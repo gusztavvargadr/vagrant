@@ -1,0 +1,3 @@
+source 'https://supermarket.chef.io'
+
+cookbook 'vagrant_workstations', path: 'chef/cookbooks/vagrant_workstations'

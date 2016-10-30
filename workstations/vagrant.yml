@@ -1,0 +1,56 @@
+vms:
+  default:
+    autostart: false
+    providers:
+      virtualbox:
+        gui: false
+        memory: 2048
+        cpus: 2
+    provisioners:
+      00-file-gitconfig:
+        type: file
+        source: ~/.gitconfig
+        destination: /Users/vagrant/.gitconfig
+      10-chef-solo:
+        type: chef-solo
+        recipe: vagrant_workstations::default
+        attributes:
+          vagrant_workstations:
+            chocolatey_packages:
+              conemu:
+              # far:
+              visualstudiocode:
+              beyondcompare:
+              googlechrome:
+              git:
+                options: -params '"/GitAndUnixToolsOnPath"'
+              git-credential-manager-for-windows:
+            git_profiles:
+              https://github.com:
+                checkout_directory_path: /Users/vagrant/Repos
+                repositories:
+                  gitconfig/gitconfig:
+
+  dotnet:
+    box: windows10ee-vs2015c
+    providers:
+      virtualbox:
+        memory: 4096
+        cpus: 4
+    provisioners:
+      10-chef-solo:
+        attributes:
+          vagrant_workstations:
+            chocolatey_packages:
+              webpi:
+              webpicmd:
+              resharper:
+              dottrace:
+              dotmemory:
+              dotcover:
+              dotpeek:
+              fiddler4:
+            git_profiles:
+              https://github.com:
+                repositories:
+                  dotnet/home:
