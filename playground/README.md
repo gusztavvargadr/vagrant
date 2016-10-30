@@ -41,3 +41,15 @@ $ vagrant up windows2012r2se-vs2015p
 ```
 $ vagrant up windows2016
 ```
+
+## Ubuntu 12
+
+```
+$ vagrant up ubuntu12
+```
+
+## Ubuntu 14
+
+```
+$ vagrant up ubuntu14
+```

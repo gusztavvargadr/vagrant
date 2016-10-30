@@ -1,62 +1,20 @@
 Vagrant.configure('2') do |config|
-  config.vm.define 'windows10ee', autostart: false do |windows10ee|
-    windows10ee.vm.box = 'gusztavvargadr/windows10ee'
+  config_vm_define config, 'windows10ee', 'gusztavvargadr/windows10ee'
+  config_vm_define config, 'windows10ee-vs2015c', 'gusztavvargadr/windows10ee-vs2015c'
+  config_vm_define config, 'windows10ee-vs2015p', 'gusztavvargadr/windows10ee-vs2015p'
+  config_vm_define config, 'windows2012r2se', 'gusztavvargadr/windows2012r2se'
+  config_vm_define config, 'windows2012r2se-vs2015c', 'gusztavvargadr/windows2012r2se-vs2015c'
+  config_vm_define config, 'windows2012r2se-vs2015p', 'gusztavvargadr/windows2012r2se-vs2015p'
+  config_vm_define config, 'windows2016', 'jacqinthebox/windowsserver2016'
+  config_vm_define config, 'ubuntu12', 'ubuntu/precise32'
+  config_vm_define config, 'ubuntu14', 'ubuntu/trusty64'
+end
 
-    windows10ee.vm.provider 'virtualbox' do |vb|
-      vb.memory = 1024
-      vb.cpus = 1
-    end
-  end
+def config_vm_define(config, name, box)
+  config.vm.define name, autostart: false do |config_vm|
+    config_vm.vm.box = box
 
-  config.vm.define 'windows10ee-vs2015c', autostart: false do |windows10ee_vs2015c|
-    windows10ee_vs2015c.vm.box = 'gusztavvargadr/windows10ee-vs2015c'
-
-    windows10ee_vs2015c.vm.provider 'virtualbox' do |vb|
-      vb.memory = 2048
-      vb.cpus = 2
-    end
-  end
-
-  config.vm.define 'windows10ee-vs2015p', autostart: false do |windows10ee_vs2015p|
-    windows10ee_vs2015p.vm.box = 'gusztavvargadr/windows10ee-vs2015p'
-
-    windows10ee_vs2015p.vm.provider 'virtualbox' do |vb|
-      vb.memory = 2048
-      vb.cpus = 2
-    end
-  end
-
-  config.vm.define 'windows2012r2se', autostart: false do |windows2012r2se|
-    windows2012r2se.vm.box = 'gusztavvargadr/windows2012r2se'
-
-    windows2012r2se.vm.provider 'virtualbox' do |vb|
-      vb.memory = 1024
-      vb.cpus = 1
-    end
-  end
-
-  config.vm.define 'windows2012r2se-vs2015c', autostart: false do |windows2012r2se_vs2015c|
-    windows2012r2se_vs2015c.vm.box = 'gusztavvargadr/windows2012r2se-vs2015c'
-
-    windows2012r2se_vs2015c.vm.provider 'virtualbox' do |vb|
-      vb.memory = 2048
-      vb.cpus = 2
-    end
-  end
-
-  config.vm.define 'windows2012r2se-vs2015p', autostart: false do |windows2012r2se_vs2015p|
-    windows2012r2se_vs2015p.vm.box = 'gusztavvargadr/windows2012r2se-vs2015p'
-
-    windows2012r2se_vs2015p.vm.provider 'virtualbox' do |vb|
-      vb.memory = 2048
-      vb.cpus = 2
-    end
-  end
-
-  config.vm.define 'windows2016', autostart: false do |windows2012r2se|
-    windows2012r2se.vm.box = 'jacqinthebox/windowsserver2016'
-
-    windows2012r2se.vm.provider 'virtualbox' do |vb|
+    config_vm.vm.provider 'virtualbox' do |vb|
       vb.gui = false
       vb.memory = 2048
       vb.cpus = 2
