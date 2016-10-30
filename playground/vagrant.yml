@@ -1,0 +1,26 @@
+vms:
+  default:
+    autostart: false
+    providers:
+      virtualbox:
+        gui: false
+        memory: 2048
+        cpus: 2
+  windows10ee:
+    box: windows10ee
+  windows10ee-vs2015c:
+    box: windows10ee-vs2015c
+  windows10ee-vs2015p:
+    box: windows10ee-vs2015p
+  windows2012r2se:
+    box: windows2012r2se
+  windows2012r2se-vs2015c:
+    box: windows2012r2se-vs2015c
+  windows2012r2se-vs2015p:
+    box: windows2012r2se-vs2015p
+  windows2016:
+    box: jacqinthebox/windowsserver2016
+  ubuntu12:
+    box: ubuntu/precise32
+  ubuntu14:
+    box: ubuntu/trusty64

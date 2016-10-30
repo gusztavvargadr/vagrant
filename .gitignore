@@ -1,1 +1,3 @@
 .vagrant
+vagrant*local.yml
+Berksfile.lock

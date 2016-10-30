@@ -1,23 +1,4 @@
-Vagrant.configure('2') do |config|
-  config_vm_define config, 'windows10ee', 'gusztavvargadr/windows10ee'
-  config_vm_define config, 'windows10ee-vs2015c', 'gusztavvargadr/windows10ee-vs2015c'
-  config_vm_define config, 'windows10ee-vs2015p', 'gusztavvargadr/windows10ee-vs2015p'
-  config_vm_define config, 'windows2012r2se', 'gusztavvargadr/windows2012r2se'
-  config_vm_define config, 'windows2012r2se-vs2015c', 'gusztavvargadr/windows2012r2se-vs2015c'
-  config_vm_define config, 'windows2012r2se-vs2015p', 'gusztavvargadr/windows2012r2se-vs2015p'
-  config_vm_define config, 'windows2016', 'jacqinthebox/windowsserver2016'
-  config_vm_define config, 'ubuntu12', 'ubuntu/precise32'
-  config_vm_define config, 'ubuntu14', 'ubuntu/trusty64'
-end
+require_relative '../vagrant'
 
-def config_vm_define(config, name, box)
-  config.vm.define name, autostart: false do |config_vm|
-    config_vm.vm.box = box
-
-    config_vm.vm.provider 'virtualbox' do |vb|
-      vb.gui = false
-      vb.memory = 2048
-      vb.cpus = 2
-    end
-  end
-end
+directory_path = File.expand_path('../', __FILE__)
+vagrant_configure(directory_path)
