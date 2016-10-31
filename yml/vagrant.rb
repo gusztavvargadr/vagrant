@@ -33,7 +33,7 @@ def vagrant_config_hostmanager(config, settings)
   config_settings = settings['config']
   config.hostmanager.enabled = config_settings['hostmanager']
   config.hostmanager.manage_host = true
-  config.hostmanager.manage_guest = false
+  config.hostmanager.manage_guest = true
 end
 
 def vagrant_config_vms(config, settings)
@@ -87,7 +87,7 @@ def vagrant_config_vm_network(vm_config, vm_settings)
     ports = network_settings['ports']
     unless ports.nil?
       network_settings['ports'].each do |port_name, port_settings|
-        vm_config.vm.network :forwarded_port, id: port_name, host: port_settings['host'], guest: port_settings['guest'], auto_correct: port_settings['auto_correct']
+        vm_config.vm.network :forwarded_port, id: port_name, host: port_settings['host'], guest: port_settings['guest'], auto_correct: true
       end
     end
 

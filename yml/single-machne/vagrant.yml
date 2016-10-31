@@ -1,0 +1,3 @@
+vms:
+  default:
+    box: ubuntu/trusty64

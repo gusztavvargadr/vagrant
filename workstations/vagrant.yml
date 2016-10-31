@@ -11,26 +11,27 @@ vms:
         type: file
         source: ~/.gitconfig
         destination: /Users/vagrant/.gitconfig
-      10-chef-solo:
+      10-chef-solo-chocolatey-packages:
         type: chef-solo
-        recipe: vagrant_workstations::default
+        recipe: vagrant_workstations::chocolatey_packages
         attributes:
           vagrant_workstations:
             chocolatey_packages:
-              conemu:
-              # far:
-              visualstudiocode:
-              beyondcompare:
-              googlechrome:
               git:
                 options: -params '"/GitAndUnixToolsOnPath"'
               git-credential-manager-for-windows:
+      20-reload:
+        type: reload
+      30-chef-solo-git-profiles:
+        type: chef-solo
+        recipe: vagrant_workstations::git_profiles
+        attributes:
+          vagrant_workstations:
             git_profiles:
               https://github.com:
                 checkout_directory_path: /Users/vagrant/Repos
                 repositories:
                   gitconfig/gitconfig:
-
   dotnet:
     box: windows10ee-vs2015c
     providers:
@@ -38,18 +39,15 @@ vms:
         memory: 4096
         cpus: 4
     provisioners:
-      10-chef-solo:
+      10-chef-solo-chocolatey-packages:
         attributes:
           vagrant_workstations:
             chocolatey_packages:
               webpi:
               webpicmd:
-              resharper:
-              dottrace:
-              dotmemory:
-              dotcover:
-              dotpeek:
-              fiddler4:
+      30-chef-solo-git-profiles:
+        attributes:
+          vagrant_workstations:
             git_profiles:
               https://github.com:
                 repositories:
