@@ -1,4 +1,4 @@
-# YML
+# YAML
 
 * Empty
 * Single-machine
