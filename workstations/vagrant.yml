@@ -43,7 +43,7 @@ vms:
         attributes:
           vagrant_workstations:
             chocolatey_packages:
-              webpi:
+              nuget.commandline:
               webpicmd:
       30-chef-solo-git-profiles:
         attributes:
