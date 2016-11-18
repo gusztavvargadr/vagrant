@@ -12,12 +12,24 @@ vms:
     box: windows10ee-vs2015c
   windows10ee-vs2015p:
     box: windows10ee-vs2015p
+  windows10ee-vs2010p:
+    box: windows10ee-vs2010p
+  windows10ee-vs2010p-vs2015p:
+    box: windows10ee-vs2010p-vs2015p
+  windows10ee-sql2014de:
+    box: windows10ee-sql2014de
+  windows10ee-sql2014de-vs2015c:
+    box: windows10ee-sql2014de-vs2015c
+  windows10ee-sql2014de-vs2015p:
+    box: windows10ee-sql2014de-vs2015p
+  windows10ee-sql2014de-vs2010p:
+    box: windows10ee-sql2014de-vs2010p
+  windows10ee-sql2014de-vs2010p-vs2015p:
+    box: windows10ee-sql2014de-vs2010p-vs2015p
   windows2012r2se:
     box: windows2012r2se
-  windows2012r2se-vs2015c:
-    box: windows2012r2se-vs2015c
-  windows2012r2se-vs2015p:
-    box: windows2012r2se-vs2015p
+  windows2012r2se-sql2014de:
+    box: windows2012r2se-sql2014de
   windows2016:
     box: jacqinthebox/windowsserver2016
   ubuntu12:
