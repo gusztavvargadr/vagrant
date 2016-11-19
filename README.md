@@ -1,16 +1,20 @@
 # Vagrant
 
-**Quick links** [Playground] | [Workstations] | [Boxes]  
-**Contents** [Overview] | [Getting started] | [Usage] | [Resources]  
+**Quick links** [Playground] | [Workstations] | [Samples] | [Boxes] | [Packer templates]  
+**Contents** [Overview] | [Getting started] | [Usage] | [Contributing] | [Resources]  
 
 This repository contains [Vagrant] environments using [VirtualBox] for .NET development purposes.
+
+If you are interested in building your own Vagrant boxes instead, check out the [Packer templates] repo.
+
+[Packer templates]: https://github.com/gusztavvargadr/packer
 
 ## Overview
 
 > Vagrant up is the new make build.  
 [@choult]
 
-Vagrant is a tool for managing development environments. By abstracting the management of virtual machines and their configurations, it provides a way to consistently set up simple machines or complex environments independently of the hosting platform. See [the official introduction][VagrantWhy] for more details.
+Vagrant is a tool for managing (virtual) development environments. By abstracting the management of virtual machines, it provides a way to consistently set up single or multi-machine environments in a hosting-agnostic way. Just type `vagrant up` and have the same setup ready in minutes anywhere. See [the official introduction][VagrantWhy] for more details and usage scenarios.
 
 [Overview]: #overview
 [@choult]: https://twitter.com/choult/status/693126220855250944
@@ -28,6 +32,8 @@ Follow these steps to get started:
 3. Install the [Chef Development Kit][ChefDKInstallation].
 4. Disable virtualization platforms other than VirtualBox. On Windows, [disable Hyper-V][HyperVDisable], in case it is running.
 
+These might have been the last few occasions you configured something manually, Vagrant will take care of the rest.
+
 [Getting started]: #getting-started
 [VagrantInstallation]: https://www.vagrantup.com/docs/installation/
 [VagrantBerkshelfInstallation]: https://github.com/berkshelf/vagrant-berkshelf#installation
@@ -39,30 +45,33 @@ Follow these steps to get started:
 
 ## Usage
 
-Check out [Vagrant's official guide][VagrantGettingStarted] for an introduction and the [command-line reference][VagrantCli] for more details.
+If you are not familiar with Vagrant yet, check out [the official guide][VagrantGettingStarted] for an introduction, and the [command-line reference][VagrantCli] for more details.
+
+Then, according to your scenario, give one of the following configurations a try:
+
+* [Playground] for quick experiments in isolation.
+* [Workstations] for setting up your everyday development environment.
+
+Of course, the above setups are not the only way to configure your environments. Here are some options to tune them for your needs:
+
+* If you need small or temporary changes (e.g. change the available resources, install additional packages) for any of the above enviroments' machines, you can simply change the related configuration values. See the environments' pages for the available options.
+* If you need completely different environments (e.g. set up a deployment environment for your project), you can simply reuse the custom [boxes] and build whatever configurations you like. See the [samples] for the most common scenarios.
 
 [Usage]: #usage
 [VagrantGettingStarted]: https://www.vagrantup.com/docs/getting-started/
 [VagrantCli]: https://www.vagrantup.com/docs/cli/
-
-### Environments
-
-The repository contains the following environments:
-
-* [Playground] for quick experiments.
-* [Workstations] for the everday development tasks.
-
 [Playground]: src/playground
 [Workstations]: src/workstations
+[Samples]: samples
+[Boxes]: https://atlas.hashicorp.com/gusztavvargadr
 
-### Customization
+## Contributing
 
-The above environments use [custom YAML-based configuration][YAML] for easy setup and customization. See the individual environments' description for a complete list of options.
+Any feedback, [issues] or [pull requests] are welcome and greatly appreciated.
 
-You can also build your own configurations and environments using the custom [boxes].
-
-[YAML]: src/samples
-[Boxes]: https://github.com/gusztavvargadr/packer
+[Contributing]: #contributing
+[Issues]: https://github.com/gusztavvargadr/vagrant/issues
+[Pull requests]: https://github.com/gusztavvargadr/vagrant/pulls
 
 ## Resources
 
