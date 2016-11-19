@@ -1,8 +1,8 @@
-# YAML-based configuration
+# Samples
 
 **Quick links** [Home] | [Playground] | [Workstations]  
 
-[Home]: ../README.md
+[Home]: ../..
 [Playground]: ../playground
 [Workstations]: ../workstations
 

@@ -4,8 +4,8 @@ vms:
     providers:
       virtualbox:
         gui: false
-        memory: 2048
-        cpus: 2
+        memory: 4096
+        cpus: 4
     provisioners:
       00-file-gitconfig:
         type: file
@@ -34,10 +34,6 @@ vms:
                   gitconfig/gitconfig:
   dotnet:
     box: windows10ee-vs2015c
-    providers:
-      virtualbox:
-        memory: 4096
-        cpus: 4
     provisioners:
       10-chef-solo-chocolatey-packages:
         attributes:

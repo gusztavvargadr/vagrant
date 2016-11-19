@@ -1,6 +1,6 @@
 # Vagrant
 
-**Quick links** [Playground] | [Workstations] | [Base boxes]  
+**Quick links** [Playground] | [Workstations] | [Boxes]  
 **Contents** [Overview] | [Getting started] | [Usage] | [Resources]  
 
 This repository contains [Vagrant] environments using [VirtualBox] for .NET development purposes.
@@ -52,17 +52,17 @@ The repository contains the following environments:
 * [Playground] for quick experiments.
 * [Workstations] for the everday development tasks.
 
-[Playground]: playground
-[Workstations]: workstations
+[Playground]: src/playground
+[Workstations]: src/workstations
 
 ### Customization
 
 The above environments use [custom YAML-based configuration][YAML] for easy setup and customization. See the individual environments' description for a complete list of options.
 
-You can also build your own configurations and environments using the custom [base boxes]. 
+You can also build your own configurations and environments using the custom [boxes].
 
-[YAML]: yaml
-[Base boxes]: https://github.com/gusztavvargadr/packer
+[YAML]: src/samples
+[Boxes]: https://github.com/gusztavvargadr/packer
 
 ## Resources
 

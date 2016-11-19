@@ -1,1 +1,0 @@
-name 'vagrant_workstations'

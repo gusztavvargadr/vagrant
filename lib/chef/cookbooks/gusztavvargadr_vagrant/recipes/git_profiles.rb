@@ -1,4 +1,4 @@
-git_profiles = node['vagrant_workstations'].nil? ? nil : node['vagrant_workstations']['git_profiles']
+git_profiles = node['gusztavvargadr_vagrant'].nil? ? nil : node['gusztavvargadr_vagrant']['git_profiles']
 unless git_profiles.nil?
   git_profiles.each do |git_profile_url, git_profile_settings|
     git_profile_checkout_directory_path = git_profile_settings['checkout_directory_path']
