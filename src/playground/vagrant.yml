@@ -6,35 +6,11 @@ vms:
         gui: false
         memory: 2048
         cpus: 2
-  w10ee:
+  w10e:
     box: windows10ee
-  w10ee-vs2015c:
-    box: windows10ee-vs2015c
-  w10ee-vs2015p:
-    box: windows10ee-vs2015p
-  w10ee-vs2010p:
-    box: windows10ee-vs2010p
-  w10ee-vs2010p-vs2015p:
-    box: windows10ee-vs2010p-vs2015p
-  w10ee-sql2014de:
-    box: windows10ee-sql2014de
-  w10ee-sql2014de-vs2015c:
-    box: windows10ee-sql2014de-vs2015c
-  w10ee-sql2014de-vs2015p:
-    box: windows10ee-sql2014de-vs2015p
-  w10ee-sql2014de-vs2010p:
-    box: windows10ee-sql2014de-vs2010p
-  w10ee-sql2014de-vs2010p-vs2015p:
-    box: windows10ee-sql2014de-vs2010p-vs2015p
-  w2012r2se:
+  w12r2s:
     box: windows2012r2se
-  w2012r2se-sql2014de:
-    box: windows2012r2se-sql2014de
-  w2012r2se-iis:
-    box: windows2012r2se-iis
-  w2012r2se-sql2014de-iis:
-    box: windows2012r2se-sql2014de-iis
-  w2016:
+  w16s:
     box: jacqinthebox/windowsserver2016
   u12:
     box: ubuntu/precise32
