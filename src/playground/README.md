@@ -1,55 +1,40 @@
 # Playground
 
-## Windows 10 Enterprise Evaluation
+**Contents** [Overview] | [Usage]  
+
+This folder contains a [multi-machine][VagrantMultiMachine] configuration for quick experiments with tools or technologies without messing up other environments.
+
+## Overview
+
+The configuration contains the following machines:
+
+Name | Box | Main components
+:--- | :--- | :---
+w10ee | [gusztavvargadr/windows10ee] | Windows10 Enterprise
+w2012r2se | [gusztavvargadr/windows2012r2se] | Windows Server 2012 R2 Standard
+
+## Usage
+
+None of the machines [start automatically][VagrantAutostart] in this configuration, use the value from the `Name` column above for interacting with them in Vagrant. For example, to boot the machines, type one of the following commands:
 
 ```
-$ vagrant up windows10ee
+$ vagrant up w10ee
+$ vagrant up w2012r2se
 ```
 
-## Windows 10 Enterprise Evaluation with Visual Studio 2015 Community
+### Customization
 
-```
-$ vagrant up windows10ee-vs2015c
-```
+[Samples]
+[yml]
 
-## Windows 10 Enterprise Evaluation with Visual Studio 2015 Professional
+[Overview]: #overview
+[Usage]: #usage
 
-```
-$ vagrant up windows10ee-vs2015p
-```
+[gusztavvargadr/windows10ee]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee
+[gusztavvargadr/windows2012r2se]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows2012r2se
 
-## Windows Server 2012 R2 Standard Evaluation
+[VagrantMultiMachine]: https://www.vagrantup.com/docs/multi-machine/
+[VagrantAutostart]: https://www.vagrantup.com/docs/multi-machine/#autostart-machines
 
-```
-$ vagrant up windows2012r2se
-```
-
-## Windows Server 2012 R2 Standard Evaluation with Visual Studio 2015 Community
-
-```
-$ vagrant up windows2012r2se-vs2015c
-```
-
-## Windows Server 2012 R2 Standard Evaluation with Visual Studio 2015 Professional
-
-```
-$ vagrant up windows2012r2se-vs2015p
-```
-
-## Windows Server 2016 Evaluation
-
-```
-$ vagrant up windows2016
-```
-
-## Ubuntu 12
-
-```
-$ vagrant up ubuntu12
-```
-
-## Ubuntu 14
-
-```
-$ vagrant up ubuntu14
-```
+[Samples]: ../../samples
+[yml]: vagrant.yml
