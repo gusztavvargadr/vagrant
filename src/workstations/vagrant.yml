@@ -1,0 +1,53 @@
+vms:
+  default:
+    autostart: false
+    providers:
+      virtualbox:
+        gui: false
+        memory: 2048
+        cpus: 2
+    provisioners:
+      00-file-gitconfig:
+        type: file
+        source: ~/.gitconfig
+        destination: /Users/vagrant/.gitconfig
+      10-chef-solo-chocolatey-packages:
+        type: chef-solo
+        recipe: gusztavvargadr_vagrant::chocolatey_packages
+        attributes:
+          gusztavvargadr_vagrant:
+            chocolatey_packages:
+              git:
+                options: -params '"/GitAndUnixToolsOnPath"'
+              git-credential-manager-for-windows:
+      20-reload:
+        type: reload
+      30-chef-solo-git-profiles:
+        type: chef-solo
+        recipe: gusztavvargadr_vagrant::git_profiles
+        attributes:
+          gusztavvargadr_vagrant:
+            git_profiles:
+              https://github.com:
+                checkout_directory_path: /Users/vagrant/Repos
+                repositories:
+                  github/gitignore:
+  dotnet:
+    box: windows10ee-vs2015c
+    provisioners:
+      10-chef-solo-chocolatey-packages:
+        attributes:
+          gusztavvargadr_vagrant:
+            chocolatey_packages:
+              nuget.commandline:
+              webpicmd:
+  sql:
+    box: windows10ee-sql2014de
+  chef:
+    box: windows10ee
+    provisioners:
+      10-chef-solo-chocolatey-packages:
+        attributes:
+          gusztavvargadr_vagrant:
+            chocolatey_packages:
+              chefdk:

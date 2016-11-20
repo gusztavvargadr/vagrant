@@ -1,0 +1,15 @@
+config:
+  hostmanager: true
+
+vms:
+  default:
+    box: ubuntu/trusty64
+    network:
+      type: private_network
+      ip: 172.16.29.156
+      ports:
+        http:
+          host: 8080
+          guest: 80
+      hostnames:
+        - default.network.yml.vagrant
