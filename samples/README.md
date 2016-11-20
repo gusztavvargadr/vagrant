@@ -213,7 +213,7 @@ vms:
 
 [Reference]: reference
 
-### Cusomization
+### Customization
 
 Although the above samples utilize only a single `vagrant.yml` file to define all the options, it is possible to split these configurations for better management via separation or for local customizations.
 
