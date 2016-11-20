@@ -6,7 +6,7 @@ This folder contains a [multi-machine][VagrantMultiMachine] configuration for se
 
 ## Overview
 
-The configuration contains the following machines:
+This configuration contains the following machines:
 
 Name | Box | Main components
 :--- | :--- | :---
@@ -26,8 +26,7 @@ $ vagrant up chef
 
 ### Customization
 
-[Samples]
-[yml]
+You can use the [YAML-based options][Samples] to customize [this configuration][YAML].
 
 [Overview]: #overview
 [Usage]: #usage
@@ -40,4 +39,4 @@ $ vagrant up chef
 [VagrantAutostart]: https://www.vagrantup.com/docs/multi-machine/#autostart-machines
 
 [Samples]: ../../samples
-[yml]: vagrant.yml
+[YAML]: vagrant.yml
