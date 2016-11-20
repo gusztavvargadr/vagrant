@@ -30,6 +30,10 @@ vms:
     box: windows2012r2se
   w2012r2se-sql2014de:
     box: windows2012r2se-sql2014de
+  w2012r2se-iis:
+    box: windows2012r2se-iis
+  w2012r2se-sql2014de-iis:
+    box: windows2012r2se-sql2014de-iis
   w2016:
     box: jacqinthebox/windowsserver2016
   u12:
