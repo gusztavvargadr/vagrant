@@ -6,7 +6,7 @@ This folder contains samples for the most common Vagrant scenarios and the detai
 
 ## Overview
 
-This repository contains Vagrant environments using custom YAML configurations instead of usual [Vagrantfile]-based approach to provide easier setup for multi-machine environments and to allow simple customization.
+This repository contains Vagrant environments using custom YAML configurations instead of usual [Vagrantfile]-based approach to provide easier setup for multi-machine environments and to allow simple customizations.
 
 We still use a [Vagrantfile][YAMLVagrantfile] of course, but it simply [loads the configuration][YAMLVagrantRb] from [YAML files][YAMLReference] instead of defining all the options in Ruby. The solution can load multiple YAML files to support e.g. cleaner multi-machine configurations, inheritance or local overrides, and processes them as [ERB templates] to e.g. build dynamic configurations or use secrets from external data sources like environment variables.
 
@@ -20,7 +20,7 @@ We still use a [Vagrantfile][YAMLVagrantfile] of course, but it simply [loads th
 
 ## Getting started
 
-The custom YAML configuration provides basically just a wrappering around the available Vagrant options, so make sure you are [familiar with the possibilities][VagrantGettingStarted].
+The custom YAML configuration provides basically a wrapper around the available Vagrant options, so make sure you are [familiar with the possibilities][VagrantGettingStarted].
 
 Then, copy one of the samples below according to your scenario.
 
@@ -29,7 +29,7 @@ Then, copy one of the samples below according to your scenario.
 
 ## Usage
 
-See below the description of all the available YAML configuration options and the approaches of further customize a baseline environment.
+See below the description of all the available YAML configuration options and the approaches of further customizing a baseline environment.
 
 [Usage]: #usage
 
@@ -46,7 +46,7 @@ This is of less practical relevance, just for your information, an [Empty] confi
 
 With the standard [Single-machine] configuration you can define the box you want to use:
 
-```
+```yaml
 vms:
   default:
     box: ubuntu/trusty64
@@ -56,9 +56,9 @@ vms:
 
 #### Multi-machine
 
-For more complex scenarios, the [Multi-machine] configuration allows you have more than one boxes for an environment:
+For more complex scenarios, the [Multi-machine] configuration allows you to have more than one boxes for an environment:
 
-```
+```yaml
 vms:
   default:
     autostart: false
@@ -68,7 +68,7 @@ vms:
     box: ubuntu/trusty64
 ```
 
-In configurations like this, `default` serves as an abstract baseline, that is, you cannot create a machine named `default`, but the other boxes (in this case `precise` and `trusty`) inherit all its settings. 
+In configurations like this, `default` serves as an abstract baseline, that is, it does not create a machine named `default`, but the other boxes (in this case `precise` and `trusty`) inherit all its settings. 
 
 [Multi-machine]: multi-machine
 
@@ -76,7 +76,7 @@ In configurations like this, `default` serves as an abstract baseline, that is, 
 
 You can also configure the basic parameters of the [Providers] being used (currently only VirtualBox is supported):
 
-```
+```yaml
 vms:
   default:
     box: ubuntu/trusty64
@@ -93,7 +93,7 @@ vms:
 
 Vagrant allows the configuration of the various [Network] settings, so do we in YAML:
 
-```
+```yaml
 config:
   hostmanager: true
 
@@ -111,7 +111,7 @@ vms:
         - default.network.yml.vagrant
 ```
 
-The global `hostmanager` flags can be used to turn on the [Host Manager plugin]. It requires a static IP address to be defined, and it will set up the network aliases specificed under `hostnames` on both the host and the guest(s).
+The global `hostmanager` flag can be used to turn on the [Host Manager plugin]. It requires a static IP address to be defined, and will set up the aliases specificed under `hostnames` on both the host and the guest(s).
 
 [Network]: network
 [Host Manager plugin]: https://github.com/devopsgroup-io/vagrant-hostmanager
@@ -120,7 +120,7 @@ The global `hostmanager` flags can be used to turn on the [Host Manager plugin].
 
 You can define the [File][FileProvisioner], [Chef Solo][ChefSoloProvisioner] and [Reload][ReloadProvisioner] [Provisioners] in YAML:
 
-```
+```yaml
 vms:
   default:
     box: ubuntu/trusty64
@@ -148,7 +148,7 @@ The provisioners are executed in the alphabetical order of their keys (in this c
 
 Finally, below is the annotated [Reference] of all the options supproted by the YAML configuration in a single file:
 
-```
+```yaml
 # Global configuration.
 config:
   hostmanager: false # Use the vagrant-hostmanager plugin. Defaults to false.
@@ -215,7 +215,7 @@ vms:
 
 ### Cusomization
 
-Although the above samples utilize only a single `vagrant.yml` file to define all the options, it is possible to split these configurations for better management via separation, or local customizations.
+Although the above samples utilize only a single `vagrant.yml` file to define all the options, it is possible to split these configurations for better management via separation or for local customizations.
 
 #### Multi-file configuration basics
 
@@ -223,7 +223,7 @@ We load all the files matching the `vagrant*.yml` pattern from the same folder a
 
 For example, this single file configuration:
 
-```
+```yaml
 # vagrant.yml
 vms:
   default:
@@ -236,7 +236,7 @@ vms:
 
 Is equivalent to the following three files in the same folder:
 
-```
+```yaml
 # vagrant.default.yml
 vms:
   default:
@@ -255,24 +255,13 @@ vms:
 
 This can also help the readability of complex configurations.
 
-```
-# vagrant.yml
-vms:
-  default:
-    autostart: false
-  precise:
-    box: ubuntu/precise32
-  trusty:
-    box: ubuntu/trusty64
-```
-
 #### Local changes
 
-Files matching the pattern `vagrant*local.yml` are automatically excluded from git, so you can use them for applying local temporary changes.
+Files matching the pattern `vagrant*local.yml` are automatically excluded from Git, so you can use them for making temporary local changes.
 
 For example, to give some more resources to the configuration below:
 
-```
+```yaml
 # vagrant.yml
 vms:
   default:
@@ -286,7 +275,7 @@ vms:
 
 Create a local file with the overrides:
 
-```
+```yaml
 # vagrant.local.yml
 vms:
   default:
@@ -298,7 +287,7 @@ vms:
 
 This will result in the merged configuration as expected:
 
-```
+```yaml
 # vagrant.yml and vagrant.local.yml merged
 vms:
   default:
@@ -310,7 +299,7 @@ vms:
         cpus: 2
 ```
 
-For more complex or permanent changes, [fork this repo][Fork] and commit your changes in your own branch like [this one][CustomizationBranch].
+For more complex or permanent changes, [fork this repo][Fork] and simply commit your changes in your own branch like [this one][CustomizationBranch].
 
 [Fork]: https://github.com/gusztavvargadr/vagrant/fork
 [CustomizationBranch]: https://github.com/gusztavvargadr/vagrant/compare/master...customization/gusztavvargadr
