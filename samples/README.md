@@ -131,7 +131,8 @@ vms:
         destination: /home/vagrant/.gitconfig
       10-chef-solo:
         type: chef-solo
-        recipe: hello_world::default
+        recipes:
+          - hello_world::default
         attributes:
       20-reload:
         type: reload
@@ -186,7 +187,8 @@ vms:
         destination: /home/vagrant/.gitconfig
       10-chef-solo: # Chef Solo provisioner configuration. Use Berksfile for cookbook dependencies with the vagrant-berkshelf plugin.
         type: chef-solo
-        recipe: hello_world::default
+        recipes:
+          - hello_world::default
         attributes:
       20-reload: # Reload provisioner configuration using vagrant-reload plugin.
         type: reload
