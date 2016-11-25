@@ -21,6 +21,15 @@ suites:
       gusztavvargadr_vagrant:
         windows_features:
           - TelnetClient
+  - name: windows_packages
+    run_list:
+      - recipe[gusztavvargadr_vagrant::windows_packages]
+    attributes:
+      gusztavvargadr_vagrant:
+        windows_packages:
+          Redgate DLM Automation Suite:
+            source: https://download.red-gate.com/DLMAutomationSuite.exe
+            options: /IAgreeToTheEULA /q
   - name: chocolatey_packages
     run_list:
       - recipe[gusztavvargadr_vagrant::chocolatey_packages]
