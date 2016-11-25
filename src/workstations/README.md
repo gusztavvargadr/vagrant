@@ -17,11 +17,17 @@ chef | [gusztavvargadr/windows10ee] | Windows 10 Enterprise, Chef Development Ki
 All the machines are provisioned by default as below:
 
 * Copy your global `.gitconfig` from the host to the guest
+* Install a customizable list of Windows features
+* Install a customizable list of Windows packages
 * Install a customizable list of Chocolatey packages
   * By default [git] and [git-credential-manager-for-windows]
 * Clone a customizable list of Git repositories
   * By default [github/gitignore]
 
+[Overview]: #overview
+[gusztavvargadr/windows10ee-vs2015c]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee-vs2015c
+[gusztavvargadr/windows10ee-sql2014de]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee-sql2014de
+[gusztavvargadr/windows10ee]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee
 [git]: https://chocolatey.org/packages/git
 [git-credential-manager-for-windows]: https://chocolatey.org/packages/Git-Credential-Manager-for-Windows
 [github/gitignore]: https://github.com/github/gitignore
@@ -36,19 +42,60 @@ $ vagrant up sql
 $ vagrant up chef
 ```
 
+[Usage]: #usage
+[VagrantMultiMachine]: https://www.vagrantup.com/docs/multi-machine/
+[VagrantAutostart]: https://www.vagrantup.com/docs/multi-machine/#autostart-machines
+
 ### Customization
 
 You can use the [YAML-based options][Samples] to customize [this configuration][YAML].
 
-#### Chocolatey packages
+[Samples]: ../../samples
+[YAML]: vagrant.yml
 
-Extend the following section of [the configuration][YAML] to install additional packages:
+#### Windows features
+
+Extend the following section of [the configuration][YAML] to install additional [Windows features]:
 
 ```yaml
 vms:
   <name>:
     provisioners:
-      10-chef-solo-chocolatey-packages:
+      10-chef-solo-packages:
+        attributes:
+          gusztavvargadr_vagrant:
+            windows_features:
+              - TelnetClient
+```
+
+[Windows features]: https://visualplanet.org/blog/?p=342
+
+#### Windows packages
+
+Extend the following section of [the configuration][YAML] to install additional Windows packages:
+
+```yaml
+vms:
+  <name>:
+    provisioners:
+      10-chef-solo-packages:
+        attributes:
+          gusztavvargadr_vagrant:
+            windows_packages:
+              Redgate DLM Automation Suite:
+                source: https://download.red-gate.com/DLMAutomationSuite.exe
+                options: /IAgreeToTheEULA /q
+```
+
+#### Chocolatey packages
+
+Extend the following section of [the configuration][YAML] to install additional [Chocolatey packages]:
+
+```yaml
+vms:
+  <name>:
+    provisioners:
+      10-chef-solo-packages:
         attributes:
           gusztavvargadr_vagrant:
             chocolatey_packages:
@@ -59,6 +106,8 @@ vms:
                 version: 2.10.2
                 options: -params '"/GitAndUnixToolsOnPath"'
 ```
+
+[Chocolatey packages]: https://chocolatey.org/packages
 
 #### Git repositories
 
@@ -73,8 +122,10 @@ vms:
           gusztavvargadr_vagrant:
             git_profiles:
               # Base url for all the repositories in this "profile" (you can define multiple ones)
-              # You can specify your credentials in the url like https://username:password@github.com for private repos
               https://github.com:
+                # Optionally, specify your credentials for private repos
+                username: <%= ENV['GIT_GITHUB_USERNAME'] %>
+                password: <%= ENV['GIT_GITHUB_PASSWORD'] %>
                 # Base directory path for the clones
                 checkout_directory_path: /Users/vagrant/Repos
                 repositories:
@@ -84,16 +135,3 @@ vms:
                   dotnet/home:
                     checkout_directory_path: /dotnet-home
 ```
-
-[Overview]: #overview
-[Usage]: #usage
-
-[gusztavvargadr/windows10ee-vs2015c]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee-vs2015c
-[gusztavvargadr/windows10ee-sql2014de]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee-sql2014de
-[gusztavvargadr/windows10ee]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee
-
-[VagrantMultiMachine]: https://www.vagrantup.com/docs/multi-machine/
-[VagrantAutostart]: https://www.vagrantup.com/docs/multi-machine/#autostart-machines
-
-[Samples]: ../../samples
-[YAML]: vagrant.yml
