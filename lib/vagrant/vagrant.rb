@@ -109,7 +109,9 @@ def vagrant_config_vm_provisioners(vm_config, vm_settings)
       if provisioner_type == 'chef-solo'
         vm_config.vm.provision 'chef_solo' do |chef_solo|
           chef_solo.cookbooks_path = ''
-          chef_solo.add_recipe provisioner_settings['recipe']
+          provisioner_settings['recipes'].each do |provisioner_recipe|
+            chef_solo.add_recipe provisioner_recipe
+          end
           json = provisioner_settings['attributes']
           chef_solo.json = json unless json.nil?
         end
