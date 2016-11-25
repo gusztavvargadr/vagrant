@@ -1,0 +1,42 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 4096
+    cpus: 4
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: win10
+    driver:
+      box: gusztavvargadr/windows10ee
+
+suites:
+  - name: chocolatey_packages
+    run_list:
+      - recipe[gusztavvargadr_vagrant::chocolatey_packages]
+    attributes:
+      gusztavvargadr_vagrant:
+        chocolatey_packages:
+          nuget.commandline:
+          git:
+            version: 2.10.2
+            options: -params '"/GitAndUnixToolsOnPath"'
+  - name: git_profiles
+    run_list:
+      - recipe[gusztavvargadr_vagrant::git_profiles]
+    attributes:
+      gusztavvargadr_vagrant:
+        git_profiles:
+          https://github.com:
+            checkout_directory_path: /Users/vagrant/Repos
+            repositories:
+              github/gitignore:
+          https://github.com/gusztavvargadr:
+            username: <%= ENV['GIT_GITHUB_USERNAME'] %>
+            password: <%= ENV['GIT_GITHUB_PASSWORD'] %>
+            checkout_directory_path: /Users/vagrant/Repos/gusztavvargadr
+            repositories:
+              home:
