@@ -14,6 +14,13 @@ platforms:
       box: gusztavvargadr/windows10ee
 
 suites:
+  - name: windows_features
+    run_list:
+      - recipe[gusztavvargadr_vagrant::windows_features]
+    attributes:
+      gusztavvargadr_vagrant:
+        windows_features:
+          - TelnetClient
   - name: chocolatey_packages
     run_list:
       - recipe[gusztavvargadr_vagrant::chocolatey_packages]
