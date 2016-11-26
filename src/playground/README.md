@@ -21,6 +21,7 @@ This folder contains [multi-machine][VagrantMultiMachine] configurations for qui
 
 [Tools]: #tools
 [Visual Studio]: visual-studio
+[SQL Server]: sql-server
 [IIS]: iis
 
 ## Technologies
