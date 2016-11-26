@@ -1,4 +1,4 @@
-require_relative '../../lib/vagrant/vagrant'
+require_relative '../../../lib/vagrant/vagrant'
 
 directory_path = File.expand_path('../', __FILE__)
 vagrant_configure(directory_path)

@@ -1,0 +1,12 @@
+vms:
+  default:
+    autostart: false
+    providers:
+      virtualbox:
+        gui: false
+        memory: 2048
+        cpus: 2
+  sql14d-w10e:
+    box: windows10ee-sql2014de
+  sql14d-w12r2s:
+    box: windows2012r2se-sql2014de

@@ -12,7 +12,3 @@ vms:
     box: windows2012r2se
   w16s:
     box: jacqinthebox/windowsserver2016
-  u12:
-    box: ubuntu/precise32
-  u14:
-    box: ubuntu/trusty64
