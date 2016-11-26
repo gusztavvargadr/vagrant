@@ -12,5 +12,13 @@ vms:
     box: windows10ee-vs2015p
   vs10p:
     box: windows10ee-vs2010p
-  vs10p15p:
+  vs10p-vs15p:
     box: windows10ee-vs2010p-vs2015p
+  vs15c-sql:
+    box: windows10ee-sql2014de-vs2015c
+  vs15p-sql:
+    box: windows10ee-sql2014de-vs2015p
+  vs10p-sql:
+    box: windows10ee-sql2014de-vs2010p
+  vs10p-vs15p-sql:
+    box: windows10ee-sql2014de-vs2010p-vs2015p
