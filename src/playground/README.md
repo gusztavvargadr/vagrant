@@ -15,7 +15,10 @@ This folder contains [multi-machine][VagrantMultiMachine] configurations for qui
 
 ## Tools
 
+* [Visual Studio]
+
 [Tools]: #tools
+[Visual Studio]: visual-studio
 
 ## Technologies
 
