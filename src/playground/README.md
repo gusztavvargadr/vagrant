@@ -28,4 +28,7 @@ This folder contains [multi-machine][VagrantMultiMachine] configurations for qui
 
 ## Technologies
 
+* [ASP.NET Core]
+
 [Technologies]: #technologies
+[ASP.NET Core]: aspnet-core
