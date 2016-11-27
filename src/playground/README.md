@@ -4,6 +4,8 @@
 
 This folder contains [multi-machine][VagrantMultiMachine] configurations for quick experiments with tools or technologies without messing up other environments.
 
+[VagrantMultiMachine]: https://www.vagrantup.com/docs/multi-machine/
+
 ## OSes
 
 * [Windows]

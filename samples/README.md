@@ -108,7 +108,7 @@ vms:
           host: 8080
           guest: 80
       hostnames:
-        - default.network.yml.vagrant
+        - default.network.samples.vagrant.local
 ```
 
 The global `hostmanager` flag can be used to turn on the [Host Manager plugin]. It requires a static IP address to be defined, and will set up the aliases specificed under `hostnames` on both the host and the guest(s).
@@ -178,7 +178,7 @@ vms:
           host: 8080
           guest: 80
       hostnames: # Hostname aliases for both the host and the guest. Requires static IP address to be specified.
-        - default.reference.yml.vagrant
+        - default.reference.samples.vagrant.local
 # Provisioner configurations, executed by alphabetical order of keys.
     provisioners:
       00-file: # File provisioner configuration.
@@ -203,14 +203,14 @@ vms:
     network:
       ip: 172.16.10.101
       hostnames:
-        - machine1.reference.yml.vagrant
+        - machine1.reference.samples.vagrant.local
   machine2: # Overrides for machine2.
     autostart: false
     box: ubuntu/precise32
     network:
       ip: 172.16.10.102
       hostnames:
-        - machine2.reference.yml.vagrant
+        - machine2.reference.samples.vagrant.local
 ```
 
 [Reference]: reference
