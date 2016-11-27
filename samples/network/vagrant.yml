@@ -12,4 +12,4 @@ vms:
           host: 8080
           guest: 80
       hostnames:
-        - default.network.yml.vagrant
+        - default.network.samples.vagrant.local
