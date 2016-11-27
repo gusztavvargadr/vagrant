@@ -71,7 +71,7 @@ You can access the sample site at the following address according to the platfor
 
 ### Code generation
 
-You can access the [Yeoman-based code generation][Yeoman] on both hosts:
+You can access the [Yeoman-based code generation][Yeoman] on both guests:
 
 ```
 $ yo aspnet
