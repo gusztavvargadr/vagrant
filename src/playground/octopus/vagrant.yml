@@ -1,0 +1,48 @@
+config:
+  hostmanager: true
+
+vms:
+  default:
+    autostart: false
+    providers:
+      virtualbox:
+        gui: false
+        memory: 2048
+        cpus: 2
+    network:
+      type: private_network
+  server:
+    box: windows2012r2se-sql2014de-iis
+    network:
+      type: private_network
+      ip: 172.16.27.108
+      hostnames:
+        - server.octopus.playground.vagrant.local
+    provisioners:
+      00-chef-solo:
+        type: chef-solo
+        recipes:
+          - gusztavvargadr_vagrant_octopus::server
+        attributes:
+          gusztavvargadr_vagrant_octopus:
+            server:
+              web_address: http://server.octopus.playground.vagrant.local:80/
+  tentacle:
+    box: windows2012r2se-sql2014de-iis
+    network:
+      type: private_network
+      ip: 172.16.87.214
+      hostnames:
+        - tentacle.octopus.playground.vagrant.local
+    provisioners:
+      00-chef-solo:
+        type: chef-solo
+        recipes:
+          - gusztavvargadr_vagrant_octopus::tentacle
+        attributes:
+          gusztavvargadr_vagrant_octopus:
+            tentacle:
+              server_web_address: http://server.octopus.playground.vagrant.local:80/
+              role_names:
+                - web
+                - sql
