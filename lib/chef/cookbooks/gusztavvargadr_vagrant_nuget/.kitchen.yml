@@ -1,0 +1,24 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 4096
+    cpus: 4
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: win10
+    driver:
+      box: gusztavvargadr/windows10ee
+
+suites:
+  - name: profiles
+    run_list:
+      - recipe[gusztavvargadr_vagrant_nuget::profiles]
+    attributes:
+      gusztavvargadr_vagrant_nuget:
+        profiles:
+          https://www.myget.org/F/identity/:
+            name: myget-identity

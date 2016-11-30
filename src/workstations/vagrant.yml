@@ -22,6 +22,7 @@ vms:
                 options: -params '"/GitAndUnixToolsOnPath"'
               git-credential-manager-for-windows:
               svn:
+              nuget.commandline:
       20-reload:
         type: reload
       30-chef-solo-profiles:
@@ -29,6 +30,7 @@ vms:
         recipes:
           - gusztavvargadr_vagrant_git::default
           - gusztavvargadr_vagrant_svn::default
+          - gusztavvargadr_vagrant_nuget::default
         attributes:
           gusztavvargadr_vagrant_git:
             profiles:
@@ -43,7 +45,6 @@ vms:
         attributes:
           gusztavvargadr_vagrant_windows:
             chocolatey_packages:
-              nuget.commandline:
               webpicmd:
   sql:
     box: windows10ee-sql2014de

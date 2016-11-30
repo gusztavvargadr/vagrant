@@ -21,11 +21,12 @@ All the machines are provisioned by default as below:
   * Install a customizable list of features
   * Install a customizable list of packages
   * Install a customizable list of Chocolatey packages
-    * By default [git], [git-credential-manager-for-windows] and [svn]
+    * By default [git], [git-credential-manager-for-windows], [svn] and [nuget.commandline]
 * Profiles
   * Clone a customizable list of Git repositories
     * By default [github/gitignore]
   * Check out a customizable list of SVN repositories
+  * Configure a customizable list of NuGet feeds
 
 [Overview]: #overview
 [gusztavvargadr/windows10ee-vs2015c]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee-vs2015c
@@ -34,6 +35,7 @@ All the machines are provisioned by default as below:
 [git]: https://chocolatey.org/packages/git
 [git-credential-manager-for-windows]: https://chocolatey.org/packages/Git-Credential-Manager-for-Windows
 [svn]: https://chocolatey.org/packages/svn
+[nuget.commandline]: https://chocolatey.org/packages/nuget.commandline
 [github/gitignore]: https://github.com/github/gitignore
 
 ## Usage
@@ -169,4 +171,25 @@ vms:
                   # Will be checked out to the custom /log4net directory
                   asf/logging/log4net/trunk:
                     checkout_directory_path: /log4net
+```
+
+##### NuGet
+
+Extend the following section of [the configuration][YAML] to configure additional NuGet feeds:
+
+```yaml
+vms:
+  <name>:
+    provisioners:
+      30-chef-solo-profiles:
+        attributes:
+          gusztavvargadr_vagrant_nuget:
+            profiles:
+              # Feed url (you can define multiple ones)
+              https://www.myget.org/F/identity/:
+                # Optionally, specify a name for the feed
+                name: myget-identity
+                # Optionally, specify your credentials for private feeds
+                username: <%= ENV['SVN_USERNAME'] %>
+                password: <%= ENV['SVN_PASSWORD'] %>
 ```
