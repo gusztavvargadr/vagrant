@@ -17,12 +17,15 @@ chef | [gusztavvargadr/windows10ee] | Windows 10 Enterprise, Chef Development Ki
 All the machines are provisioned by default as below:
 
 * Copy your global `.gitconfig` from the host to the guest
-* Install a customizable list of Windows features
-* Install a customizable list of Windows packages
-* Install a customizable list of Chocolatey packages
-  * By default [git] and [git-credential-manager-for-windows]
-* Clone a customizable list of Git repositories
-  * By default [github/gitignore]
+* Windows
+  * Install a customizable list of features
+  * Install a customizable list of packages
+  * Install a customizable list of Chocolatey packages
+    * By default [git], [git-credential-manager-for-windows] and [svn]
+* Profiles
+  * Clone a customizable list of Git repositories
+    * By default [github/gitignore]
+  * Check out a customizable list of SVN repositories
 
 [Overview]: #overview
 [gusztavvargadr/windows10ee-vs2015c]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee-vs2015c
@@ -30,6 +33,7 @@ All the machines are provisioned by default as below:
 [gusztavvargadr/windows10ee]: https://atlas.hashicorp.com/gusztavvargadr/boxes/windows10ee
 [git]: https://chocolatey.org/packages/git
 [git-credential-manager-for-windows]: https://chocolatey.org/packages/Git-Credential-Manager-for-Windows
+[svn]: https://chocolatey.org/packages/svn
 [github/gitignore]: https://github.com/github/gitignore
 
 ## Usage
@@ -53,7 +57,9 @@ You can use the [YAML-based options][Samples] to customize [this configuration][
 [Samples]: ../../samples
 [YAML]: vagrant.yml
 
-#### Windows features
+#### Windows
+
+##### Features
 
 Extend the following section of [the configuration][YAML] to install additional [Windows features]:
 
@@ -70,7 +76,7 @@ vms:
 
 [Windows features]: https://visualplanet.org/blog/?p=342
 
-#### Windows packages
+##### Packages
 
 Extend the following section of [the configuration][YAML] to install additional Windows packages:
 
@@ -87,7 +93,7 @@ vms:
                 options: /IAgreeToTheEULA /q
 ```
 
-#### Chocolatey packages
+##### Chocolatey packages
 
 Extend the following section of [the configuration][YAML] to install additional [Chocolatey packages]:
 
@@ -109,15 +115,17 @@ vms:
 
 [Chocolatey packages]: https://chocolatey.org/packages
 
-#### Git repositories
+#### Profiles
 
-Extend the following section of [the configuration][YAML] to clone additional repositories:
+##### Git
+
+Extend the following section of [the configuration][YAML] to clone additional Git repositories:
 
 ```yaml
 vms:
   <name>:
     provisioners:
-      30-chef-solo-git:
+      30-chef-solo-profiles:
         attributes:
           gusztavvargadr_vagrant_git:
             profiles:
@@ -134,4 +142,31 @@ vms:
                   # Will be cloned to the custom /dotnet-home directory
                   dotnet/home:
                     checkout_directory_path: /dotnet-home
+```
+
+##### SVN
+
+Extend the following section of [the configuration][YAML] to check out additional SVN repositories:
+
+```yaml
+vms:
+  <name>:
+    provisioners:
+      30-chef-solo-profiles:
+        attributes:
+          gusztavvargadr_vagrant_svn:
+            profiles:
+              # Base url for all the repositories in this "profile" (you can define multiple ones)
+              http://svn.apache.org/repos:
+                # Optionally, specify your credentials for private repos
+                username: <%= ENV['SVN_USERNAME'] %>
+                password: <%= ENV['SVN_PASSWORD'] %>
+                # Base directory path for the checkouts
+                checkout_directory_path: /Users/vagrant/Repos
+                repositories:
+                  # Will be checked out to the default /Users/vagrant/Repos/asf/logging/log4net/trunk directory
+                  asf/logging/log4net/trunk:
+                  # Will be checked out to the custom /log4net directory
+                  asf/logging/log4net/trunk:
+                    checkout_directory_path: /log4net
 ```

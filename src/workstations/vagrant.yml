@@ -21,12 +21,14 @@ vms:
               git:
                 options: -params '"/GitAndUnixToolsOnPath"'
               git-credential-manager-for-windows:
+              svn:
       20-reload:
         type: reload
-      30-chef-solo-git:
+      30-chef-solo-profiles:
         type: chef-solo
         recipes:
           - gusztavvargadr_vagrant_git::default
+          - gusztavvargadr_vagrant_svn::default
         attributes:
           gusztavvargadr_vagrant_git:
             profiles:
