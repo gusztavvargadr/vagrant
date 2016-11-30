@@ -11,29 +11,25 @@ vms:
         type: file
         source: ~/.gitconfig
         destination: /Users/vagrant/.gitconfig
-      10-chef-solo-packages:
+      10-chef-solo-windows:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant::windows_features
-          - gusztavvargadr_vagrant::windows_packages
-          - gusztavvargadr_vagrant::chocolatey_packages
+          - gusztavvargadr_vagrant_windows::default
         attributes:
-          gusztavvargadr_vagrant:
-            windows_features:
-            windows_packages:
+          gusztavvargadr_vagrant_windows:
             chocolatey_packages:
               git:
                 options: -params '"/GitAndUnixToolsOnPath"'
               git-credential-manager-for-windows:
       20-reload:
         type: reload
-      30-chef-solo-profiles:
+      30-chef-solo-git:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant::git_profiles
+          - gusztavvargadr_vagrant_git::default
         attributes:
-          gusztavvargadr_vagrant:
-            git_profiles:
+          gusztavvargadr_vagrant_git:
+            profiles:
               https://github.com:
                 checkout_directory_path: /Users/vagrant/Repos
                 repositories:
@@ -41,9 +37,9 @@ vms:
   dotnet:
     box: windows10ee-vs2015c
     provisioners:
-      10-chef-solo-packages:
+      10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant:
+          gusztavvargadr_vagrant_windows:
             chocolatey_packages:
               nuget.commandline:
               webpicmd:
@@ -52,8 +48,8 @@ vms:
   chef:
     box: windows10ee
     provisioners:
-      10-chef-solo-packages:
+      10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant:
+          gusztavvargadr_vagrant_windows:
             chocolatey_packages:
               chefdk:

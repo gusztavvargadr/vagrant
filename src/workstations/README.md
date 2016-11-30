@@ -61,10 +61,10 @@ Extend the following section of [the configuration][YAML] to install additional 
 vms:
   <name>:
     provisioners:
-      10-chef-solo-packages:
+      10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant:
-            windows_features:
+          gusztavvargadr_vagrant_windows:
+            features:
               - TelnetClient
 ```
 
@@ -78,10 +78,10 @@ Extend the following section of [the configuration][YAML] to install additional 
 vms:
   <name>:
     provisioners:
-      10-chef-solo-packages:
+      10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant:
-            windows_packages:
+          gusztavvargadr_vagrant_windows:
+            packages:
               Redgate DLM Automation Suite:
                 source: https://download.red-gate.com/DLMAutomationSuite.exe
                 options: /IAgreeToTheEULA /q
@@ -95,9 +95,9 @@ Extend the following section of [the configuration][YAML] to install additional 
 vms:
   <name>:
     provisioners:
-      10-chef-solo-packages:
+      10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant:
+          gusztavvargadr_vagrant_windows:
             chocolatey_packages:
               # Install the latest version of the package with the default options
               nuget.commandline:
@@ -117,10 +117,10 @@ Extend the following section of [the configuration][YAML] to clone additional re
 vms:
   <name>:
     provisioners:
-      30-chef-solo-git-profiles:
+      30-chef-solo-git:
         attributes:
-          gusztavvargadr_vagrant:
-            git_profiles:
+          gusztavvargadr_vagrant_git:
+            profiles:
               # Base url for all the repositories in this "profile" (you can define multiple ones)
               https://github.com:
                 # Optionally, specify your credentials for private repos

@@ -1,1 +1,0 @@
-name 'gusztavvargadr_vagrant'
