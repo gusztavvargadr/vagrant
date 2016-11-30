@@ -20,11 +20,13 @@ This folder contains [multi-machine][VagrantMultiMachine] configurations for qui
 * [Visual Studio]
 * [SQL Server]
 * [IIS]
+* [Octopus]
 
 [Tools]: #tools
 [Visual Studio]: visual-studio
 [SQL Server]: sql-server
 [IIS]: iis
+[Octopus]: octopus
 
 ## Technologies
 
