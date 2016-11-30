@@ -1,4 +1,4 @@
-chocolatey_packages = node['gusztavvargadr_vagrant'].nil? ? nil : node['gusztavvargadr_vagrant']['chocolatey_packages']
+chocolatey_packages = node['gusztavvargadr_vagrant_windows'].nil? ? nil : node['gusztavvargadr_vagrant_windows']['chocolatey_packages']
 unless chocolatey_packages.nil?
   chocolatey_packages.each do |chocolatey_package_name, chocolatey_package_settings|
     chocolatey_package_version = chocolatey_package_settings.nil? ? nil : chocolatey_package_settings['version']
