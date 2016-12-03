@@ -3,9 +3,8 @@ property :version, String, required: true
 property :home_directory_path, String, required: true
 property :communication_port, Integer, required: true
 property :server_web_address, String, required: true
-property :server_web_username, String, required: true
-property :server_web_password, String, required: true
 property :server_communication_port, Integer, required: true
+property :api_key, String, required: true
 property :node_name, String, required: true
 property :environment_name, String, required: true
 property :role_names, Array, required: true
@@ -47,7 +46,7 @@ action :configure do
       "#{executable_path}" service --instance "#{instance_name}" --stop --console
       "#{executable_path}" polling-proxy --instance "#{instance_name}" --proxyEnable "False" --proxyUsername "" --proxyPassword "" --proxyHost "" --proxyPort ""  --console
       "#{executable_path}" service --instance "#{instance_name}" --start  --console
-      "#{executable_path}" register-with --instance "#{instance_name}" --server "#{server_web_address}" --name "#{node_name}" --username "#{server_web_username}" --password "#{server_web_password}" --comms-style "TentacleActive" --server-comms-port "#{server_communication_port}" --force --environment "#{environment_name}" #{roles} --console
+      "#{executable_path}" register-with --instance "#{instance_name}" --server "#{server_web_address}" --name "#{node_name}" --apiKey "#{api_key}" --comms-style "TentacleActive" --server-comms-port "#{server_communication_port}" --force --environment "#{environment_name}" #{roles} --console
       "#{executable_path}" service --instance "#{instance_name}" --install --start --console
     EOH
     action :create
