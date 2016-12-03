@@ -8,6 +8,7 @@ property :web_address, String, required: true
 property :web_username, String, required: true
 property :web_password, String, required: true
 property :communication_port, Integer, required: true
+property :node_name, String, required: true
 
 action :install do
   windows_package_name = instance_name
@@ -38,7 +39,7 @@ action :configure do
   file script_file_path do
     content <<-EOH
       "#{executable_file_path}" create-instance --instance "#{instance_name}" --config "#{home_directory_path}\\#{instance_name}.config" --console
-      "#{executable_file_path}" configure --instance "#{instance_name}" --home "#{home_directory_path}" --storageConnectionString "Data Source=#{storage_server_name};Initial Catalog=#{storage_database_name};Integrated Security=True" --upgradeCheck "False" --upgradeCheckWithStatistics "False" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes "#{web_address}" --commsListenPort "#{communication_port}" --serverNodeName "#{instance_name}" --console
+      "#{executable_file_path}" configure --instance "#{instance_name}" --home "#{home_directory_path}" --storageConnectionString "Data Source=#{storage_server_name};Initial Catalog=#{storage_database_name};Integrated Security=True" --upgradeCheck "False" --upgradeCheckWithStatistics "False" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes "#{web_address}" --commsListenPort "#{communication_port}" --serverNodeName "#{node_name}" --console
       "#{executable_file_path}" database --instance "#{instance_name}" --create --grant "#{service_username}" --console
       "#{executable_file_path}" service --instance "#{instance_name}" --stop --console
       "#{executable_file_path}" admin --instance "#{instance_name}" --username "#{web_username}" --password "#{web_password}" --console

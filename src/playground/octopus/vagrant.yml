@@ -27,6 +27,7 @@ vms:
           gusztavvargadr_vagrant_octopus:
             server:
               web_address: http://server.octopus.playground.vagrant.local:80/
+              api_key: <%= ENV['OCTOPUS_VAGRANT_API_KEY'] %>
   tentacle:
     box: windows2012r2se-sql2014de-iis
     network:
@@ -43,6 +44,4 @@ vms:
           gusztavvargadr_vagrant_octopus:
             tentacle:
               server_web_address: http://server.octopus.playground.vagrant.local:80/
-              role_names:
-                - web
-                - sql
+              api_key: <%= ENV['OCTOPUS_VAGRANT_API_KEY'] %>
