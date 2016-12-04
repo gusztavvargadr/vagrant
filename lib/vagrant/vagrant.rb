@@ -100,24 +100,45 @@ def vagrant_config_vm_provisioners(vm_config, vm_settings)
   provisioners_settings = vm_settings['provisioners']
   unless provisioners_settings.nil?
     provisioners_settings.sort.map.each do |provisioner_name, provisioner_settings|
-      provisioner_type = provisioner_settings['type']
+      type = provisioner_settings['type']
 
-      if provisioner_type == 'file'
+      if type == 'file'
         vm_config.vm.provision 'file', source: provisioner_settings['source'], destination: provisioner_settings['destination']
       end
 
-      if provisioner_type == 'chef-solo'
+      if type == 'chef-solo'
         vm_config.vm.provision 'chef_solo' do |chef_solo|
           chef_solo.cookbooks_path = ''
-          provisioner_settings['recipes'].each do |provisioner_recipe|
-            chef_solo.add_recipe provisioner_recipe
+
+          recipes = provisioner_settings['recipes']
+          unless recipes.nil?
+            recipes.each do |recipe|
+              chef_solo.add_recipe recipe
+            end
           end
+
+          roles_path = provisioner_settings['roles_path']
+          chef_solo.roles_path = roles_path unless roles_path.nil?
+
+          roles = provisioner_settings['roles']
+          unless roles.nil?
+            roles.each do |role|
+              chef_solo.add_role role
+            end
+          end
+
+          environments_path = provisioner_settings['environments_path']
+          chef_solo.environments_path = environments_path unless environments_path.nil?
+
+          environment = provisioner_settings['environment']
+          chef_solo.environment = environment unless environment.nil?
+
           json = provisioner_settings['attributes']
           chef_solo.json = json unless json.nil?
         end
       end
 
-      if provisioner_type == 'reload'
+      if type == 'reload'
         vm_config.vm.provision :reload
       end
     end
