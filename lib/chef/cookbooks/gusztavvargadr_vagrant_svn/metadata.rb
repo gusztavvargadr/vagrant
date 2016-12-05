@@ -1,7 +1,0 @@
-name 'gusztavvargadr_vagrant_svn'
-maintainer 'Gusztav Varga'
-maintainer_email 'me@gusztavvargadr.me'
-license 'MIT'
-description 'Installs/Configures SVN'
-long_description 'Installs/Configures SVN'
-version '0.1.0'
