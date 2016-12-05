@@ -25,33 +25,15 @@ action :install do
 end
 
 action :configure do
-  script_directory_path = "#{Chef::Config[:file_cache_path]}/gusztavvargadr_vagrant_octopus/server"
-
-  directory script_directory_path do
-    recursive true
-    action :create
-  end
-
-  script_file_name = "#{instance_name}_configure.bat"
-  script_file_path = "#{script_directory_path}\\#{script_file_name}"
   executable_file_path = 'C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Server.exe'
-
-  file script_file_path do
-    content <<-EOH
-      "#{executable_file_path}" create-instance --instance "#{instance_name}" --config "#{home_directory_path}\\#{instance_name}.config" --console
-      "#{executable_file_path}" configure --instance "#{instance_name}" --home "#{home_directory_path}" --storageConnectionString "Data Source=#{storage_server_name};Initial Catalog=#{storage_database_name};Integrated Security=True" --upgradeCheck "False" --upgradeCheckWithStatistics "False" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes "#{web_address}" --commsListenPort "#{communication_port}" --serverNodeName "#{node_name}" --console
-      "#{executable_file_path}" database --instance "#{instance_name}" --create --grant "#{service_username}" --console
-      "#{executable_file_path}" service --instance "#{instance_name}" --stop --console
-      "#{executable_file_path}" admin --instance "#{instance_name}" --username "#{web_username}" --password "#{web_password}" --console
-      "#{executable_file_path}" service --instance "#{instance_name}" --install --reconfigure --start --console
-    EOH
-    action :create
-  end
-
-  powershell_script "Create Octopus Server instance #{instance_name}" do
-    cwd script_directory_path
+  gusztavvargadr_vagrant_windows_powershell_script_elevated "Create Octopus Server instance #{instance_name}" do
     code <<-EOH
-      .\\#{script_file_name} > #{script_file_name}.log
+      & "#{executable_file_path}" create-instance --instance "#{instance_name}" --config "#{home_directory_path}\\#{instance_name}.config" --console
+      & "#{executable_file_path}" configure --instance "#{instance_name}" --home "#{home_directory_path}" --storageConnectionString "Data Source=#{storage_server_name};Initial Catalog=#{storage_database_name};Integrated Security=True" --upgradeCheck "False" --upgradeCheckWithStatistics "False" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes "#{web_address}" --commsListenPort "#{communication_port}" --serverNodeName "#{node_name}" --console
+      & "#{executable_file_path}" database --instance "#{instance_name}" --create --grant "#{service_username}" --console
+      & "#{executable_file_path}" service --instance "#{instance_name}" --stop --console
+      & "#{executable_file_path}" admin --instance "#{instance_name}" --username "#{web_username}" --password "#{web_password}" --console
+      & "#{executable_file_path}" service --instance "#{instance_name}" --install --reconfigure --start --console
     EOH
     action :run
     not_if { ::File.exist?("#{home_directory_path}\\#{instance_name}.config") }
