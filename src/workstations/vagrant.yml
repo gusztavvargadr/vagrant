@@ -14,9 +14,9 @@ vms:
       10-chef-solo-windows:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant_windows::default
+          - gusztavvargadr_windows::default
         attributes:
-          gusztavvargadr_vagrant_windows:
+          gusztavvargadr_windows:
             chocolatey_packages:
               git:
                 options: -params '"/GitAndUnixToolsOnPath"'
@@ -28,11 +28,11 @@ vms:
       30-chef-solo-profiles:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant_git::default
-          - gusztavvargadr_vagrant_svn::default
-          - gusztavvargadr_vagrant_nuget::default
+          - gusztavvargadr_git::default
+          - gusztavvargadr_svn::default
+          - gusztavvargadr_nuget::default
         attributes:
-          gusztavvargadr_vagrant_git:
+          gusztavvargadr_git:
             profiles:
               https://github.com:
                 checkout_directory_path: /Users/vagrant/Repos
@@ -43,7 +43,7 @@ vms:
     provisioners:
       10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant_windows:
+          gusztavvargadr_windows:
             chocolatey_packages:
               webpicmd:
   sql:
@@ -53,6 +53,6 @@ vms:
     provisioners:
       10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant_windows:
+          gusztavvargadr_windows:
             chocolatey_packages:
               chefdk:

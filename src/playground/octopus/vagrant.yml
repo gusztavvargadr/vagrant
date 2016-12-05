@@ -22,11 +22,13 @@ vms:
       00-chef-solo:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant_octopus::server
+          - gusztavvargadr_octopus::server
         attributes:
-          gusztavvargadr_vagrant_octopus:
+          gusztavvargadr_octopus:
             server:
               web_address: http://server.octopus.playground.vagrant.local:80/
+              web_username: vagrant
+              web_password: Vagrant42
               api_key: <%= ENV['OCTOPUS_VAGRANT_API_KEY'] %>
   tentacle:
     box: windows2012r2se-sql2014de-iis
@@ -39,9 +41,9 @@ vms:
       00-chef-solo:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant_octopus::tentacle
+          - gusztavvargadr_octopus::tentacle
         attributes:
-          gusztavvargadr_vagrant_octopus:
+          gusztavvargadr_octopus:
             tentacle:
               server_web_address: http://server.octopus.playground.vagrant.local:80/
               api_key: <%= ENV['OCTOPUS_VAGRANT_API_KEY'] %>

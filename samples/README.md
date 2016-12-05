@@ -14,7 +14,7 @@ We still use a [Vagrantfile][YAMLVagrantfile] of course, but it simply [loads th
 
 [Vagrantfile]: https://www.vagrantup.com/docs/vagrantfile/
 [YAMLVagrantfile]: reference/Vagrantfile
-[YAMLVagrantRb]: ../lib/vagrant/vagrant.rb
+[YAMLVagrantRb]: ../lib/vagrant/local/vagrant.rb
 [YAMLReference]: reference/vagrant.yml
 [ERB templates]: http://www.stuartellis.name/articles/erb/
 
