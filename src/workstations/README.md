@@ -71,7 +71,7 @@ vms:
     provisioners:
       10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant_windows:
+          gusztavvargadr_windows:
             features:
               - TelnetClient
 ```
@@ -88,7 +88,7 @@ vms:
     provisioners:
       10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant_windows:
+          gusztavvargadr_windows:
             packages:
               Redgate DLM Automation Suite:
                 source: https://download.red-gate.com/DLMAutomationSuite.exe
@@ -105,7 +105,7 @@ vms:
     provisioners:
       10-chef-solo-windows:
         attributes:
-          gusztavvargadr_vagrant_windows:
+          gusztavvargadr_windows:
             chocolatey_packages:
               # Install the latest version of the package with the default options
               nuget.commandline:
@@ -129,7 +129,7 @@ vms:
     provisioners:
       30-chef-solo-profiles:
         attributes:
-          gusztavvargadr_vagrant_git:
+          gusztavvargadr_git:
             profiles:
               # Base url for all the repositories in this "profile" (you can define multiple ones)
               https://github.com:
@@ -156,7 +156,7 @@ vms:
     provisioners:
       30-chef-solo-profiles:
         attributes:
-          gusztavvargadr_vagrant_svn:
+          gusztavvargadr_svn:
             profiles:
               # Base url for all the repositories in this "profile" (you can define multiple ones)
               http://svn.apache.org/repos:
@@ -183,7 +183,7 @@ vms:
     provisioners:
       30-chef-solo-profiles:
         attributes:
-          gusztavvargadr_vagrant_nuget:
+          gusztavvargadr_nuget:
             profiles:
               # Feed url (you can define multiple ones)
               https://www.myget.org/F/identity/:

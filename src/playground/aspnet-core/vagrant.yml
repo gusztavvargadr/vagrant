@@ -21,13 +21,13 @@ vms:
       00-chef-solo:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant_aspnet_core::windows_1
+          - gusztavvargadr_aspnet_core::windows_1
       01-reload:
         type: reload
       02-chef-solo:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant_aspnet_core::windows_2
+          - gusztavvargadr_aspnet_core::windows_2
   ubuntu:
     box: ubuntu/trusty64
     network:
@@ -38,4 +38,4 @@ vms:
       00-chef-solo:
         type: chef-solo
         recipes:
-          - gusztavvargadr_vagrant_aspnet_core::ubuntu
+          - gusztavvargadr_aspnet_core::ubuntu
