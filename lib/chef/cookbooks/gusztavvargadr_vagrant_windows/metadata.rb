@@ -5,3 +5,5 @@ license 'MIT'
 description 'Installs/Configures Windows'
 long_description 'Installs/Configures Windows'
 version '0.1.0'
+
+depends 'windows'

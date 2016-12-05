@@ -24,38 +24,19 @@ action :install do
 end
 
 action :configure do
-  script_directory_path = "#{Chef::Config[:file_cache_path]}/gusztavvargadr_vagrant_octopus/tentacle"
-
-  directory script_directory_path do
-    recursive true
-    action :create
-  end
-
-  script_file_name = "#{instance_name}_configure.bat"
-  script_file_path = "#{script_directory_path}\\#{script_file_name}"
-
   executable_path = 'C:\\Program Files\\Octopus Deploy\\Tentacle\\Tentacle.exe'
   roles = role_names.map { |role_name| "--role=\"#{role_name}\"" }.join(' ')
-
-  file script_file_path do
-    content <<-EOH
-      "#{executable_path}" create-instance --instance "#{instance_name}" --config "#{home_directory_path}\\#{instance_name}.config" --console
-      "#{executable_path}" new-certificate --instance "#{instance_name}" --if-blank --console
-      "#{executable_path}" configure --instance "#{instance_name}" --reset-trust --console
-      "#{executable_path}" configure --instance "#{instance_name}" --home "#{home_directory_path}" --app "#{home_directory_path}\\Applications" --port "#{communication_port}" --noListen "True" --console
-      "#{executable_path}" service --instance "#{instance_name}" --stop --console
-      "#{executable_path}" polling-proxy --instance "#{instance_name}" --proxyEnable "False" --proxyUsername "" --proxyPassword "" --proxyHost "" --proxyPort ""  --console
-      "#{executable_path}" service --instance "#{instance_name}" --start  --console
-      "#{executable_path}" register-with --instance "#{instance_name}" --server "#{server_web_address}" --name "#{node_name}" --apiKey "#{api_key}" --comms-style "TentacleActive" --server-comms-port "#{server_communication_port}" --force --environment "#{environment_name}" #{roles} --console
-      "#{executable_path}" service --instance "#{instance_name}" --install --start --console
-    EOH
-    action :create
-  end
-
-  powershell_script "Create Octopus Tentacle instance #{instance_name}" do
-    cwd script_directory_path
+  gusztavvargadr_vagrant_windows_powershell_script_elevated "Create Octopus Tentacle instance #{instance_name}" do
     code <<-EOH
-      .\\#{script_file_name} > #{script_file_name}.log
+      & "#{executable_path}" create-instance --instance "#{instance_name}" --config "#{home_directory_path}\\#{instance_name}.config" --console
+      & "#{executable_path}" new-certificate --instance "#{instance_name}" --if-blank --console
+      & "#{executable_path}" configure --instance "#{instance_name}" --reset-trust --console
+      & "#{executable_path}" configure --instance "#{instance_name}" --home "#{home_directory_path}" --app "#{home_directory_path}\\Applications" --port "#{communication_port}" --noListen "True" --console
+      & "#{executable_path}" service --instance "#{instance_name}" --stop --console
+      & "#{executable_path}" polling-proxy --instance "#{instance_name}" --proxyEnable "False" --proxyUsername "" --proxyPassword "" --proxyHost "" --proxyPort ""  --console
+      & "#{executable_path}" service --instance "#{instance_name}" --start  --console
+      & "#{executable_path}" register-with --instance "#{instance_name}" --server "#{server_web_address}" --name "#{node_name}" --apiKey "#{api_key}" --comms-style "TentacleActive" --server-comms-port "#{server_communication_port}" --force --environment "#{environment_name}" #{roles} --console
+      & "#{executable_path}" service --instance "#{instance_name}" --install --start --console
     EOH
     action :run
     not_if { ::File.exist?("#{home_directory_path}\\#{instance_name}.config") }

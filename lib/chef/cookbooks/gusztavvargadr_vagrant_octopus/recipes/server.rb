@@ -10,7 +10,7 @@ gusztavvargadr_vagrant_octopus_server server['instance_name'] do
   web_username server['web_username']
   web_password server['web_password']
   communication_port server['communication_port']
-  node_name server['node_name']
+  node_name server['node_name'].to_s == '' ? node['hostname'] : server['node_name']
   action [:install, :configure]
 end
 

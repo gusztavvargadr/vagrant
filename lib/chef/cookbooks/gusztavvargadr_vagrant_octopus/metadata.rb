@@ -5,3 +5,5 @@ license 'MIT'
 description 'Installs/Configures Octopus'
 long_description 'Installs/Configures Octopus'
 version '0.1.0'
+
+depends 'gusztavvargadr_vagrant_windows'
