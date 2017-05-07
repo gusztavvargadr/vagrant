@@ -1,7 +1,0 @@
-vms:
-  default:
-    autostart: false
-  precise:
-    box: ubuntu/precise32
-  trusty:
-    box: ubuntu/trusty64

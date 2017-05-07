@@ -1,4 +1,0 @@
-.kitchen
-Berksfile.lock
-.vagrant
-vagrant*local.yml
