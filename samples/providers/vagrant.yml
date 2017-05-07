@@ -1,8 +1,0 @@
-vms:
-  default:
-    box: ubuntu/trusty64
-    providers:
-      virtualbox:
-        gui: false
-        memory: 1024
-        cpus: 1
