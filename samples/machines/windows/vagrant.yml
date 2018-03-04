@@ -1,0 +1,20 @@
+---
+defaults:
+  machines:
+    core: &machine_core
+      providers:
+        virtualbox:
+        hyperv:
+
+environment: windows.machines.samples.vagrant
+
+machines:
+  w10e:
+    <<: *machine_core
+    box: gusztavvargadr/w10e
+  w16s:
+    <<: *machine_core
+    box: gusztavvargadr/w16s
+  w16sc:
+    <<: *machine_core
+    box: gusztavvargadr/w16sc

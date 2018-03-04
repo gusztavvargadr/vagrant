@@ -1,0 +1,32 @@
+---
+defaults:
+  machines:
+    core: &machine_core
+      providers:
+        virtualbox:
+        hyperv:
+
+environment: docker.provisioning.samples.vagrant
+
+machines:
+  u16:
+    <<: *machine_core
+    box: gusztavvargadr/u16
+    provisioners:
+      docker:
+        builds:
+          - path: /vagrant
+            args: -t hello-world:local
+        runs:
+          - name: hello-world-local
+            image: hello-world:local
+            daemonize: false
+            restart: no
+      shell:
+        path: run.sh
+  w16sc:
+    <<: *machine_core
+    box: gusztavvargadr/w16sc-de
+    provisioners:
+      shell:
+        path: run.ps1

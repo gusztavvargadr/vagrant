@@ -1,0 +1,4 @@
+require "#{File.dirname(__FILE__)}/../../../src/vagrant"
+
+deployment = VagrantDeployment.new(File.dirname(__FILE__))
+deployment.configure

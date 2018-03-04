@@ -1,0 +1,17 @@
+---
+defaults:
+  machines:
+    core: &machine_core
+      providers:
+        virtualbox:
+        hyperv:
+
+environment: linux.machines.samples.vagrant
+
+machines:
+  u14:
+    <<: *machine_core
+    box: gusztavvargadr/u14
+  u16:
+    <<: *machine_core
+    box: gusztavvargadr/u16

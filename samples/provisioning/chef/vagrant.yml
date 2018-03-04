@@ -1,0 +1,20 @@
+---
+defaults:
+  machines:
+    core: &machine_core
+      providers:
+        virtualbox:
+        hyperv:
+      provisioners:
+        chef_zero:
+          run_list: recipe[hello_world::default]
+
+environment: chef.provisioning.samples.vagrant
+
+machines:
+  u16:
+    <<: *machine_core
+    box: gusztavvargadr/u16
+  w16sc:
+    <<: *machine_core
+    box: gusztavvargadr/w16sc

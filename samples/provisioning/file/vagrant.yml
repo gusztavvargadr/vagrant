@@ -1,0 +1,21 @@
+---
+defaults:
+  machines:
+    core: &machine_core
+      providers:
+        virtualbox:
+        hyperv:
+      provisioners:
+        file:
+          source: hello-world.txt
+          destination: /tmp/hello-world.txt
+
+environment: file.provisioning.samples.vagrant
+
+machines:
+  u16:
+    <<: *machine_core
+    box: gusztavvargadr/u16
+  w16sc:
+    <<: *machine_core
+    box: gusztavvargadr/w16sc

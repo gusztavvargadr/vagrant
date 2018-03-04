@@ -1,0 +1,20 @@
+---
+defaults:
+  machines:
+    core: &machine_core
+      providers:
+        virtualbox:
+        hyperv:
+      provisioners:
+        shell:
+          inline: echo Hello World!
+
+environment: shell.provisioning.samples.vagrant
+
+machines:
+  u16:
+    <<: *machine_core
+    box: gusztavvargadr/u16
+  w16sc:
+    <<: *machine_core
+    box: gusztavvargadr/w16sc
