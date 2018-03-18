@@ -12,9 +12,9 @@ defaults:
 environment: shell.provisioning.samples.vagrant
 
 machines:
-  u16:
+  u14:
     <<: *machine_core
-    box: gusztavvargadr/u16
+    box: gusztavvargadr/u14
   w16sc:
     <<: *machine_core
     box: gusztavvargadr/w16sc

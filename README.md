@@ -3,8 +3,9 @@
 <!-- TODOs
 migrate todos
 
-provisioner samples
-samples with defaults / overrides (yaml)
+src core / providers / ...
+mount options only for smb
+samples with defaults / overrides / count (yaml)
 update docs
 vagrant defaults into each class
 vagrant version to conf

@@ -68,8 +68,18 @@ class VagrantDeployment
 
     options.fetch('machines').each do |machine_name, machine_options|
       machine = VagrantMachine.new(self, { 'name' => machine_name }.deep_merge(machine_options))
-      machines.push machine
-      machine.configure
+      machine_count = machine.options.fetch('count')
+
+      if machine_count > 0
+        machines.push machine
+        machine.configure
+      end
+
+      (2..machine_count).each do |machine_index|
+        machine = VagrantMachine.new(self, { 'name' => "#{machine_name}-#{machine_index}" }.deep_merge(machine_options))
+        machines.push machine
+        machine.configure
+      end
     end
   end
 
@@ -89,7 +99,10 @@ class VagrantMachine
     'autostart' => true,
     'primary' => false,
     'providers' => {},
+    'no_synced_folders' => ENV['VAGRANT_MACHINE_NO_SYNCED_FOLDERS'] == 'true',
+    'synced_folders' => {},
     'provisioners' => {},
+    'count' => 1,
   }
 
   def self.defaults(defaults = {})
@@ -132,7 +145,7 @@ class VagrantMachine
   def configure_core
     vagrant.vm.box = options['box'] unless options['box'].to_s.empty?
 
-    # vagrant.vm.hostname = host if deployment.hostmanager_enabled?
+    vagrant.vm.hostname = host if deployment.hostmanager_enabled?
     vagrant.hostmanager.aliases = [fqdn] if deployment.hostmanager_enabled?
 
     vagrant.vm.network 'private_network', type: 'dhcp'
@@ -150,6 +163,12 @@ class VagrantMachine
 
       providers.push provider
       provider.configure
+    end
+
+    unless options.fetch('no_synced_folders')
+      options.fetch('synced_folders').each do |synced_folder_host, synced_folder_guest|
+        vagrant.vm.synced_folder synced_folder_host, synced_folder_guest, mount_options: ['vers=3.0']
+      end
     end
 
     options.fetch('provisioners').each do |provisioner_name, provisioner_options|
@@ -248,10 +267,13 @@ class VagrantHyperVProvider < VagrantProvider
     vagrant.vmname = machine.fqdn
     vagrant.differencing_disk = options.fetch('linked_clone')
 
-    override.vm.synced_folder '.', '/vagrant',
+    unless machine.options.fetch('no_synced_folders')
+      override.vm.synced_folder '.', '/vagrant',
       type: 'smb',
       smb_username: options.fetch('smb_username'),
-      smb_password: options.fetch('smb_password')
+      smb_password: options.fetch('smb_password'),
+      mount_options: ['vers=3.0']
+    end
   end
 end
 
