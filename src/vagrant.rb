@@ -167,7 +167,7 @@ class VagrantMachine
 
     unless options.fetch('no_synced_folders')
       options.fetch('synced_folders').each do |synced_folder_host, synced_folder_guest|
-        vagrant.vm.synced_folder synced_folder_host, synced_folder_guest, mount_options: ['vers=3.0']
+        vagrant.vm.synced_folder synced_folder_host, synced_folder_guest
       end
     end
 
@@ -271,8 +271,7 @@ class VagrantHyperVProvider < VagrantProvider
       override.vm.synced_folder '.', '/vagrant',
       type: 'smb',
       smb_username: options.fetch('smb_username'),
-      smb_password: options.fetch('smb_password'),
-      mount_options: ['vers=3.0']
+      smb_password: options.fetch('smb_password')
     end
   end
 end

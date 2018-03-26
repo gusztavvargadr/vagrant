@@ -9,9 +9,6 @@ defaults:
 environment: linux.machines.samples.vagrant
 
 machines:
-  u14:
+  u16s:
     <<: *machine_core
-    box: gusztavvargadr/u14
-  u16:
-    <<: *machine_core
-    box: gusztavvargadr/u16
+    box: gusztavvargadr/u16s

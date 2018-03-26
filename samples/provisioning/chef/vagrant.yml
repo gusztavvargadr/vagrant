@@ -12,9 +12,9 @@ defaults:
 environment: chef.provisioning.samples.vagrant
 
 machines:
-  u14:
+  linux:
     <<: *machine_core
-    box: gusztavvargadr/u14
-  w16sc:
+    box: gusztavvargadr/u16s
+  windows:
     <<: *machine_core
     box: gusztavvargadr/w16sc
