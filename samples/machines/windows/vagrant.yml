@@ -6,7 +6,7 @@ defaults:
         virtualbox:
         hyperv:
 
-environment: windows.machines.samples.vagrant
+environment: windows.machines.vagrant
 
 machines:
   w10e:

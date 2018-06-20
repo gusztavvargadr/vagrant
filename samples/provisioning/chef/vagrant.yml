@@ -9,7 +9,7 @@ defaults:
         chef_zero:
           run_list: recipe[hello_world::default]
 
-environment: chef.provisioning.samples.vagrant
+environment: chef.provisioning.vagrant
 
 machines:
   linux:
@@ -17,4 +17,4 @@ machines:
     box: gusztavvargadr/u16s
   windows:
     <<: *machine_core
-    box: gusztavvargadr/w16sc
+    box: gusztavvargadr/w16s

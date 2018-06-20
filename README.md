@@ -1,28 +1,32 @@
 # Vagrant
 
 <!-- TODOs
-migrate todos
 
-src core / providers / ...
-mount options only for smb
-samples with defaults / overrides / count (yaml)
-update docs
-vagrant defaults into each class
-vagrant version to conf
-vagrant MULTIPLE deployments in single file?
-vagrant environment to name stack service (component) env local
-ruby modules / namespaces - sources to e.g. Vagrant from Vagrantfile, Berkshelf from Berksfile
-check with vbox
-hostmanager check (dhcp network - check with vbox)
-back to private networks
-core vagrantcomponent / vagrantbuilder
-split vagrant file across core / compute / etc
-vagrant option to set hostname (e.g. clusters)
-vagrant memory hyperv allow from to
-yaml version / document separator
-rb extensions as vagrant plugin?
-vagrant berkshelf eliminate
-vagrant yml remove duplication
+core
+  migrate todos from other repose
+
+src
+  hostmanager check (dhcp network - check with vbox)
+  split vagrant file across core / compute / etc
+  vagrant version to conf
+  vagrant memory hyperv allow from to
+  vagrant multiple deployments in single file?
+  vagrant environment to name stack service (component) env local
+  ruby modules / namespaces - sources to e.g. Vagrant from Vagrantfile, Berkshelf from Berksfile
+  core vagrantcomponent / vagrantbuilder
+  yaml version / document separator
+  vagrant option to set hostname (e.g. clusters)
+  vagrant berkshelf eliminate -> policyfile
+  vagrant yml reuse
+  rb extensions as vagrant plugin?
+  default boxes for platform / feature (e.g. linux / windows, docker, etc)
+
+samples
+  defaults / overrides / count (yaml)
+
+docs
+  update with samples
+
 -->
 
 **Quick links** [Vagrant resources] | [Virtual workstations] | [Vagrant boxes] | [Packer templates]  

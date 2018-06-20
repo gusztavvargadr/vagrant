@@ -10,7 +10,7 @@ defaults:
           source: hello-world.txt
           destination: /tmp/hello-world.txt
 
-environment: file.provisioning.samples.vagrant
+environment: file.provisioning.vagrant
 
 machines:
   linux:
@@ -18,4 +18,4 @@ machines:
     box: gusztavvargadr/u16s
   windows:
     <<: *machine_core
-    box: gusztavvargadr/w16sc
+    box: gusztavvargadr/w16s

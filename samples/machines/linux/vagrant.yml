@@ -6,7 +6,7 @@ defaults:
         virtualbox:
         hyperv:
 
-environment: linux.machines.samples.vagrant
+environment: linux.machines.vagrant
 
 machines:
   u16s:

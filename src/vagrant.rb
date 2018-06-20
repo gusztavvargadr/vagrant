@@ -1,30 +1,9 @@
 require 'yaml'
 require 'erb'
 
-class VagrantDefaults
-  @virtualbox_provider = {
-    'type' => 'virtualbox',
-  }
-
-  @hyperv_provider = {
-    'type' => 'hyperv',
-    'network_bridge' => ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'].to_s.empty? ? 'Default Switch' : ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'],
-    'smb_username' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_USERNAME'],
-    'smb_password' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_PASSWORD'],
-  }
-
-  def self.virtualbox_provider(options = {})
-    @virtualbox_provider = @virtualbox_provider.deep_merge(options)
-  end
-
-  def self.hyperv_provider(options = {})
-    @hyperv_provider = @hyperv_provider.deep_merge(options)
-  end
-end
-
 class VagrantDeployment
   @defaults = {
-    'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'sandbox',
+    'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'vagrant',
     'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
     'hostmanager' => ENV['VAGRANT_DEPLOYMENT_HOSTMANAGER'] == 'true',
     'machines' => {},
@@ -148,6 +127,10 @@ class VagrantMachine
     vagrant.vm.hostname = host if deployment.hostmanager_enabled?
     vagrant.hostmanager.aliases = [fqdn] if deployment.hostmanager_enabled?
 
+    # vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+    #   vm.provider.driver.read_guest_ip(1)
+    # end
+
     vagrant.vm.network 'private_network', type: 'dhcp'
 
     options.fetch('providers').each do |provider_name, provider_options|
@@ -200,7 +183,6 @@ class VagrantProvider
     'type' => '',
     'memory' => 1024,
     'cpus' => 1,
-    'linked_clone' => ENV['VAGRANT_PROVIDER_LINKED_CLONE'] == 'true',
   }
 
   def self.defaults(defaults = {})
@@ -239,8 +221,17 @@ class VagrantProvider
 end
 
 class VagrantVirtualBoxProvider < VagrantProvider
+  @defaults = {
+    'type' => 'virtualbox',
+    'linked_clone' => ENV['VAGRANT_PROVIDER_VIRTUALBOX_LINKED_CLONE'] == 'true',
+  }
+
+  def self.defaults(defaults = {})
+    @defaults = @defaults.deep_merge(defaults)
+  end
+
   def initialize(machine, options = {})
-    super(machine, VagrantDefaults.virtualbox_provider.deep_merge(options))
+    super(machine, VagrantVirtualBoxProvider.defaults.deep_merge(options))
   end
 
   def configure_core
@@ -252,8 +243,20 @@ class VagrantVirtualBoxProvider < VagrantProvider
 end
 
 class VagrantHyperVProvider < VagrantProvider
+  @defaults = {
+    'type' => 'hyperv',
+    'differencing_disk' => ENV['VAGRANT_PROVIDER_HYPERV_DIFFERENCING_DISK'] == 'true',
+    'network_bridge' => ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'].to_s.empty? ? 'Default Switch' : ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'],
+    'smb_username' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_USERNAME'],
+    'smb_password' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_PASSWORD'],
+  }
+
+  def self.defaults(defaults = {})
+    @defaults = @defaults.deep_merge(defaults)
+  end
+
   def initialize(machine, options = {})
-    super(machine, VagrantDefaults.hyperv_provider.deep_merge(options))
+    super(machine, VagrantHyperVProvider.defaults.deep_merge(options))
   end
 
   def configure_core
@@ -265,13 +268,13 @@ class VagrantHyperVProvider < VagrantProvider
     # vagrant.maxmemory = options.fetch('memory')
 
     vagrant.vmname = machine.fqdn
-    vagrant.differencing_disk = options.fetch('linked_clone')
+    vagrant.differencing_disk = options.fetch('differencing_disk')
 
     unless machine.options.fetch('no_synced_folders')
       override.vm.synced_folder '.', '/vagrant',
-      type: 'smb',
-      smb_username: options.fetch('smb_username'),
-      smb_password: options.fetch('smb_password')
+        type: 'smb',
+        smb_username: options.fetch('smb_username'),
+        smb_password: options.fetch('smb_password')
     end
   end
 end

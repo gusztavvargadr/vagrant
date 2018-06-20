@@ -9,7 +9,7 @@ defaults:
         shell:
           inline: echo Hello World!
 
-environment: shell.provisioning.samples.vagrant
+environment: shell.provisioning.vagrant
 
 machines:
   linux:
@@ -17,4 +17,4 @@ machines:
     box: gusztavvargadr/u16s
   windows:
     <<: *machine_core
-    box: gusztavvargadr/w16sc
+    box: gusztavvargadr/w16s

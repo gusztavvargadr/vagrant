@@ -5,28 +5,20 @@ defaults:
       providers:
         virtualbox:
         hyperv:
+      provisioners:
+        docker:
+          runs:
+            - name: hello-world
+              image: hello-world
+              daemonize: false
+              restart: no
 
-environment: docker.provisioning.samples.vagrant
+environment: docker.provisioning.vagrant
 
 machines:
   linux:
     <<: *machine_core
     box: gusztavvargadr/u16s-dc
-    provisioners:
-      docker:
-        builds:
-          - path: /vagrant
-            args: -t hello-world:local
-        runs:
-          - name: hello-world-local
-            image: hello-world:local
-            daemonize: false
-            restart: no
-      shell:
-        path: run.sh
   windows:
     <<: *machine_core
-    box: gusztavvargadr/w16sc-de
-    provisioners:
-      shell:
-        path: run.ps1
+    box: gusztavvargadr/w16s-de
