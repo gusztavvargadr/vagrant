@@ -13,7 +13,8 @@ defaults:
               daemonize: false
               restart: no
 
-environment: docker.provisioning.vagrant
+environment: docker.provisioners.vagrant
+tenant: local
 
 machines:
   linux:

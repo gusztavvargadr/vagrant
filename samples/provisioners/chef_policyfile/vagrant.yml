@@ -6,15 +6,15 @@ defaults:
         virtualbox:
         hyperv:
       provisioners:
-        chef_zero:
-          run_list: recipe[hello_world::default]
+        chef_policyfile:
 
-environment: chef.provisioning.vagrant
+environment: chef_policyfile.provisioners.vagrant
+tenant: local
 
 machines:
   linux:
     <<: *machine_core
-    box: gusztavvargadr/u16s
+    box: gusztavvargadr/u16s-dc
   windows:
     <<: *machine_core
-    box: gusztavvargadr/w16s
+    box: gusztavvargadr/w16s-de

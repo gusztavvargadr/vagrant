@@ -2,6 +2,34 @@
 
 <!-- TODOs
 
+https://www.vagrantup.com/docs/vagrantfile/vagrant_version.html
+include rb files with local yamls instead of pure yaml merging
+
+single samples with all provisioners
+meta repo, contributing or setup script to update references
+naming: underscore vs hyphen
+conventions for configuration / provisioners
+default boxes per scenario based on env with default
+review options
+
+vagrant
+  vagrant: org, domain, component, project, tenant, env
+  vagrant chef json static vs method
+  yml split configurtion for env, vm, provision, etc
+  vagrant core : private / public network optins
+  virtualbox: ip lookup
+  env vars to options
+  env name load from folder (check with kitchen)
+  machine / provisioner options directly (do not depend on env, other machines)
+  default options load from yml
+  data files load with chef
+  vault
+  virtualbox
+  dotnet
+  double check src / sample count
+  0-based index for vagrant also
+
+
 core
   migrate todos from other repose
 

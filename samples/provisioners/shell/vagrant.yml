@@ -5,17 +5,17 @@ defaults:
       providers:
         virtualbox:
         hyperv:
+      provisioners:
+        shell:
+          inline: echo Hello World!
 
-environment: windows.machines.vagrant
+environment: shell.provisioners.vagrant
 tenant: local
 
 machines:
-  w10e:
+  linux:
     <<: *machine_core
-    box: gusztavvargadr/w10e-dc
-  w16s:
+    box: gusztavvargadr/u16s-dc
+  windows:
     <<: *machine_core
     box: gusztavvargadr/w16s-de
-  w16sc:
-    <<: *machine_core
-    box: gusztavvargadr/w16sc-de

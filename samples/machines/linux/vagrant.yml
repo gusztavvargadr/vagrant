@@ -7,8 +7,9 @@ defaults:
         hyperv:
 
 environment: linux.machines.vagrant
+tenant: local
 
 machines:
   u16s:
     <<: *machine_core
-    box: gusztavvargadr/u16s
+    box: gusztavvargadr/u16s-dc

@@ -6,15 +6,16 @@ defaults:
         virtualbox:
         hyperv:
       provisioners:
-        shell:
-          inline: echo Hello World!
+        chef_zero:
+          run_list: recipe[hello_world::default]
 
-environment: shell.provisioning.vagrant
+environment: chef_zero.provisioners.vagrant
+tenant: local
 
 machines:
   linux:
     <<: *machine_core
-    box: gusztavvargadr/u16s
+    box: gusztavvargadr/u16s-dc
   windows:
     <<: *machine_core
-    box: gusztavvargadr/w16s
+    box: gusztavvargadr/w16s-de

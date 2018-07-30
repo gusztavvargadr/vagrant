@@ -157,10 +157,11 @@ class VagrantMachine
     options.fetch('provisioners').each do |provisioner_name, provisioner_options|
       provisioner = nil
 
-      provisioner = VagrantShellProvisioner.new(self, provisioner_options) if provisioner_name.start_with?('shell')
-      provisioner = VagrantFileProvisioner.new(self, provisioner_options) if provisioner_name.start_with?('file')
-      provisioner = VagrantChefZeroProvisioner.new(self, provisioner_options) if provisioner_name.start_with?('chef_zero')
-      provisioner = VagrantDockerProvisioner.new(self, provisioner_options) if provisioner_name.start_with?('docker')
+      provisioner = VagrantShellProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('shell')
+      provisioner = VagrantFileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('file')
+      provisioner = VagrantChefZeroProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_zero')
+      provisioner = VagrantChefPolicyfileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_policyfile')
+      provisioner = VagrantDockerProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('docker')
 
       raise "Provisioner '#{provisioner_name}' is not supported." if provisioner.nil?
 
@@ -290,12 +291,14 @@ class VagrantProvisioner
   end
 
   attr_reader :machine
+  attr_reader :name
   attr_reader :options
 
   attr_reader :vagrant
 
-  def initialize(machine, options = {})
+  def initialize(machine, name, options = {})
     @machine = machine
+    @name = name
     @options = VagrantProvisioner.defaults.deep_merge(options)
 
     @vagrant = nil
@@ -333,8 +336,8 @@ class VagrantShellProvisioner < VagrantProvisioner
     @defaults = @defaults.deep_merge(defaults)
   end
 
-  def initialize(machine, options = {})
-    super(machine, VagrantShellProvisioner.defaults.deep_merge(options))
+  def initialize(machine, name, options = {})
+    super(machine, name, VagrantShellProvisioner.defaults.deep_merge(options))
   end
 
   def vagrant_options
@@ -353,8 +356,8 @@ class VagrantFileProvisioner < VagrantProvisioner
     @defaults = @defaults.deep_merge(defaults)
   end
 
-  def initialize(machine, options = {})
-    super(machine, VagrantFileProvisioner.defaults.deep_merge(options))
+  def initialize(machine, name, options = {})
+    super(machine, name, VagrantFileProvisioner.defaults.deep_merge(options))
   end
 
   def vagrant_options
@@ -375,8 +378,8 @@ class VagrantChefZeroProvisioner < VagrantProvisioner
     @defaults = @defaults.deep_merge(defaults)
   end
 
-  def initialize(machine, options = {})
-    super(machine, VagrantChefZeroProvisioner.defaults.deep_merge(options))
+  def initialize(machine, name, options = {})
+    super(machine, name, VagrantChefZeroProvisioner.defaults.deep_merge(options))
   end
 
   def configure_core
@@ -390,6 +393,43 @@ class VagrantChefZeroProvisioner < VagrantProvisioner
 
   def json
     options.fetch('json')
+  end
+end
+
+class VagrantChefPolicyfileProvisioner < VagrantProvisioner
+  @defaults = {
+    'type' => 'chef_policyfile',
+    'path' => 'Policyfile.rb',
+  }
+
+  def self.defaults(defaults = {})
+    @defaults = @defaults.deep_merge(defaults)
+  end
+
+  def initialize(machine, name, options = {})
+    super(machine, name, VagrantChefPolicyfileProvisioner.defaults.deep_merge(options))
+  end
+
+  def configure
+    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
+      trigger.name = "#{name}_chef_install"
+      trigger.run = {
+        inline: "chef install #{options.fetch('path')}"
+      }
+    end
+
+    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
+      trigger.name = "#{name}_chef_export"
+      trigger.run = {
+        inline: "chef export #{options.fetch('path')} #{machine.deployment.directory}/.vagrant/provisioners/#{name} --force"
+      }
+    end
+
+    shellProvisioner = VagrantShellProvisioner.new(machine, "#{name}_chef_client", {
+      'inline' => "cd /vagrant/.vagrant/provisioners/#{name}; chef-client --local-mode",
+      'run' => options.fetch('run'),
+    })
+    shellProvisioner.configure
   end
 end
 

@@ -10,12 +10,13 @@ defaults:
           source: hello-world.txt
           destination: /tmp/hello-world.txt
 
-environment: file.provisioning.vagrant
+environment: file.provisioners.vagrant
+tenant: local
 
 machines:
   linux:
     <<: *machine_core
-    box: gusztavvargadr/u16s
+    box: gusztavvargadr/u16s-dc
   windows:
     <<: *machine_core
-    box: gusztavvargadr/w16s
+    box: gusztavvargadr/w16s-de
