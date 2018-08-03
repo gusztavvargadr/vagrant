@@ -11,6 +11,20 @@ naming: underscore vs hyphen
 conventions for configuration / provisioners
 default boxes per scenario based on env with default
 review options
+windows chef node issues
+common settings for providers - linked_clone, gui
+
+general
+  terraform for local config
+  multiple domain names per level with overrides to support aliases too
+  terraform / packer "deployment" with docker
+  providers / platform as params for e.g. docker 
+  separate provisioning samples from machine / container
+  ci flow
+  environment generalization with providers (vagrant, terraform)
+  contributing.ps1
+  license.md
+  core repo with common components
 
 vagrant
   vagrant: org, domain, component, project, tenant, env

@@ -124,7 +124,7 @@ class VagrantMachine
   def configure_core
     vagrant.vm.box = options['box'] unless options['box'].to_s.empty?
 
-    vagrant.vm.hostname = host if deployment.hostmanager_enabled?
+    # vagrant.vm.hostname = host if deployment.hostmanager_enabled?
     vagrant.hostmanager.aliases = [fqdn] if deployment.hostmanager_enabled?
 
     # vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
@@ -414,22 +414,40 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
     machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
       trigger.name = "#{name}_chef_install"
       trigger.run = {
-        inline: "chef install #{options.fetch('path')}"
+        inline: "chef install #{options.fetch('path')}",
       }
     end
 
     machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
       trigger.name = "#{name}_chef_export"
       trigger.run = {
-        inline: "chef export #{options.fetch('path')} #{machine.deployment.directory}/.vagrant/provisioners/#{name} --force"
+        inline: "chef export #{options.fetch('path')} #{machine.deployment.directory}/.vagrant/provisioners/#{name} --force",
       }
     end
 
-    shellProvisioner = VagrantShellProvisioner.new(machine, "#{name}_chef_client", {
-      'inline' => "cd /vagrant/.vagrant/provisioners/#{name}; chef-client --local-mode",
-      'run' => options.fetch('run'),
-    })
-    shellProvisioner.configure
+    file_provisioner_1 = VagrantFileProvisioner.new(
+      machine,
+      "#{name}_chef_copy",
+      'source' => "#{machine.deployment.directory}/.vagrant/provisioners/#{name}",
+      'destination' => "/tmp/vagrant/provisioners/#{name}"
+    )
+    file_provisioner_1.configure
+
+    file_provisioner_2 = VagrantFileProvisioner.new(
+      machine,
+      "#{name}_chef_copy",
+      'source' => "#{machine.deployment.directory}/.vagrant/provisioners/#{name}/.chef",
+      'destination' => "/tmp/vagrant/provisioners/#{name}/.chef"
+    )
+    file_provisioner_2.configure
+
+    shell_provisioner = VagrantShellProvisioner.new(
+      machine,
+      "#{name}_chef_run",
+      'inline' => "cd /tmp/vagrant/provisioners/#{name}; chef-client --local-mode",
+      'run' => options.fetch('run')
+    )
+    shell_provisioner.configure
   end
 end
 
