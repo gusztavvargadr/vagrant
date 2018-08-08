@@ -1,6 +1,3 @@
-require "#{File.dirname(__FILE__)}/../src/vagrant"
+directory = File.dirname(__FILE__)
 
-VagrantProvider.defaults({
-  'memory' => 2048,
-  'cpus' => 2,
-})
+require "#{directory}/../src/vagrant"

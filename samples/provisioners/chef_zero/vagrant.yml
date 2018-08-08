@@ -1,10 +1,16 @@
 ---
 defaults:
+  providers:
+    core: &provider_core
+      memory: 2048
+      cpus: 2
   machines:
     core: &machine_core
       providers:
         virtualbox:
+          <<: *provider_core
         hyperv:
+          <<: *provider_core
       provisioners:
         chef_zero:
           run_list: recipe[hello_world::default]

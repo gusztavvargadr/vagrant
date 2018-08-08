@@ -41,9 +41,12 @@ class VagrantDeployment
   end
 
   def configure_core
-    vagrant.hostmanager.enabled = hostmanager_enabled?
-    vagrant.hostmanager.manage_host = hostmanager_enabled?
-    vagrant.hostmanager.manage_guest = false
+    if hostmanager_enabled?
+      vagrant.hostmanager.enabled = true
+      vagrant.hostmanager.manage_host = true
+      vagrant.hostmanager.manage_guest = false
+      vagrant.hostmanager.include_offline = true
+    end
 
     options.fetch('machines').each do |machine_name, machine_options|
       machine = VagrantMachine.new(self, { 'name' => machine_name }.deep_merge(machine_options))
@@ -124,14 +127,15 @@ class VagrantMachine
   def configure_core
     vagrant.vm.box = options['box'] unless options['box'].to_s.empty?
 
-    # vagrant.vm.hostname = host if deployment.hostmanager_enabled?
-    vagrant.hostmanager.aliases = [fqdn] if deployment.hostmanager_enabled?
-
-    # vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
-    #   vm.provider.driver.read_guest_ip(1)
-    # end
-
     vagrant.vm.network 'private_network', type: 'dhcp'
+
+    if deployment.hostmanager_enabled?
+      # vagrant.vm.hostname = host 
+      vagrant.hostmanager.aliases = [fqdn] if deployment.hostmanager_enabled?
+      # vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+      #   vm.provider.driver.read_guest_ip(1)
+      # end
+    end
 
     options.fetch('providers').each do |provider_name, provider_options|
       provider = nil

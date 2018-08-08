@@ -4,6 +4,10 @@
 
 https://www.vagrantup.com/docs/vagrantfile/vagrant_version.html
 include rb files with local yamls instead of pure yaml merging
+config include yaml files from multiple dirs
+  local rb files to process local yaml
+  defaults in core yaml as well
+  overrides per environment to load automatically
 
 single samples with all provisioners
 meta repo, contributing or setup script to update references
