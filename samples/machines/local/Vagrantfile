@@ -1,6 +1,6 @@
 directory = File.dirname(__FILE__)
 
-require "#{directory}/../../vagrant"
+require "#{directory}/../../../src/vagrant"
 
 deployment = VagrantDeployment.new(directory)
 deployment.configure

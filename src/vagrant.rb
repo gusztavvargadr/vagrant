@@ -45,7 +45,9 @@ class VagrantDeployment
       vagrant.hostmanager.enabled = true
       vagrant.hostmanager.manage_host = true
       vagrant.hostmanager.manage_guest = false
-      vagrant.hostmanager.include_offline = true
+      # vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+      #   vm.provider.driver.read_guest_ip(1)
+      # end
     end
 
     options.fetch('machines').each do |machine_name, machine_options|
@@ -77,6 +79,7 @@ end
 class VagrantMachine
   @defaults = {
     'name' => 'default',
+    'aliases' => [],
     'box' => '',
     'autostart' => true,
     'primary' => false,
@@ -130,11 +133,8 @@ class VagrantMachine
     vagrant.vm.network 'private_network', type: 'dhcp'
 
     if deployment.hostmanager_enabled?
-      # vagrant.vm.hostname = host 
-      vagrant.hostmanager.aliases = [fqdn] if deployment.hostmanager_enabled?
-      # vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
-      #   vm.provider.driver.read_guest_ip(1)
-      # end
+      vagrant.vm.hostname = hostname
+      vagrant.hostmanager.aliases = [fqdn].concat(options.fetch('aliases')).concat(aliases_fqdn) if deployment.hostmanager_enabled?
     end
 
     options.fetch('providers').each do |provider_name, provider_options|
@@ -163,8 +163,8 @@ class VagrantMachine
 
       provisioner = VagrantShellProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('shell')
       provisioner = VagrantFileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('file')
-      provisioner = VagrantChefZeroProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_zero')
       provisioner = VagrantChefPolicyfileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_policyfile')
+      provisioner = VagrantChefZeroProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_zero')
       provisioner = VagrantDockerProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('docker')
 
       raise "Provisioner '#{provisioner_name}' is not supported." if provisioner.nil?
@@ -174,12 +174,16 @@ class VagrantMachine
     end
   end
 
-  def host
+  def hostname
     options.fetch('name')
   end
 
   def fqdn
-    "#{host}.#{deployment.domain}"
+    "#{hostname}.#{deployment.domain}"
+  end
+
+  def aliases_fqdn
+    options.fetch('aliases').map { |value| "#{value}.#{deployment.domain}" }
   end
 end
 
@@ -369,6 +373,68 @@ class VagrantFileProvisioner < VagrantProvisioner
   end
 end
 
+class VagrantChefPolicyfileProvisioner < VagrantProvisioner
+  @defaults = {
+    'type' => 'chef_policyfile',
+    'path' => 'Policyfile.rb',
+  }
+
+  def self.defaults(defaults = {})
+    @defaults = @defaults.deep_merge(defaults)
+  end
+
+  def initialize(machine, name, options = {})
+    super(machine, name, VagrantChefPolicyfileProvisioner.defaults.deep_merge(options))
+  end
+
+  def configure
+    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
+      trigger.name = "#{name}_chef_install"
+      trigger.run = {
+        inline: "chef install #{options.fetch('path')}",
+      }
+    end
+
+    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
+      trigger.name = "#{name}_chef_export"
+      trigger.run = {
+        inline: "chef export #{options.fetch('path')} #{machine.deployment.directory}/.chef/#{name} --force",
+      }
+    end
+
+    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
+      trigger.name = "#{name}_zip"
+      trigger.run = {
+        inline: "7z a -aoa #{machine.deployment.directory}/.chef/#{name}.zip #{machine.deployment.directory}/.chef/#{name}/",
+      }
+    end
+
+    file_provisioner = VagrantFileProvisioner.new(
+      machine,
+      "#{name}_upload",
+      'source' => "#{machine.deployment.directory}/.chef/#{name}.zip",
+      'destination' => "/tmp/chef/#{name}.zip"
+    )
+    file_provisioner.configure
+
+    shell_unzip_provisioner = VagrantShellProvisioner.new(
+      machine,
+      "#{name}_unzip",
+      'inline' => "cd /tmp/chef; 7z x -aoa #{name}.zip",
+      'run' => options.fetch('run')
+    )
+    shell_unzip_provisioner.configure
+
+    shell_run_provisioner = VagrantShellProvisioner.new(
+      machine,
+      "#{name}_chef_run",
+      'inline' => "cd /tmp/chef/#{name}; chef-client --local-mode",
+      'run' => options.fetch('run')
+    )
+    shell_run_provisioner.configure
+  end
+end
+
 class VagrantChefZeroProvisioner < VagrantProvisioner
   @defaults = {
     'type' => 'chef_zero',
@@ -400,61 +466,6 @@ class VagrantChefZeroProvisioner < VagrantProvisioner
   end
 end
 
-class VagrantChefPolicyfileProvisioner < VagrantProvisioner
-  @defaults = {
-    'type' => 'chef_policyfile',
-    'path' => 'Policyfile.rb',
-  }
-
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
-  end
-
-  def initialize(machine, name, options = {})
-    super(machine, name, VagrantChefPolicyfileProvisioner.defaults.deep_merge(options))
-  end
-
-  def configure
-    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
-      trigger.name = "#{name}_chef_install"
-      trigger.run = {
-        inline: "chef install #{options.fetch('path')}",
-      }
-    end
-
-    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
-      trigger.name = "#{name}_chef_export"
-      trigger.run = {
-        inline: "chef export #{options.fetch('path')} #{machine.deployment.directory}/.vagrant/provisioners/#{name} --force",
-      }
-    end
-
-    file_provisioner_1 = VagrantFileProvisioner.new(
-      machine,
-      "#{name}_chef_copy",
-      'source' => "#{machine.deployment.directory}/.vagrant/provisioners/#{name}",
-      'destination' => "/tmp/vagrant/provisioners/#{name}"
-    )
-    file_provisioner_1.configure
-
-    file_provisioner_2 = VagrantFileProvisioner.new(
-      machine,
-      "#{name}_chef_copy",
-      'source' => "#{machine.deployment.directory}/.vagrant/provisioners/#{name}/.chef",
-      'destination' => "/tmp/vagrant/provisioners/#{name}/.chef"
-    )
-    file_provisioner_2.configure
-
-    shell_provisioner = VagrantShellProvisioner.new(
-      machine,
-      "#{name}_chef_run",
-      'inline' => "cd /tmp/vagrant/provisioners/#{name}; chef-client --local-mode",
-      'run' => options.fetch('run')
-    )
-    shell_provisioner.configure
-  end
-end
-
 class VagrantDockerProvisioner < VagrantProvisioner
   @defaults = {
     'type' => 'docker',
@@ -466,8 +477,8 @@ class VagrantDockerProvisioner < VagrantProvisioner
     @defaults = @defaults.deep_merge(defaults)
   end
 
-  def initialize(machine, options = {})
-    super(machine, VagrantDockerProvisioner.defaults.deep_merge(options))
+  def initialize(machine, name, options = {})
+    super(machine, name, VagrantDockerProvisioner.defaults.deep_merge(options))
   end
 
   def configure_core

@@ -8,8 +8,8 @@ config include yaml files from multiple dirs
   local rb files to process local yaml
   defaults in core yaml as well
   overrides per environment to load automatically
+cli sample
 
-single samples with all provisioners
 meta repo, contributing or setup script to update references
 naming: underscore vs hyphen
 conventions for configuration / provisioners
