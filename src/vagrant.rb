@@ -1,6 +1,8 @@
 require 'yaml'
 require 'erb'
 
+Vagrant.require_version '>= 2.1.2'
+
 class VagrantDeployment
   @defaults = {
     'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'vagrant',
@@ -44,9 +46,12 @@ class VagrantDeployment
     if hostmanager_enabled?
       vagrant.hostmanager.enabled = true
       vagrant.hostmanager.manage_host = true
-      vagrant.hostmanager.manage_guest = false
+      vagrant.hostmanager.manage_guest = true
+      vagrant.hostmanager.include_offline = false
+
+      # VirtualBox only
       # vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
-      #   vm.provider.driver.read_guest_ip(1)
+      #   vm.provider.driver.read_guest_ip(1) if vm.state.id == :running
       # end
     end
 
@@ -192,6 +197,7 @@ class VagrantProvider
     'type' => '',
     'memory' => 1024,
     'cpus' => 1,
+    'linked_clone' => ENV['VAGRANT_PROVIDER_LINKED_CLONE'] == 'true',
   }
 
   def self.defaults(defaults = {})
@@ -226,13 +232,13 @@ class VagrantProvider
   def configure_core
     vagrant.memory = options.fetch('memory')
     vagrant.cpus = options.fetch('cpus')
+    vagrant.linked_clone = options.fetch('linked_clone')
   end
 end
 
 class VagrantVirtualBoxProvider < VagrantProvider
   @defaults = {
     'type' => 'virtualbox',
-    'linked_clone' => ENV['VAGRANT_PROVIDER_VIRTUALBOX_LINKED_CLONE'] == 'true',
   }
 
   def self.defaults(defaults = {})
@@ -247,14 +253,12 @@ class VagrantVirtualBoxProvider < VagrantProvider
     super
 
     vagrant.name = machine.fqdn
-    vagrant.linked_clone = options.fetch('linked_clone')
   end
 end
 
 class VagrantHyperVProvider < VagrantProvider
   @defaults = {
     'type' => 'hyperv',
-    'differencing_disk' => ENV['VAGRANT_PROVIDER_HYPERV_DIFFERENCING_DISK'] == 'true',
     'network_bridge' => ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'].to_s.empty? ? 'Default Switch' : ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'],
     'smb_username' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_USERNAME'],
     'smb_password' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_PASSWORD'],
@@ -277,7 +281,6 @@ class VagrantHyperVProvider < VagrantProvider
     # vagrant.maxmemory = options.fetch('memory')
 
     vagrant.vmname = machine.fqdn
-    vagrant.differencing_disk = options.fetch('differencing_disk')
 
     unless machine.options.fetch('no_synced_folders')
       override.vm.synced_folder '.', '/vagrant',
