@@ -1,18 +1,29 @@
 require 'yaml'
 require 'erb'
 
-Vagrant.require_version '>= 2.1.2'
+Vagrant.require_version('>= 2.1.0')
 
 class VagrantDeployment
   @defaults = {
     'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'vagrant',
     'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
-    'hostmanager' => ENV['VAGRANT_DEPLOYMENT_HOSTMANAGER'] == 'true',
+
+    'hostmanager' => ENV['VAGRANT_NETWORK_HOSTMANAGER'] == 'true',
+
     'machines' => {},
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
+
+    def configure(directory, options = {}, &block)
+      deployment = VagrantDeployment.new(directory, options)
+      deployment.configure(&block)
+    end
   end
 
   attr_reader :directory
@@ -23,23 +34,28 @@ class VagrantDeployment
 
   def initialize(directory, options = {})
     @directory = directory
-    @options = VagrantDeployment.defaults.deep_merge(options)
-    Dir.glob("#{@directory}/vagrant*.yml").sort_by { |file| File.basename(file, '.*') }.each do |file|
-      @options = @options.deep_merge(YAML.load(ERB.new(File.read(file)).result) || {})
+    @options = VagrantDeployment.defaults
+    ['vagrant.yml', 'vagrant.override.yml'].each do |file|
+      yml = File.join(directory, file)
+      @options = @options.deep_merge(YAML.load(ERB.new(File.read(yml)).result) || {}) if File.exist?(yml)
     end
+    @options = @options.deep_merge(options)
 
     @vagrant = nil
     @machines = []
   end
 
   def configure
-    Vagrant.configure('2') do |vagrant|
+    Vagrant.configure(vagrant_options) do |vagrant|
       @vagrant = vagrant
 
       configure_core
-
       yield self if block_given?
     end
+  end
+
+  def vagrant_options
+    '2'
   end
 
   def configure_core
@@ -49,24 +65,28 @@ class VagrantDeployment
       vagrant.hostmanager.manage_guest = true
       vagrant.hostmanager.include_offline = false
 
-      # VirtualBox only
-      # vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
-      #   vm.provider.driver.read_guest_ip(1) if vm.state.id == :running
-      # end
+      if ENV['VAGRANT_PREFERRED_PROVIDERS'] == 'virtualbox'
+        vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+          vm.provider.driver.read_guest_ip(1) if vm.state.id == :running
+        end
+      end
     end
 
+    VagrantMachine.defaults_include(options.fetch('machines').fetch('defaults', {}))
     options.fetch('machines').each do |machine_name, machine_options|
+      next if machine_name == 'defaults'
+
       machine = VagrantMachine.new(self, { 'name' => machine_name }.deep_merge(machine_options))
       machine_count = machine.options.fetch('count')
 
       if machine_count > 0
-        machines.push machine
+        machines.push(machine)
         machine.configure
       end
 
       (2..machine_count).each do |machine_index|
         machine = VagrantMachine.new(self, { 'name' => "#{machine_name}-#{machine_index}" }.deep_merge(machine_options))
-        machines.push machine
+        machines.push(machine)
         machine.configure
       end
     end
@@ -84,19 +104,28 @@ end
 class VagrantMachine
   @defaults = {
     'name' => 'default',
-    'aliases' => [],
     'box' => '',
     'autostart' => true,
     'primary' => false,
-    'providers' => {},
     'no_synced_folders' => ENV['VAGRANT_MACHINE_NO_SYNCED_FOLDERS'] == 'true',
     'synced_folders' => {},
+    'aliases' => [],
+    'providers' => {},
     'provisioners' => {},
     'count' => 1,
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
+
+    def configure(deployment, options = {}, &block)
+      machine = VagrantMachine.new(deployment, options)
+      machine.configure(&block)
+    end
   end
 
   attr_reader :deployment
@@ -120,9 +149,9 @@ class VagrantMachine
       @vagrant = vagrant
 
       configure_core
-
       yield self if block_given?
     end
+    self
   end
 
   def vagrant_options
@@ -135,14 +164,23 @@ class VagrantMachine
   def configure_core
     vagrant.vm.box = options['box'] unless options['box'].to_s.empty?
 
-    vagrant.vm.network 'private_network', type: 'dhcp'
+    unless options.fetch('no_synced_folders')
+      options.fetch('synced_folders').each do |synced_folder_host, synced_folder_guest|
+        vagrant.vm.synced_folder synced_folder_host, synced_folder_guest
+      end
+    end
 
     if deployment.hostmanager_enabled?
       vagrant.vm.hostname = hostname
-      vagrant.hostmanager.aliases = [fqdn].concat(options.fetch('aliases')).concat(aliases_fqdn) if deployment.hostmanager_enabled?
+      vagrant.hostmanager.aliases = [fqdn].concat(options.fetch('aliases')).concat(aliases_fqdn)
+
+      vagrant.vm.network 'private_network', type: 'dhcp'
     end
 
+    VagrantProvider.defaults_include(options.fetch('providers').fetch('defaults', {}))
     options.fetch('providers').each do |provider_name, provider_options|
+      next if provider_name == 'defaults'
+
       provider = nil
       case provider_name
       when 'virtualbox'
@@ -153,14 +191,8 @@ class VagrantMachine
         raise "Provider '#{provider_name}' is not supported."
       end
 
-      providers.push provider
+      providers.push(provider)
       provider.configure
-    end
-
-    unless options.fetch('no_synced_folders')
-      options.fetch('synced_folders').each do |synced_folder_host, synced_folder_guest|
-        vagrant.vm.synced_folder synced_folder_host, synced_folder_guest
-      end
     end
 
     options.fetch('provisioners').each do |provisioner_name, provisioner_options|
@@ -171,10 +203,11 @@ class VagrantMachine
       provisioner = VagrantChefPolicyfileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_policyfile')
       provisioner = VagrantChefZeroProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_zero')
       provisioner = VagrantDockerProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('docker')
+      provisioner = VagrantReloadProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('reload')
 
       raise "Provisioner '#{provisioner_name}' is not supported." if provisioner.nil?
 
-      provisioners.push provisioner
+      provisioners.push(provisioner)
       provisioner.configure
     end
   end
@@ -200,8 +233,17 @@ class VagrantProvider
     'linked_clone' => ENV['VAGRANT_PROVIDER_LINKED_CLONE'] == 'true',
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
+
+    def configure(machine, options = {}, &block)
+      provider = VagrantProvider.new(machine, options)
+      provider.configure(&block)
+    end
   end
 
   attr_reader :machine
@@ -224,7 +266,6 @@ class VagrantProvider
       @override = override
 
       configure_core
-
       yield self if block_given?
     end
   end
@@ -232,7 +273,6 @@ class VagrantProvider
   def configure_core
     vagrant.memory = options.fetch('memory')
     vagrant.cpus = options.fetch('cpus')
-    vagrant.linked_clone = options.fetch('linked_clone')
   end
 end
 
@@ -241,8 +281,12 @@ class VagrantVirtualBoxProvider < VagrantProvider
     'type' => 'virtualbox',
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
   end
 
   def initialize(machine, options = {})
@@ -253,19 +297,24 @@ class VagrantVirtualBoxProvider < VagrantProvider
     super
 
     vagrant.name = machine.fqdn
+    vagrant.linked_clone = options.fetch('linked_clone')
   end
 end
 
 class VagrantHyperVProvider < VagrantProvider
   @defaults = {
     'type' => 'hyperv',
-    'network_bridge' => ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'].to_s.empty? ? 'Default Switch' : ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'],
+    'network_bridge' => ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'] || 'Default Switch',
     'smb_username' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_USERNAME'],
     'smb_password' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_PASSWORD'],
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
   end
 
   def initialize(machine, options = {})
@@ -275,12 +324,8 @@ class VagrantHyperVProvider < VagrantProvider
   def configure_core
     super
 
-    override.vm.network 'private_network', bridge: options.fetch('network_bridge')
-
-    # vagrant.memory = [1024, options.fetch('memory')].min
-    # vagrant.maxmemory = options.fetch('memory')
-
     vagrant.vmname = machine.fqdn
+    vagrant.differencing_disk = options.fetch('linked_clone')
 
     unless machine.options.fetch('no_synced_folders')
       override.vm.synced_folder '.', '/vagrant',
@@ -288,6 +333,8 @@ class VagrantHyperVProvider < VagrantProvider
         smb_username: options.fetch('smb_username'),
         smb_password: options.fetch('smb_password')
     end
+
+    override.vm.network 'private_network', bridge: options.fetch('network_bridge')
   end
 end
 
@@ -297,8 +344,12 @@ class VagrantProvisioner
     'run' => '',
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
   end
 
   attr_reader :machine
@@ -320,7 +371,6 @@ class VagrantProvisioner
       @vagrant = vagrant
 
       configure_core
-
       yield self if block_given?
     end
   end
@@ -343,8 +393,12 @@ class VagrantShellProvisioner < VagrantProvisioner
     'args' => '',
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
   end
 
   def initialize(machine, name, options = {})
@@ -363,8 +417,12 @@ class VagrantFileProvisioner < VagrantProvisioner
     'destination' => '',
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
   end
 
   def initialize(machine, name, options = {})
@@ -382,8 +440,12 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
     'path' => 'Policyfile.rb',
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
   end
 
   def initialize(machine, name, options = {})
@@ -447,8 +509,12 @@ class VagrantChefZeroProvisioner < VagrantProvisioner
     'json' => {},
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
   end
 
   def initialize(machine, name, options = {})
@@ -476,8 +542,12 @@ class VagrantDockerProvisioner < VagrantProvisioner
     'runs' => [],
   }
 
-  def self.defaults(defaults = {})
-    @defaults = @defaults.deep_merge(defaults)
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
   end
 
   def initialize(machine, name, options = {})
@@ -499,6 +569,24 @@ class VagrantDockerProvisioner < VagrantProvisioner
         deamonize: run.fetch('daemonize', true),
         restart: run.fetch('restart', 'always')
     end
+  end
+end
+
+class VagrantReloadProvisioner < VagrantProvisioner
+  @defaults = {
+    'type' => 'reload',
+  }
+
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
+  end
+
+  def initialize(machine, name, options = {})
+    super(machine, name, VagrantReloadProvisioner.defaults.deep_merge(options))
   end
 end
 

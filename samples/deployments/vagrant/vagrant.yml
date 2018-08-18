@@ -1,0 +1,11 @@
+environment: vagrant.deployments.vagrant
+
+machines:
+  virtualbox:
+    provisioners:
+      chef_policyfile_tools:
+        path: Policyfile.tools_virtualbox.rb
+  hyperv:
+    provisioners:
+      chef_policyfile_tools:
+        path: Policyfile.tools_hyperv.rb

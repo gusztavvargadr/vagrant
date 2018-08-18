@@ -2,36 +2,25 @@
 
 <!-- TODOs
 
-https://www.vagrantup.com/docs/vagrantfile/vagrant_version.html
-include rb files with local yamls instead of pure yaml merging
-config include yaml files from multiple dirs
-  local rb files to process local yaml
-  defaults in core yaml as well
-  overrides per environment to load automatically
-cli sample
-
-meta repo, contributing or setup script to update references
-naming: underscore vs hyphen
-conventions for configuration / provisioners
-default boxes per scenario based on env with default
-review options
-windows chef node issues
-common settings for providers - linked_clone, gui
-
-general
-  terraform for local config
-  multiple domain names per level with overrides to support aliases too
-  terraform / packer "deployment" with docker
-  providers / platform as params for e.g. docker 
-  separate provisioning samples from machine / container
-  ci flow
-  environment generalization with providers (vagrant, terraform)
-  contributing.ps1
-  license.md
-  core repo with common components
-
 vagrant
-  vagrant: org, domain, component, project, tenant, env
+  dynamic registration of deployment / machine / provisioner / provider types
+  multiple deployments
+    to be able to merge them
+    deployment name from parent dir by default
+  provider to decide from vagrant instead of env var
+  deployment directory from Vagrant
+  review tenant / env (add project / stack / component?)
+    vagrant: org, domain, component, project, tenant, env
+  vagrant factory method extract
+  hostmanager into network
+  aliases count
+  platform-based provisioners
+  conventions for configuration / provisioners
+  review vagrant options
+  scripts for triggers
+  include rb files with local yamls instead of pure yaml merging
+    defaults in core yaml as well
+    overrides per environment to load automatically
   vagrant chef json static vs method
   yml split configurtion for env, vm, provision, etc
   vagrant core : private / public network optins
@@ -46,29 +35,28 @@ vagrant
   dotnet
   double check src / sample count
   0-based index for vagrant also
-
-
-core
-  migrate todos from other repose
+  docker provider
 
 src
-  hostmanager check (dhcp network - check with vbox)
   split vagrant file across core / compute / etc
   vagrant version to conf
   vagrant memory hyperv allow from to
   vagrant multiple deployments in single file?
-  vagrant environment to name stack service (component) env local
-  ruby modules / namespaces - sources to e.g. Vagrant from Vagrantfile, Berkshelf from Berksfile
   core vagrantcomponent / vagrantbuilder
-  yaml version / document separator
-  vagrant option to set hostname (e.g. clusters)
-  vagrant berkshelf eliminate -> policyfile
-  vagrant yml reuse
+  ruby lint
+    factory methods for parents (e.g. deployment.machine instead of VagrantMachine.configure)
+    ruby modules / namespaces - sources to e.g. Vagrant from Vagrantfile, Berkshelf from Berksfile
+    ruby symbolize keys
+    ruby named params instead of options on classes
+    ruby blocks to change configuration (similar to core vagrant)
+      extract and apply policies instead of pure options
+      auto traverse hierarchy?
   rb extensions as vagrant plugin?
-  default boxes for platform / feature (e.g. linux / windows, docker, etc)
 
 samples
   defaults / overrides / count (yaml)
+  provider samples
+  organize other samples into deployments?
 
 docs
   update with samples

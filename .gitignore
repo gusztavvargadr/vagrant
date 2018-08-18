@@ -1,5 +1,5 @@
 .vagrant
-vagrant.*override*.yml
+vagrant.override.yml
 
 *.lock.json
 .chef
