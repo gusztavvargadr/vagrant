@@ -1,0 +1,18 @@
+directory = File.dirname(__FILE__)
+
+require "#{directory}/../vagrant"
+
+VagrantMachine.defaults_include(
+  'provisioners' => {
+    'docker' => {
+      'runs' => [
+        'name' => 'hello-world',
+        'image' => 'hello-world',
+        'daemonize' => 'false',
+        'restart' => 'no',
+      ],
+    },
+  }
+)
+
+VagrantDeployment.configure(directory)

@@ -1,0 +1,5 @@
+environment: linux.machines.vagrant
+
+machines:
+  server:
+    box: <%= VagrantLinuxServerMachine.defaults['box'] %>

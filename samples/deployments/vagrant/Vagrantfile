@@ -1,0 +1,21 @@
+directory = File.dirname(__FILE__)
+
+require "#{directory}/../vagrant"
+
+VagrantMachine.defaults_include(
+  'box' => VagrantWindowsDesktopMachine.defaults['box'],
+  'provisioners' => {
+    'chef_policyfile_tools' => {},
+    'reload' => {},
+    'chef_policyfile_extensions' => {
+      'path' => 'Policyfile.extensions.rb',
+    },
+  }
+)
+
+VagrantProvider.defaults_include(
+  'memory' => 8192,
+  'cpus' => 4
+)
+
+VagrantDeployment.configure(directory)
