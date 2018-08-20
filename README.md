@@ -2,8 +2,14 @@
 
 <!-- TODOs
 
+cli synced folder
+32 bit test
+tools folder in root
+synced_folders remove 
+
 vagrant
   dynamic registration of deployment / machine / provisioner / provider types
+  hyperv dyanmic memory / virt ext
   multiple deployments
     to be able to merge them
     deployment name from parent dir by default
@@ -57,12 +63,14 @@ samples
   defaults / overrides / count (yaml)
   provider samples
   organize other samples into deployments?
+  sample for dhcp server (to be used in hyperv)
 
 docs
   update with samples
 
 -->
 
+<!--
 **Quick links** [Vagrant resources] | [Virtual workstations] | [Vagrant boxes] | [Packer templates]  
 
 [This repository][Vagrant resources] serves as the as starting point for the following [Vagrant] resources for virtualized .NET development on Windows with Hyper-V and VirtualBox:
@@ -83,3 +91,4 @@ Please follow the links above for more information.
 **Note** The earlier approach of a single repository supporting all the different types of Vagrant environments is now deprecated and is no longer being maintained. You can find the latest version of that approach [here][Deprecated].
 
 [Deprecated]: https://github.com/gusztavvargadr/vagrant/tree/0.1.0
+-->

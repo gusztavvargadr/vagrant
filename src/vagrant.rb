@@ -287,6 +287,11 @@ class VagrantVirtualBoxProvider < VagrantProvider
     def defaults_include(defaults)
       @defaults = @defaults.deep_merge(defaults)
     end
+
+    def configure(machine, options = {}, &block)
+      provider = VagrantVirtualBoxProvider.new(machine, options)
+      provider.configure(&block)
+    end
   end
 
   def initialize(machine, options = {})
@@ -314,6 +319,11 @@ class VagrantHyperVProvider < VagrantProvider
 
     def defaults_include(defaults)
       @defaults = @defaults.deep_merge(defaults)
+    end
+
+    def configure(machine, options = {}, &block)
+      provider = VagrantHyperVProvider.new(machine, options)
+      provider.configure(&block)
     end
   end
 
@@ -349,6 +359,11 @@ class VagrantProvisioner
 
     def defaults_include(defaults)
       @defaults = @defaults.deep_merge(defaults)
+    end
+
+    def configure(machine, options = {}, &block)
+      provider = VagrantProvisioner.new(machine, options)
+      provider.configure(&block)
     end
   end
 
