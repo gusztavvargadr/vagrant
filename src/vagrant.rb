@@ -468,32 +468,32 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
   end
 
   def configure
-    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
+    machine.vagrant.trigger.before :up, :provision do |trigger|
       trigger.name = "#{name}_chef_install"
       trigger.run = {
         inline: "chef install #{options.fetch('path')}",
       }
     end
 
-    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
+    machine.vagrant.trigger.before :up, :provision do |trigger|
       trigger.name = "#{name}_chef_export"
       trigger.run = {
-        inline: "chef export #{options.fetch('path')} #{machine.deployment.directory}/.chef/#{name} --force",
+        inline: "chef export #{options.fetch('path')} #{machine.deployment.directory}/.vagrant/chef/#{name} --force",
       }
     end
 
-    machine.vagrant.trigger.before :up, :reload, :provision do |trigger|
+    machine.vagrant.trigger.before :up, :provision do |trigger|
       trigger.name = "#{name}_zip"
       trigger.run = {
-        inline: "7z a -aoa #{machine.deployment.directory}/.chef/#{name}.zip #{machine.deployment.directory}/.chef/#{name}/",
+        inline: "7z a -sdel #{machine.deployment.directory}/.vagrant/chef/#{name}.zip #{machine.deployment.directory}/.vagrant/chef/#{name}/",
       }
     end
 
     file_provisioner = VagrantFileProvisioner.new(
       machine,
       "#{name}_upload",
-      'source' => "#{machine.deployment.directory}/.chef/#{name}.zip",
-      'destination' => "/tmp/chef/#{name}.zip"
+      'source' => "#{machine.deployment.directory}/.vagrant/chef",
+      'destination' => '/tmp/chef'
     )
     file_provisioner.configure
 

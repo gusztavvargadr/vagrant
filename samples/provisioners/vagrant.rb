@@ -14,6 +14,6 @@ VagrantDeployment.defaults_include(
 )
 
 VagrantProvider.defaults_include(
-  'memory' => '2048',
-  'cpus' => '2'
+  'memory' => 2048,
+  'cpus' => 2
 )
