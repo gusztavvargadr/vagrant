@@ -8,7 +8,7 @@ action :install do
     code <<-EOH
       vagrant plugin install vagrant-#{new_resource.name} --plugin-version #{new_resource.version}
     EOH
-    not_if "(vagrant plugin list).IndexOf('vagrant-#{new_resource.name}') -ge 0"
+    not_if "$($(iex 'vagrant plugin list') -match 'vagrant-#{new_resource.name}').Length -ge 0"
     action :run
   end
 end
