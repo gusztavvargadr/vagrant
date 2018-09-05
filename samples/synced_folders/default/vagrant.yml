@@ -1,0 +1,7 @@
+environment: default.synced_folders.vagrant
+
+machines:
+  defaults:
+    synced_folders:
+      /vagrant-default:
+        source: .
