@@ -107,8 +107,11 @@ class VagrantMachine
     'box' => '',
     'autostart' => true,
     'primary' => false,
-    'no_synced_folders' => ENV['VAGRANT_MACHINE_NO_SYNCED_FOLDERS'] == 'true',
-    'synced_folders' => {},
+    'synced_folders' => {
+      '/vagrant' => {
+        'source' => '.',
+      },
+    },
     'aliases' => [],
     'providers' => {},
     'provisioners' => {},
@@ -163,12 +166,6 @@ class VagrantMachine
 
   def configure_core
     vagrant.vm.box = options['box'] unless options['box'].to_s.empty?
-
-    unless options.fetch('no_synced_folders')
-      options.fetch('synced_folders').each do |synced_folder_host, synced_folder_guest|
-        vagrant.vm.synced_folder synced_folder_host, synced_folder_guest
-      end
-    end
 
     if deployment.hostmanager_enabled?
       vagrant.vm.hostname = hostname
@@ -231,6 +228,7 @@ class VagrantProvider
     'memory' => 1024,
     'cpus' => 1,
     'linked_clone' => ENV['VAGRANT_PROVIDER_LINKED_CLONE'] == 'true',
+    'synced_folder_type' => '',
   }
 
   class << self
@@ -273,6 +271,31 @@ class VagrantProvider
   def configure_core
     vagrant.memory = options.fetch('memory')
     vagrant.cpus = options.fetch('cpus')
+
+    machine.options.fetch('synced_folders').each do |synced_folder_destination, synced_folder_options|
+      synced_folder_source = synced_folder_options.fetch('source')
+      synced_folder_disabled = synced_folder_options.fetch('disabled', false)
+      synced_folder_type = synced_folder_options.fetch('type', options.fetch('synced_folder_type'))
+
+      case synced_folder_type
+      when ''
+        override.vm.synced_folder synced_folder_source, synced_folder_destination,
+          disabled: synced_folder_disabled
+      when 'smb'
+        smb_username = ENV['VAGRANT_SYNCED_FOLDER_SMB_USERNAME']
+        smb_password = ENV['VAGRANT_SYNCED_FOLDER_SMB_PASSWORD']
+
+        override.vm.synced_folder synced_folder_source, synced_folder_destination,
+          disabled: synced_folder_disabled,
+          type: 'smb',
+          smb_username: smb_username,
+          smb_password: smb_password
+      else
+        override.vm.synced_folder synced_folder_source, synced_folder_destination,
+          disabled: synced_folder_disabled,
+          type: synced_folder_type
+      end
+    end
   end
 end
 
@@ -309,9 +332,8 @@ end
 class VagrantHyperVProvider < VagrantProvider
   @defaults = {
     'type' => 'hyperv',
+    'synced_folder_type' => 'smb',
     'network_bridge' => ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'] || 'Default Switch',
-    'smb_username' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_USERNAME'],
-    'smb_password' => ENV['VAGRANT_PROVIDER_HYPERV_SMB_PASSWORD'],
   }
 
   class << self
@@ -336,13 +358,6 @@ class VagrantHyperVProvider < VagrantProvider
 
     vagrant.vmname = machine.fqdn
     vagrant.differencing_disk = options.fetch('linked_clone')
-
-    unless machine.options.fetch('no_synced_folders')
-      override.vm.synced_folder '.', '/vagrant',
-        type: 'smb',
-        smb_username: options.fetch('smb_username'),
-        smb_password: options.fetch('smb_password')
-    end
 
     override.vm.network 'private_network', bridge: options.fetch('network_bridge')
   end
