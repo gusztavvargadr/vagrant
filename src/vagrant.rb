@@ -468,50 +468,58 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
   end
 
   def configure
-    machine.vagrant.trigger.before :up, :provision do |trigger|
+    policyfile_path = options.fetch('path')
+    export_base_path = "#{machine.deployment.directory}/.chef"
+    export_directory_path = "#{export_base_path}/#{policyfile_path}"
+    export_file_path = "#{export_base_path}/#{policyfile_path}.zip"
+    upload_base_path = '/tmp'
+
+    trigger_actions = File.exist?(export_file_path) ? [:provision] : [:up, :provision]
+
+    machine.vagrant.trigger.before trigger_actions do |trigger|
       trigger.name = "#{name}_chef_install"
       trigger.run = {
-        inline: "chef install #{options.fetch('path')}",
+        inline: "chef install #{policyfile_path}",
       }
     end
 
-    machine.vagrant.trigger.before :up, :provision do |trigger|
+    machine.vagrant.trigger.before trigger_actions do |trigger|
       trigger.name = "#{name}_chef_export"
       trigger.run = {
-        inline: "chef export #{options.fetch('path')} #{machine.deployment.directory}/.vagrant/chef/#{name} --force",
+        inline: "chef export #{policyfile_path} #{export_directory_path} --force",
       }
     end
 
-    machine.vagrant.trigger.before :up, :provision do |trigger|
+    machine.vagrant.trigger.before trigger_actions do |trigger|
       trigger.name = "#{name}_zip"
       trigger.run = {
-        inline: "7z a -sdel #{machine.deployment.directory}/.vagrant/chef/#{name}.zip #{machine.deployment.directory}/.vagrant/chef/#{name}/",
+        inline: "7z a -sdel #{export_file_path} #{export_directory_path}",
       }
     end
 
     file_provisioner = VagrantFileProvisioner.new(
       machine,
       "#{name}_upload",
-      'source' => "#{machine.deployment.directory}/.vagrant/chef",
-      'destination' => '/tmp/chef'
+      'source' => export_base_path,
+      'destination' => upload_base_path
     )
     file_provisioner.configure
 
     shell_unzip_provisioner = VagrantShellProvisioner.new(
       machine,
       "#{name}_unzip",
-      'inline' => "cd /tmp/chef; 7z x -aoa #{name}.zip",
+      'inline' => "cd #{upload_base_path}; 7z x -aoa #{policyfile_path}.zip",
       'run' => options.fetch('run')
     )
     shell_unzip_provisioner.configure
 
-    shell_run_provisioner = VagrantShellProvisioner.new(
+    shell_chef_client_provisioner = VagrantShellProvisioner.new(
       machine,
-      "#{name}_chef_run",
-      'inline' => "cd /tmp/chef/#{name}; chef-client --local-mode",
+      "#{name}_chef_client",
+      'inline' => "cd #{upload_base_path}/#{policyfile_path}; chef-client --local-mode",
       'run' => options.fetch('run')
     )
-    shell_run_provisioner.configure
+    shell_chef_client_provisioner.configure
   end
 end
 
