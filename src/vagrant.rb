@@ -274,24 +274,28 @@ class VagrantProvider
 
     machine.options.fetch('synced_folders').each do |synced_folder_destination, synced_folder_options|
       synced_folder_source = synced_folder_options.fetch('source')
+      synced_folder_create = synced_folder_options.fetch('create', false)
       synced_folder_disabled = synced_folder_options.fetch('disabled', false)
       synced_folder_type = synced_folder_options.fetch('type', options.fetch('synced_folder_type'))
 
       case synced_folder_type
       when ''
         override.vm.synced_folder synced_folder_source, synced_folder_destination,
+          create: synced_folder_create,
           disabled: synced_folder_disabled
       when 'smb'
         smb_username = ENV['VAGRANT_SYNCED_FOLDER_SMB_USERNAME']
         smb_password = ENV['VAGRANT_SYNCED_FOLDER_SMB_PASSWORD']
 
         override.vm.synced_folder synced_folder_source, synced_folder_destination,
+          create: synced_folder_create,
           disabled: synced_folder_disabled,
           type: 'smb',
           smb_username: smb_username,
           smb_password: smb_password
       else
         override.vm.synced_folder synced_folder_source, synced_folder_destination,
+          create: synced_folder_create,
           disabled: synced_folder_disabled,
           type: synced_folder_type
       end
