@@ -1,7 +1,7 @@
 require 'yaml'
 require 'erb'
 
-Vagrant.require_version('>= 2.1.0')
+Vagrant.require_version('>= 2.1.5')
 
 class VagrantDeployment
   @defaults = {
@@ -271,6 +271,7 @@ class VagrantProvider
   def configure_core
     vagrant.memory = options.fetch('memory')
     vagrant.cpus = options.fetch('cpus')
+    vagrant.linked_clone = options.fetch('linked_clone')
 
     machine.options.fetch('synced_folders').each do |synced_folder_destination, synced_folder_options|
       synced_folder_source = synced_folder_options.fetch('source')
@@ -329,7 +330,6 @@ class VagrantVirtualBoxProvider < VagrantProvider
     super
 
     vagrant.name = machine.fqdn
-    vagrant.linked_clone = options.fetch('linked_clone')
   end
 end
 
@@ -361,7 +361,6 @@ class VagrantHyperVProvider < VagrantProvider
     super
 
     vagrant.vmname = machine.fqdn
-    vagrant.differencing_disk = options.fetch('linked_clone')
 
     override.vm.network 'private_network', bridge: options.fetch('network_bridge')
   end
