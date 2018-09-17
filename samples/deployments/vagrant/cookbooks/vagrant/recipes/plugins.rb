@@ -12,3 +12,8 @@ gusztavvargadr_vagrant_plugin 'reload' do
   version '0.0.1'
   action :install
 end
+
+gusztavvargadr_vagrant_plugin 'azure' do
+  version '2.0.0'
+  action :install
+end
