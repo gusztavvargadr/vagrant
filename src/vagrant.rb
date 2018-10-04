@@ -336,6 +336,9 @@ end
 class VagrantHyperVProvider < VagrantProvider
   @defaults = {
     'type' => 'hyperv',
+    'start' => ENV['VAGRANT_PROVIDER_HYPERV_START'] || 'Nothing',
+    'stop' => ENV['VAGRANT_PROVIDER_HYPERV_STOP'] || 'ShutDown',
+    'virtualization' => ENV['VAGRANT_PROVIDER_HYPERV_VIRTUALIZATION'] == 'true',
     'synced_folder_type' => 'smb',
     'network_bridge' => ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'] || 'Default Switch',
   }
@@ -361,6 +364,9 @@ class VagrantHyperVProvider < VagrantProvider
     super
 
     vagrant.vmname = machine.fqdn
+    vagrant.auto_start_action = options.fetch('start')
+    vagrant.auto_stop_action = options.fetch('stop')
+    vagrant.enable_virtualization_extensions = options.fetch('virtualization')
 
     override.vm.network 'private_network', bridge: options.fetch('network_bridge')
   end
