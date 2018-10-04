@@ -15,9 +15,15 @@ class VagrantLinuxServerMachine < VagrantMachine
   }
 end
 
+class VagrantLinuxDesktopMachine < VagrantMachine
+  @defaults = {
+    'box' => ENV['VAGRANT_BOX_LINUX_DESKTOP'] || 'gusztavvargadr/u16d-dc',
+  }
+end
+
 class VagrantWindowsServerMachine < VagrantMachine
   @defaults = {
-    'box' => ENV['VAGRANT_BOX_WINDOWS_SERVER'] || 'gusztavvargadr/w16s-de',
+    'box' => ENV['VAGRANT_BOX_WINDOWS_SERVER'] || 'gusztavvargadr/w16sc-de',
   }
 end
 

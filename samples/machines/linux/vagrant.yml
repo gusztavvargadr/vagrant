@@ -3,3 +3,5 @@ environment: linux.machines.vagrant
 machines:
   server:
     box: <%= VagrantLinuxServerMachine.defaults['box'] %>
+  desktop:
+    box: <%= VagrantLinuxDesktopMachine.defaults['box'] %>
