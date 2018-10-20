@@ -1,7 +1,0 @@
-environment: hostmanager.network.vagrant
-
-hostmanager: true
-
-machines:
-  foo:
-  bar:

@@ -8,4 +8,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory)
+VagrantDeployment.configure(directory, 'environment' => 'chef_policyfile.provisioners.vagrant')
