@@ -22,7 +22,7 @@ end
 
 class VagrantWindowsDesktopMachine < VagrantMachine
   @defaults = {
-    'box' => ENV['VAGRANT_BOX_WINDOWS_DESKTOP'] || 'gusztavvargadr/w16s-de',
+    'box' => ENV['VAGRANT_BOX_WINDOWS_DESKTOP'] || 'gusztavvargadr/w16s-dc',
   }
 end
 
