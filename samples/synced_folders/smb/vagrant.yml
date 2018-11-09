@@ -1,8 +1,0 @@
-environment: smb.synced_folders.vagrant
-
-machines:
-  defaults:
-    synced_folders:
-      /vagrant-smb:
-        source: .
-        type: 'smb'

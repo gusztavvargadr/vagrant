@@ -1,8 +1,0 @@
-environment: rsync.synced_folders.vagrant
-
-machines:
-  defaults:
-    synced_folders:
-      /vagrant-rsync:
-        source: .
-        type: 'rsync'
