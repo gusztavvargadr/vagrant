@@ -1,7 +1,0 @@
-environment: windows.machines.vagrant
-
-machines:
-  server:
-    box: <%= VagrantWindowsServerMachine.defaults['box'] %>
-  desktop:
-    box: <%= VagrantWindowsDesktopMachine.defaults['box'] %>

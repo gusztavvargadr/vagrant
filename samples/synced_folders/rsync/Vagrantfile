@@ -2,4 +2,13 @@ directory = File.dirname(__FILE__)
 
 require "#{directory}/../vagrant"
 
-VagrantDeployment.configure(directory)
+VagrantMachine.defaults_include(
+  'synced_folders' => {
+    '/vagrant-rsync' => {
+      'source' => '.',
+      'type' => 'rsync',
+    },
+  }
+)
+
+VagrantDeployment.configure(directory, 'environment' => 'rsync.synced_folders.vagrant')
