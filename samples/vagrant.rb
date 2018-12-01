@@ -30,6 +30,7 @@ VagrantDeployment.defaults_include(
   'machines' => {
     'linux' => {
       'box' => VagrantLinuxServerMachine.defaults['box'],
+      'azure_image_urn' => 'Canonical:UbuntuServer:16.04-LTS:latest',
     },
     'windows' => {
       'box' => VagrantWindowsServerMachine.defaults['box'],
@@ -41,10 +42,12 @@ VagrantMachine.defaults_include(
   'providers' => {
     'virtualbox' => {},
     'hyperv' => {},
+    'azure' => {},
   }
 )
 
 VagrantProvider.defaults_include(
   'memory' => 2048,
-  'cpus' => 2
+  'cpus' => 2,
+  'azure_size' => 'Standard_B2s'
 )

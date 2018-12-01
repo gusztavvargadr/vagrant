@@ -8,4 +8,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'environment' => 'reload.provisioners.vagrant')
+VagrantDeployment.configure(directory, 'component' => 'reload', 'stack' => 'provisioners')

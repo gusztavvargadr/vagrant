@@ -18,4 +18,4 @@ VagrantProvider.defaults_include(
   'cpus' => 4
 )
 
-VagrantDeployment.configure(directory, 'environment' => 'desktop.machines.vagrant')
+VagrantDeployment.configure(directory, 'component' => 'desktop', 'stack' => 'machines')

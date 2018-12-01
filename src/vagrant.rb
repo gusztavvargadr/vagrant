@@ -5,6 +5,8 @@ Vagrant.require_version('>= 2.1.5')
 
 class VagrantDeployment
   @defaults = {
+    'component' => '',
+    'stack' => '',
     'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'vagrant',
     'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
 
@@ -93,7 +95,12 @@ class VagrantDeployment
   end
 
   def domain
-    "#{options.fetch('environment')}.#{options.fetch('tenant')}"
+    [
+      options.fetch('component', ''),
+      options.fetch('stack', ''),
+      options.fetch('environment', ''),
+      options.fetch('tenant', ''),
+    ].reject(&:empty?).join('.')
   end
 
   def hostmanager_enabled?
@@ -105,8 +112,10 @@ class VagrantMachine
   @defaults = {
     'name' => 'default',
     'box' => '',
+    'azure_image_urn' => '',
     'autostart' => true,
     'primary' => false,
+    'communicator' => '',
     'synced_folders' => {
       '/vagrant' => {
         'source' => '.',
@@ -167,6 +176,8 @@ class VagrantMachine
   def configure_core
     vagrant.vm.box = options['box'] unless options['box'].to_s.empty?
 
+    vagrant.vm.communicator = options['communicator'] unless options['communicator'].to_s.empty?
+
     if deployment.hostmanager_enabled?
       vagrant.vm.hostname = hostname
       vagrant.hostmanager.aliases = [fqdn].concat(options.fetch('aliases')).concat(aliases_fqdn)
@@ -184,6 +195,8 @@ class VagrantMachine
         provider = VagrantVirtualBoxProvider.new(self, provider_options)
       when 'hyperv'
         provider = VagrantHyperVProvider.new(self, provider_options)
+      when 'azure'
+        provider = VagrantAzureProvider.new(self, provider_options)
       else
         raise "Provider '#{provider_name}' is not supported."
       end
@@ -227,6 +240,7 @@ class VagrantProvider
     'type' => '',
     'memory' => 1024,
     'cpus' => 1,
+    'azure_size' => 'Standard_B1s',
     'linked_clone' => ENV['VAGRANT_PROVIDER_LINKED_CLONE'] == 'true',
     'synced_folder_type' => '',
   }
@@ -269,10 +283,6 @@ class VagrantProvider
   end
 
   def configure_core
-    vagrant.memory = options.fetch('memory')
-    vagrant.cpus = options.fetch('cpus')
-    vagrant.linked_clone = options.fetch('linked_clone')
-
     machine.options.fetch('synced_folders').each do |synced_folder_destination, synced_folder_options|
       synced_folder_source = synced_folder_options.fetch('source')
       synced_folder_create = synced_folder_options.fetch('create', false)
@@ -330,6 +340,10 @@ class VagrantVirtualBoxProvider < VagrantProvider
     super
 
     vagrant.name = machine.fqdn
+
+    vagrant.memory = options.fetch('memory')
+    vagrant.cpus = options.fetch('cpus')
+    vagrant.linked_clone = options.fetch('linked_clone')
   end
 end
 
@@ -364,11 +378,69 @@ class VagrantHyperVProvider < VagrantProvider
     super
 
     vagrant.vmname = machine.fqdn
+
+    vagrant.memory = options.fetch('memory')
+    vagrant.cpus = options.fetch('cpus')
+    vagrant.linked_clone = options.fetch('linked_clone')
+
     vagrant.auto_start_action = options.fetch('start')
     vagrant.auto_stop_action = options.fetch('stop')
     vagrant.enable_virtualization_extensions = options.fetch('virtualization')
 
     override.vm.network 'private_network', bridge: options.fetch('network_bridge')
+  end
+end
+
+class VagrantAzureProvider < VagrantProvider
+  @defaults = {
+    'type' => 'azure',
+    'location' => ENV['VAGRANT_PROVIDER_AZURE_LOCATION'],
+    'synced_folder_type' => 'rsync',
+  }
+
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
+
+    def configure(machine, options = {}, &block)
+      provider = VagrantAzureProvider.new(machine, options)
+      provider.configure(&block)
+    end
+  end
+
+  def initialize(machine, options = {})
+    super(machine, VagrantAzureProvider.defaults.deep_merge(options))
+  end
+
+  def configure_core
+    super
+
+    vagrant.vm_name = machine.hostname
+
+    override.vm.box = 'dummy'
+    vagrant.vm_image_urn = machine.options.fetch('azure_image_urn')
+
+    resource_group_name = [
+      machine.deployment.options.fetch('component', ''),
+      machine.deployment.options.fetch('stack', ''),
+      machine.deployment.options.fetch('environment', ''),
+      machine.deployment.options.fetch('tenant', ''),
+    ].reject(&:empty?).join('-')
+
+    vagrant.resource_group_name = resource_group_name
+    vagrant.location = options.fetch('location')
+
+    vagrant.vm_size = options.fetch('azure_size')
+
+    vagrant.virtual_network_name = resource_group_name
+    vagrant.dns_name = "#{machine.hostname}-#{Digest::MD5.hexdigest(machine.deployment.domain)}"
+    vagrant.subnet_name = "#{resource_group_name}-default"
+    vagrant.nsg_name = "#{resource_group_name}-default"
+
+    override.ssh.private_key_path = '~/.ssh/azure'
   end
 end
 

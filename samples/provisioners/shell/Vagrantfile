@@ -10,4 +10,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'environment' => 'shell.provisioners.vagrant')
+VagrantDeployment.configure(directory, 'component' => 'shell', 'stack' => 'provisioners')

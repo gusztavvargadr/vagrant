@@ -11,4 +11,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'environment' => 'smb.synced_folders.vagrant')
+VagrantDeployment.configure(directory, 'component' => 'smb', 'stack' => 'synced_folders')
