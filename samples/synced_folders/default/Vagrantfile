@@ -10,4 +10,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'component' => 'default', 'stack' => 'synced_folders')
+VagrantDeployment.configure(directory, 'component' => 'default-synced-folder')

@@ -8,4 +8,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'component' => 'chef_policyfile', 'stack' => 'provisioners')
+VagrantDeployment.configure(directory, 'component' => 'chef-policyfile-provisioner')

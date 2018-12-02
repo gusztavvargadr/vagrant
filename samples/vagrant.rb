@@ -27,6 +27,8 @@ class VagrantWindowsDesktopMachine < VagrantMachine
 end
 
 VagrantDeployment.defaults_include(
+  'stack' => 'vagrant',
+
   'machines' => {
     'linux' => {
       'box' => VagrantLinuxServerMachine.defaults['box'],

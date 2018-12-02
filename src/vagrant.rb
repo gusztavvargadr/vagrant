@@ -5,9 +5,9 @@ Vagrant.require_version('>= 2.1.5')
 
 class VagrantDeployment
   @defaults = {
-    'component' => '',
-    'stack' => '',
-    'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'vagrant',
+    'component' => ENV['VAGRANT_DEPLOYMENT_COMPONENT'],
+    'stack' => ENV['VAGRANT_DEPLOYMENT_STACK'],
+    'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'sandbox',
     'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
 
     'hostmanager' => ENV['VAGRANT_NETWORK_HOSTMANAGER'] == 'true',
@@ -64,7 +64,7 @@ class VagrantDeployment
     if hostmanager_enabled?
       vagrant.hostmanager.enabled = true
       vagrant.hostmanager.manage_host = true
-      vagrant.hostmanager.manage_guest = true
+      vagrant.hostmanager.manage_guest = false
       vagrant.hostmanager.include_offline = false
 
       if ENV['VAGRANT_PREFERRED_PROVIDERS'] == 'virtualbox'

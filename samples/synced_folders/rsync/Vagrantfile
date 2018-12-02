@@ -11,4 +11,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'component' => 'rsync', 'stack' => 'synced_folders')
+VagrantDeployment.configure(directory, 'component' => 'rsync-synced-folder')

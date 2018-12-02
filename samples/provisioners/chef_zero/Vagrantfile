@@ -10,4 +10,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'component' => 'chef_zero', 'stack' => 'provisioners')
+VagrantDeployment.configure(directory, 'component' => 'chef-zero-provisioner')
