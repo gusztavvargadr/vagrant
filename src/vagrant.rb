@@ -565,12 +565,16 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
 
   def configure
     policyfile_path = options.fetch('path')
-    export_base_path = "#{machine.deployment.directory}/.chef"
-    export_directory_path = "#{export_base_path}/#{policyfile_path}"
-    export_file_path = "#{export_base_path}/#{policyfile_path}.zip"
-    upload_base_path = '/tmp'
 
-    trigger_actions = File.exist?(export_file_path) ? [:provision] : [:up, :provision]
+    host_base_path = "#{machine.deployment.directory}/.chef/"
+    host_directory_path = "#{host_base_path}/#{policyfile_path}"
+    host_file_path = "#{host_directory_path}.zip"
+
+    guest_base_path = '/tmp/chef'
+    guest_directory_path = "#{guest_base_path}/#{policyfile_path}"
+    guest_file_path = "#{guest_directory_path}.zip"
+
+    trigger_actions = File.exist?(host_file_path) ? [:provision] : [:up, :provision]
 
     machine.vagrant.trigger.before trigger_actions do |trigger|
       trigger.name = "#{name}_chef_install"
@@ -582,29 +586,29 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
     machine.vagrant.trigger.before trigger_actions do |trigger|
       trigger.name = "#{name}_chef_export"
       trigger.run = {
-        inline: "chef export #{policyfile_path} #{export_directory_path} --force",
+        inline: "chef export #{policyfile_path} #{host_directory_path} --force",
       }
     end
 
     machine.vagrant.trigger.before trigger_actions do |trigger|
       trigger.name = "#{name}_zip"
       trigger.run = {
-        inline: "7z a -sdel #{export_file_path} #{export_directory_path}",
+        inline: "7z a -sdel #{host_file_path} #{host_directory_path}",
       }
     end
 
     file_provisioner = VagrantFileProvisioner.new(
       machine,
       "#{name}_upload",
-      'source' => export_base_path,
-      'destination' => upload_base_path
+      'source' => host_file_path,
+      'destination' => guest_file_path
     )
     file_provisioner.configure
 
     shell_unzip_provisioner = VagrantShellProvisioner.new(
       machine,
       "#{name}_unzip",
-      'inline' => "cd #{upload_base_path}; 7z x -aoa #{policyfile_path}.zip",
+      'inline' => "cd #{guest_base_path}; 7z x -aoa #{policyfile_path}.zip",
       'run' => options.fetch('run')
     )
     shell_unzip_provisioner.configure
@@ -612,7 +616,7 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
     shell_chef_client_provisioner = VagrantShellProvisioner.new(
       machine,
       "#{name}_chef_client",
-      'inline' => "cd #{upload_base_path}/#{policyfile_path}; chef-client --local-mode",
+      'inline' => "cd #{guest_directory_path}; chef-client --local-mode",
       'run' => options.fetch('run')
     )
     shell_chef_client_provisioner.configure
@@ -621,9 +625,8 @@ end
 
 class VagrantChefZeroProvisioner < VagrantProvisioner
   @defaults = {
-    'type' => 'chef_zero',
-    'nodes_path' => ['.vagrant'],
-    'cookbooks_path' => ['cookbooks'],
+    'type' => 'chef_solo',
+    'cookbooks_path' => 'cookbooks',
     'run_list' => '',
     'json' => {},
   }
@@ -643,7 +646,6 @@ class VagrantChefZeroProvisioner < VagrantProvisioner
   def configure_core
     super
 
-    vagrant.nodes_path = options.fetch('nodes_path')
     vagrant.cookbooks_path = options.fetch('cookbooks_path')
     vagrant.run_list = options.fetch('run_list').split(',')
     vagrant.json = json
