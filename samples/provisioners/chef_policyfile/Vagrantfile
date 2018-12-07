@@ -4,7 +4,11 @@ require "#{directory}/../vagrant"
 
 VagrantMachine.defaults_include(
   'provisioners' => {
-    'chef_policyfile' => {},
+    'chef_policyfile' => {
+      'paths' => [
+        'Policyfile.rb',
+      ],
+    },
   }
 )
 

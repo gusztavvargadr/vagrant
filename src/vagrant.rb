@@ -548,7 +548,7 @@ end
 class VagrantChefPolicyfileProvisioner < VagrantProvisioner
   @defaults = {
     'type' => 'chef_policyfile',
-    'path' => 'Policyfile.rb',
+    'paths' => [],
   }
 
   class << self
@@ -564,66 +564,68 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
   end
 
   def configure
-    policyfile_path = options.fetch('path')
-    policyfile_digest = Digest::MD5.hexdigest(policyfile_path)
+    options.fetch('paths').each do |path|
+      policyfile_path = path
+      policyfile_digest = Digest::MD5.hexdigest(policyfile_path)
 
-    host_base_path = "#{machine.deployment.directory}/.chef"
-    host_directory_path = "#{host_base_path}/#{policyfile_digest}"
-    host_file_path = "#{host_directory_path}.zip"
+      host_base_path = "#{machine.deployment.directory}/.chef"
+      host_directory_path = "#{host_base_path}/#{policyfile_digest}"
+      host_file_path = "#{host_directory_path}.zip"
 
-    guest_base_path = '/tmp/chef'
-    guest_directory_path = "#{guest_base_path}/#{policyfile_digest}"
-    guest_file_path = "#{guest_directory_path}.zip"
+      guest_base_path = '/tmp/chef'
+      guest_directory_path = "#{guest_base_path}/#{policyfile_digest}"
+      guest_file_path = "#{guest_directory_path}.zip"
 
-    trigger_actions = (File.exist?(host_file_path) && File.size(host_file_path) > 0) ? [:provision] : [:up, :provision]
+      trigger_actions = (File.exist?(host_file_path) && File.size(host_file_path) > 0) ? [:provision] : [:up, :provision]
 
-    FileUtils.mkdir_p File.dirname(host_file_path)
-    FileUtils.touch host_file_path
+      FileUtils.mkdir_p File.dirname(host_file_path)
+      FileUtils.touch host_file_path
 
-    machine.vagrant.trigger.before trigger_actions do |trigger|
-      trigger.name = "#{name}_chef_install"
-      trigger.run = {
-        inline: "chef install #{policyfile_path}",
-      }
+      machine.vagrant.trigger.before trigger_actions do |trigger|
+        trigger.name = "#{name}_chef_install"
+        trigger.run = {
+          inline: "chef install #{policyfile_path}",
+        }
+      end
+
+      machine.vagrant.trigger.before trigger_actions do |trigger|
+        trigger.name = "#{name}_chef_export"
+        trigger.run = {
+          inline: "chef export #{policyfile_path} #{host_directory_path} --force",
+        }
+      end
+
+      machine.vagrant.trigger.before trigger_actions do |trigger|
+        trigger.name = "#{name}_zip"
+        trigger.run = {
+          inline: "rm #{host_file_path}; 7z a -sdel #{host_file_path} #{host_directory_path}",
+        }
+      end
+
+      file_provisioner = VagrantFileProvisioner.new(
+        machine,
+        "#{name}_upload",
+        'source' => host_file_path,
+        'destination' => guest_file_path
+      )
+      file_provisioner.configure
+
+      shell_unzip_provisioner = VagrantShellProvisioner.new(
+        machine,
+        "#{name}_unzip",
+        'inline' => "cd #{guest_base_path}; 7z x -aoa #{guest_file_path}",
+        'run' => options.fetch('run')
+      )
+      shell_unzip_provisioner.configure
+
+      shell_chef_client_provisioner = VagrantShellProvisioner.new(
+        machine,
+        "#{name}_chef_client",
+        'inline' => "cd #{guest_directory_path}; chef-client --local-mode",
+        'run' => options.fetch('run')
+      )
+      shell_chef_client_provisioner.configure
     end
-
-    machine.vagrant.trigger.before trigger_actions do |trigger|
-      trigger.name = "#{name}_chef_export"
-      trigger.run = {
-        inline: "chef export #{policyfile_path} #{host_directory_path} --force",
-      }
-    end
-
-    machine.vagrant.trigger.before trigger_actions do |trigger|
-      trigger.name = "#{name}_zip"
-      trigger.run = {
-        inline: "rm #{host_file_path}; 7z a -sdel #{host_file_path} #{host_directory_path}",
-      }
-    end
-
-    file_provisioner = VagrantFileProvisioner.new(
-      machine,
-      "#{name}_upload",
-      'source' => host_file_path,
-      'destination' => guest_file_path
-    )
-    file_provisioner.configure
-
-    shell_unzip_provisioner = VagrantShellProvisioner.new(
-      machine,
-      "#{name}_unzip",
-      'inline' => "cd #{guest_base_path}; 7z x -aoa #{guest_file_path}",
-      'run' => options.fetch('run')
-    )
-    shell_unzip_provisioner.configure
-
-    shell_chef_client_provisioner = VagrantShellProvisioner.new(
-      machine,
-      "#{name}_chef_client",
-      'inline' => "cd #{guest_directory_path}; chef-client --local-mode",
-      'run' => options.fetch('run')
-    ) 
-    shell_chef_client_provisioner.configure
   end
 end
 
