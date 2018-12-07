@@ -566,7 +566,7 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
   def configure
     policyfile_path = options.fetch('path')
 
-    host_base_path = "#{machine.deployment.directory}/.chef/"
+    host_base_path = "#{machine.deployment.directory}/.chef"
     host_directory_path = "#{host_base_path}/#{policyfile_path}"
     host_file_path = "#{host_directory_path}.zip"
 
@@ -575,6 +575,9 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
     guest_file_path = "#{guest_directory_path}.zip"
 
     trigger_actions = File.exist?(host_file_path) ? [:provision] : [:up, :provision]
+
+    FileUtils.mkdir_p host_base_path
+    FileUtils.touch host_file_path
 
     machine.vagrant.trigger.before trigger_actions do |trigger|
       trigger.name = "#{name}_chef_install"
@@ -593,7 +596,7 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
     machine.vagrant.trigger.before trigger_actions do |trigger|
       trigger.name = "#{name}_zip"
       trigger.run = {
-        inline: "7z a -sdel #{host_file_path} #{host_directory_path}",
+        inline: "rm #{host_file_path}; 7z a -sdel #{host_file_path} #{host_directory_path}",
       }
     end
 
