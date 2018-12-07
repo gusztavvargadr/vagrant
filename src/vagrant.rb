@@ -565,18 +565,19 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
 
   def configure
     policyfile_path = options.fetch('path')
+    policyfile_digest = Digest::MD5.hexdigest(policyfile_path)
 
     host_base_path = "#{machine.deployment.directory}/.chef"
-    host_directory_path = "#{host_base_path}/#{policyfile_path}"
+    host_directory_path = "#{host_base_path}/#{policyfile_digest}"
     host_file_path = "#{host_directory_path}.zip"
 
     guest_base_path = '/tmp/chef'
-    guest_directory_path = "#{guest_base_path}/#{policyfile_path}"
+    guest_directory_path = "#{guest_base_path}/#{policyfile_digest}"
     guest_file_path = "#{guest_directory_path}.zip"
 
-    trigger_actions = File.exist?(host_file_path) ? [:provision] : [:up, :provision]
+    trigger_actions = (File.exist?(host_file_path) && File.size(host_file_path) > 0) ? [:provision] : [:up, :provision]
 
-    FileUtils.mkdir_p host_base_path
+    FileUtils.mkdir_p File.dirname(host_file_path)
     FileUtils.touch host_file_path
 
     machine.vagrant.trigger.before trigger_actions do |trigger|
@@ -611,7 +612,7 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
     shell_unzip_provisioner = VagrantShellProvisioner.new(
       machine,
       "#{name}_unzip",
-      'inline' => "cd #{guest_base_path}; 7z x -aoa #{policyfile_path}.zip",
+      'inline' => "cd #{guest_base_path}; 7z x -aoa #{guest_file_path}",
       'run' => options.fetch('run')
     )
     shell_unzip_provisioner.configure
@@ -621,7 +622,7 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
       "#{name}_chef_client",
       'inline' => "cd #{guest_directory_path}; chef-client --local-mode",
       'run' => options.fetch('run')
-    )
+    ) 
     shell_chef_client_provisioner.configure
   end
 end
