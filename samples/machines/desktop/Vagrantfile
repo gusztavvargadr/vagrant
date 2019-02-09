@@ -14,8 +14,7 @@ VagrantDeployment.defaults_include(
 )
 
 VagrantProvider.defaults_include(
-  'memory' => 8192,
-  'cpus' => 4
+  'memory' => 4096
 )
 
 VagrantDeployment.configure(directory, 'component' => 'desktop-machine')

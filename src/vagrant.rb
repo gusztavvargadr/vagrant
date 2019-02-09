@@ -100,7 +100,7 @@ class VagrantDeployment
       options.fetch('stack', ''),
       options.fetch('environment', ''),
       options.fetch('tenant', ''),
-    ].reject(&:empty?).join('.')
+    ].reject(&:nil?).reject(&:empty?).join('.')
   end
 
   def hostmanager_enabled?
@@ -174,7 +174,12 @@ class VagrantMachine
   end
 
   def configure_core
-    vagrant.vm.box = options['box'] unless options['box'].to_s.empty?
+    box = options['box'].to_s
+    unless box.empty?
+      box_parts = box.split(':')
+      vagrant.vm.box = box_parts[0]
+      vagrant.vm.box_version = box_parts[1] unless box_parts.length == 1
+    end
 
     vagrant.vm.communicator = options['communicator'] unless options['communicator'].to_s.empty?
 
@@ -421,14 +426,17 @@ class VagrantAzureProvider < VagrantProvider
     vagrant.vm_name = machine.hostname
 
     override.vm.box = 'dummy'
-    vagrant.vm_image_urn = machine.options.fetch('azure_image_urn')
+    image_urn = machine.options.fetch('azure_image_urn', '')
+    vagrant.vm_image_urn = image_urn unless image_urn.empty?
+    managed_image_id = machine.options.fetch('azure_managed_image_id', '')
+    vagrant.vm_managed_image_id = managed_image_id unless managed_image_id.empty?
 
     resource_group_name = [
       machine.deployment.options.fetch('component', ''),
       machine.deployment.options.fetch('stack', ''),
       machine.deployment.options.fetch('environment', ''),
       machine.deployment.options.fetch('tenant', ''),
-    ].reject(&:empty?).join('-')
+    ].reject(&:nil?).reject(&:empty?).join('-')
 
     vagrant.resource_group_name = resource_group_name
     vagrant.location = options.fetch('location')
