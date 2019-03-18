@@ -23,6 +23,11 @@ end
 class VagrantLinuxServerMachine < VagrantMachine
   @defaults = {
     'box' => ENV['VAGRANT_BOX_LINUX_SERVER'] || 'gusztavvargadr/ubuntu-server',
+    'providers' => {
+      'azure' => {
+        'image_urn' => ENV['VAGRANT_PROVIDERS_AZURE_IMAGE_URN_LINUX_SERVER'] || 'Canonical:UbuntuServer:16.04-LTS:latest',
+      },
+    },
   }
 end
 
@@ -47,7 +52,7 @@ VagrantDeployment.defaults_include(
     },
     'linux' => {
       'box' => VagrantLinuxServerMachine.defaults['box'],
-      'azure_image_urn' => 'Canonical:UbuntuServer:16.04-LTS:latest',
+      'providers' => VagrantLinuxServerMachine.defaults['providers'],
     },
   }
 )
@@ -60,8 +65,16 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantProvider.defaults_include(
-  'memory' => 2048,
-  'cpus' => 2,
-  'azure_size' => 'Standard_B2s'
+VagrantVirtualBoxProvider.defaults_include(
+  'memory' => 4096,
+  'cpus' => 2
+)
+
+VagrantHyperVProvider.defaults_include(
+  'memory' => 4096,
+  'cpus' => 2
+)
+
+VagrantAzureProvider.defaults_include(
+  'size' => 'Standard_B2s'
 )

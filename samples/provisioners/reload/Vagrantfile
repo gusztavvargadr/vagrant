@@ -8,4 +8,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'component' => 'reload-provisioner')
+VagrantDeployment.configure(directory, 'component' => 'reload')

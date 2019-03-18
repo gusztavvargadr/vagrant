@@ -26,4 +26,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'component' => 'docker-provisioner')
+VagrantDeployment.configure(directory, 'component' => 'docker')

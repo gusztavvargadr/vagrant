@@ -6,6 +6,7 @@ Vagrant.require_version('>= 2.1.5')
 class VagrantDeployment
   @defaults = {
     'component' => ENV['VAGRANT_DEPLOYMENT_COMPONENT'],
+    'service' => ENV['VAGRANT_DEPLOYMENT_SERVICE'],
     'stack' => ENV['VAGRANT_DEPLOYMENT_STACK'],
     'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'sandbox',
     'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
@@ -97,6 +98,7 @@ class VagrantDeployment
   def domain
     [
       options.fetch('component', ''),
+      options.fetch('service', ''),
       options.fetch('stack', ''),
       options.fetch('environment', ''),
       options.fetch('tenant', ''),
@@ -112,7 +114,6 @@ class VagrantMachine
   @defaults = {
     'name' => 'default',
     'box' => '',
-    'azure_image_urn' => '',
     'autostart' => true,
     'primary' => false,
     'communicator' => '',
@@ -243,10 +244,6 @@ end
 class VagrantProvider
   @defaults = {
     'type' => '',
-    'memory' => 1024,
-    'cpus' => 1,
-    'azure_size' => 'Standard_B1s',
-    'linked_clone' => ENV['VAGRANT_PROVIDER_LINKED_CLONE'] == 'true',
     'synced_folder_type' => '',
   }
 
@@ -322,6 +319,9 @@ end
 class VagrantVirtualBoxProvider < VagrantProvider
   @defaults = {
     'type' => 'virtualbox',
+    'memory' => 1024,
+    'cpus' => 1,
+    'linked_clone' => ENV['VAGRANT_PROVIDER_VIRTUALBOX_LINKED_CLONE'] == 'true',
   }
 
   class << self
@@ -355,6 +355,9 @@ end
 class VagrantHyperVProvider < VagrantProvider
   @defaults = {
     'type' => 'hyperv',
+    'memory' => 1024,
+    'cpus' => 1,
+    'linked_clone' => ENV['VAGRANT_PROVIDER_HYPERV_LINKED_CLONE'] == 'true',
     'start' => ENV['VAGRANT_PROVIDER_HYPERV_START'] || 'Nothing',
     'stop' => ENV['VAGRANT_PROVIDER_HYPERV_STOP'] || 'ShutDown',
     'virtualization' => ENV['VAGRANT_PROVIDER_HYPERV_VIRTUALIZATION'] == 'true',
@@ -399,8 +402,13 @@ end
 class VagrantAzureProvider < VagrantProvider
   @defaults = {
     'type' => 'azure',
+    'box_override' => 'dummy',
+    'image_urn' => '',
+    'managed_image_id' => '',
+    'size' => 'Standard_B1s',
     'location' => ENV['VAGRANT_PROVIDER_AZURE_LOCATION'],
     'synced_folder_type' => 'rsync',
+    'ssh_private_key_path_override' => ENV['VAGRANT_PROVIDER_AZURE_SSH_PRIVATE_KEY_PATH_OVERRIDE'],
   }
 
   class << self
@@ -425,30 +433,29 @@ class VagrantAzureProvider < VagrantProvider
 
     vagrant.vm_name = machine.hostname
 
-    override.vm.box = 'dummy'
-    image_urn = machine.options.fetch('azure_image_urn', '')
+    box_overide = options.fetch('box_override', '')
+    override.vm.box = box_overide unless box_overide.empty?
+
+    image_urn = options.fetch('image_urn', '')
     vagrant.vm_image_urn = image_urn unless image_urn.empty?
-    managed_image_id = machine.options.fetch('azure_managed_image_id', '')
+
+    managed_image_id = options.fetch('managed_image_id', '')
     vagrant.vm_managed_image_id = managed_image_id unless managed_image_id.empty?
 
-    resource_group_name = [
-      machine.deployment.options.fetch('component', ''),
-      machine.deployment.options.fetch('stack', ''),
-      machine.deployment.options.fetch('environment', ''),
-      machine.deployment.options.fetch('tenant', ''),
-    ].reject(&:nil?).reject(&:empty?).join('-')
+    vagrant.vm_size = options.fetch('size')
 
-    vagrant.resource_group_name = resource_group_name
     vagrant.location = options.fetch('location')
 
-    vagrant.vm_size = options.fetch('azure_size')
+    resource_group_name = machine.deployment.domain
+    vagrant.resource_group_name = resource_group_name
 
     vagrant.virtual_network_name = resource_group_name
     vagrant.dns_name = "#{machine.hostname}-#{Digest::MD5.hexdigest(machine.deployment.domain)}"
-    vagrant.subnet_name = "#{resource_group_name}-default"
-    vagrant.nsg_name = "#{resource_group_name}-default"
+    vagrant.subnet_name = resource_group_name
+    vagrant.nsg_name = resource_group_name
 
-    override.ssh.private_key_path = '~/.ssh/azure'
+    ssh_private_key_path_override = options.fetch('ssh_private_key_path_override')
+    override.ssh.private_key_path = ssh_private_key_path_override unless ssh_private_key_path_override.empty?
   end
 end
 
