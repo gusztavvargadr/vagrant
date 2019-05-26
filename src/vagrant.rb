@@ -436,11 +436,13 @@ class VagrantAzureProvider < VagrantProvider
     box_overide = options.fetch('box_override', '')
     override.vm.box = box_overide unless box_overide.empty?
 
-    image_urn = options.fetch('image_urn', '')
-    vagrant.vm_image_urn = image_urn unless image_urn.empty?
-
     managed_image_id = options.fetch('managed_image_id', '')
-    vagrant.vm_managed_image_id = managed_image_id unless managed_image_id.empty?
+    if managed_image_id.empty?
+      image_urn = options.fetch('image_urn', '')
+      vagrant.vm_image_urn = image_urn unless image_urn.empty?
+    else
+      vagrant.vm_managed_image_id = managed_image_id 
+    end
 
     vagrant.vm_size = options.fetch('size')
 
