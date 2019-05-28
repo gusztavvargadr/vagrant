@@ -5,7 +5,10 @@ Vagrant.require_version('>= 2.1.5')
 
 class VagrantDeployment
   @defaults = {
-    'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'vagrant',
+    'component' => ENV['VAGRANT_DEPLOYMENT_COMPONENT'],
+    'service' => ENV['VAGRANT_DEPLOYMENT_SERVICE'],
+    'stack' => ENV['VAGRANT_DEPLOYMENT_STACK'],
+    'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'sandbox',
     'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
 
     'hostmanager' => ENV['VAGRANT_NETWORK_HOSTMANAGER'] == 'true',
@@ -62,7 +65,7 @@ class VagrantDeployment
     if hostmanager_enabled?
       vagrant.hostmanager.enabled = true
       vagrant.hostmanager.manage_host = true
-      vagrant.hostmanager.manage_guest = true
+      vagrant.hostmanager.manage_guest = false
       vagrant.hostmanager.include_offline = false
 
       if ENV['VAGRANT_PREFERRED_PROVIDERS'] == 'virtualbox'
@@ -93,7 +96,13 @@ class VagrantDeployment
   end
 
   def domain
-    "#{options.fetch('environment')}.#{options.fetch('tenant')}"
+    [
+      options.fetch('component', ''),
+      options.fetch('service', ''),
+      options.fetch('stack', ''),
+      options.fetch('environment', ''),
+      options.fetch('tenant', ''),
+    ].reject(&:nil?).reject(&:empty?).join('.')
   end
 
   def hostmanager_enabled?
@@ -107,6 +116,7 @@ class VagrantMachine
     'box' => '',
     'autostart' => true,
     'primary' => false,
+    'communicator' => '',
     'synced_folders' => {
       '/vagrant' => {
         'source' => '.',
@@ -165,7 +175,14 @@ class VagrantMachine
   end
 
   def configure_core
-    vagrant.vm.box = options['box'] unless options['box'].to_s.empty?
+    box = options['box'].to_s
+    unless box.empty?
+      box_parts = box.split(':')
+      vagrant.vm.box = box_parts[0]
+      vagrant.vm.box_version = box_parts[1] unless box_parts.length == 1
+    end
+
+    vagrant.vm.communicator = options['communicator'] unless options['communicator'].to_s.empty?
 
     if deployment.hostmanager_enabled?
       vagrant.vm.hostname = hostname
@@ -184,6 +201,8 @@ class VagrantMachine
         provider = VagrantVirtualBoxProvider.new(self, provider_options)
       when 'hyperv'
         provider = VagrantHyperVProvider.new(self, provider_options)
+      when 'azure'
+        provider = VagrantAzureProvider.new(self, provider_options)
       else
         raise "Provider '#{provider_name}' is not supported."
       end
@@ -225,9 +244,6 @@ end
 class VagrantProvider
   @defaults = {
     'type' => '',
-    'memory' => 1024,
-    'cpus' => 1,
-    'linked_clone' => ENV['VAGRANT_PROVIDER_LINKED_CLONE'] == 'true',
     'synced_folder_type' => '',
   }
 
@@ -269,10 +285,6 @@ class VagrantProvider
   end
 
   def configure_core
-    vagrant.memory = options.fetch('memory')
-    vagrant.cpus = options.fetch('cpus')
-    vagrant.linked_clone = options.fetch('linked_clone')
-
     machine.options.fetch('synced_folders').each do |synced_folder_destination, synced_folder_options|
       synced_folder_source = synced_folder_options.fetch('source')
       synced_folder_create = synced_folder_options.fetch('create', false)
@@ -307,6 +319,9 @@ end
 class VagrantVirtualBoxProvider < VagrantProvider
   @defaults = {
     'type' => 'virtualbox',
+    'memory' => 1024,
+    'cpus' => 1,
+    'linked_clone' => ENV['VAGRANT_PROVIDER_VIRTUALBOX_LINKED_CLONE'] == 'true',
   }
 
   class << self
@@ -330,12 +345,19 @@ class VagrantVirtualBoxProvider < VagrantProvider
     super
 
     vagrant.name = machine.fqdn
+
+    vagrant.memory = options.fetch('memory')
+    vagrant.cpus = options.fetch('cpus')
+    vagrant.linked_clone = options.fetch('linked_clone')
   end
 end
 
 class VagrantHyperVProvider < VagrantProvider
   @defaults = {
     'type' => 'hyperv',
+    'memory' => 1024,
+    'cpus' => 1,
+    'linked_clone' => ENV['VAGRANT_PROVIDER_HYPERV_LINKED_CLONE'] == 'true',
     'start' => ENV['VAGRANT_PROVIDER_HYPERV_START'] || 'Nothing',
     'stop' => ENV['VAGRANT_PROVIDER_HYPERV_STOP'] || 'ShutDown',
     'virtualization' => ENV['VAGRANT_PROVIDER_HYPERV_VIRTUALIZATION'] == 'true',
@@ -364,11 +386,78 @@ class VagrantHyperVProvider < VagrantProvider
     super
 
     vagrant.vmname = machine.fqdn
+
+    vagrant.memory = options.fetch('memory')
+    vagrant.cpus = options.fetch('cpus')
+    vagrant.linked_clone = options.fetch('linked_clone')
+
     vagrant.auto_start_action = options.fetch('start')
     vagrant.auto_stop_action = options.fetch('stop')
     vagrant.enable_virtualization_extensions = options.fetch('virtualization')
 
     override.vm.network 'private_network', bridge: options.fetch('network_bridge')
+  end
+end
+
+class VagrantAzureProvider < VagrantProvider
+  @defaults = {
+    'type' => 'azure',
+    'box_override' => 'dummy',
+    'image_urn' => '',
+    'managed_image_id' => '',
+    'size' => 'Standard_B1s',
+    'location' => ENV['VAGRANT_PROVIDER_AZURE_LOCATION'],
+    'synced_folder_type' => 'rsync',
+    'ssh_private_key_path_override' => ENV['VAGRANT_PROVIDER_AZURE_SSH_PRIVATE_KEY_PATH_OVERRIDE'],
+  }
+
+  class << self
+    attr_reader :defaults
+
+    def defaults_include(defaults)
+      @defaults = @defaults.deep_merge(defaults)
+    end
+
+    def configure(machine, options = {}, &block)
+      provider = VagrantAzureProvider.new(machine, options)
+      provider.configure(&block)
+    end
+  end
+
+  def initialize(machine, options = {})
+    super(machine, VagrantAzureProvider.defaults.deep_merge(options))
+  end
+
+  def configure_core
+    super
+
+    vagrant.vm_name = machine.hostname
+
+    box_overide = options.fetch('box_override', '')
+    override.vm.box = box_overide unless box_overide.empty?
+
+    managed_image_id = options.fetch('managed_image_id', '')
+    if managed_image_id.empty?
+      image_urn = options.fetch('image_urn', '')
+      vagrant.vm_image_urn = image_urn unless image_urn.empty?
+    else
+      vagrant.vm_managed_image_id = managed_image_id 
+    end
+
+    vagrant.vm_size = options.fetch('size')
+
+    vagrant.location = options.fetch('location')
+
+    resource_group_name = machine.deployment.domain
+    vagrant.resource_group_name = resource_group_name
+
+    vagrant.virtual_network_name = resource_group_name
+    vagrant.dns_name = "#{machine.hostname}-#{Digest::MD5.hexdigest(machine.deployment.domain)}"
+    vagrant.subnet_name = resource_group_name
+    vagrant.nsg_name = resource_group_name
+
+    ssh_private_key_path_override = options.fetch('ssh_private_key_path_override')
+    override.ssh.private_key_path = ssh_private_key_path_override unless ssh_private_key_path_override.empty?
   end
 end
 
@@ -476,7 +565,7 @@ end
 class VagrantChefPolicyfileProvisioner < VagrantProvisioner
   @defaults = {
     'type' => 'chef_policyfile',
-    'path' => 'Policyfile.rb',
+    'paths' => [],
   }
 
   class << self
@@ -492,66 +581,75 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
   end
 
   def configure
-    policyfile_path = options.fetch('path')
-    export_base_path = "#{machine.deployment.directory}/.chef"
-    export_directory_path = "#{export_base_path}/#{policyfile_path}"
-    export_file_path = "#{export_base_path}/#{policyfile_path}.zip"
-    upload_base_path = '/tmp'
+    options.fetch('paths').each do |path|
+      policyfile_path = path
+      policyfile_digest = Digest::MD5.hexdigest(policyfile_path)
 
-    trigger_actions = File.exist?(export_file_path) ? [:provision] : [:up, :provision]
+      host_base_path = "#{machine.deployment.directory}/.chef"
+      host_directory_path = "#{host_base_path}/#{policyfile_digest}"
+      host_file_path = "#{host_directory_path}.zip"
 
-    machine.vagrant.trigger.before trigger_actions do |trigger|
-      trigger.name = "#{name}_chef_install"
-      trigger.run = {
-        inline: "chef install #{policyfile_path}",
-      }
+      guest_base_path = '/tmp/chef'
+      guest_directory_path = "#{guest_base_path}/#{policyfile_digest}"
+      guest_file_path = "#{guest_directory_path}.zip"
+
+      trigger_actions = (File.exist?(host_file_path) && File.size(host_file_path) > 0) ? [:provision] : [:up, :provision]
+
+      FileUtils.mkdir_p File.dirname(host_file_path)
+      FileUtils.touch host_file_path
+
+      machine.vagrant.trigger.before trigger_actions do |trigger|
+        trigger.name = "#{name}_chef_install"
+        trigger.run = {
+          inline: "chef install #{policyfile_path}",
+        }
+      end
+
+      machine.vagrant.trigger.before trigger_actions do |trigger|
+        trigger.name = "#{name}_chef_export"
+        trigger.run = {
+          inline: "chef export #{policyfile_path} #{host_directory_path} --force",
+        }
+      end
+
+      machine.vagrant.trigger.before trigger_actions do |trigger|
+        trigger.name = "#{name}_zip"
+        trigger.run = {
+          inline: "rm #{host_file_path}; 7z a -sdel #{host_file_path} #{host_directory_path}",
+        }
+      end
+
+      file_provisioner = VagrantFileProvisioner.new(
+        machine,
+        "#{name}_upload",
+        'source' => host_file_path,
+        'destination' => guest_file_path
+      )
+      file_provisioner.configure
+
+      shell_unzip_provisioner = VagrantShellProvisioner.new(
+        machine,
+        "#{name}_unzip",
+        'inline' => "cd #{guest_base_path}; 7z x -aoa #{guest_file_path}",
+        'run' => options.fetch('run')
+      )
+      shell_unzip_provisioner.configure
+
+      shell_chef_client_provisioner = VagrantShellProvisioner.new(
+        machine,
+        "#{name}_chef_client",
+        'inline' => "cd #{guest_directory_path}; chef-client --local-mode",
+        'run' => options.fetch('run')
+      )
+      shell_chef_client_provisioner.configure
     end
-
-    machine.vagrant.trigger.before trigger_actions do |trigger|
-      trigger.name = "#{name}_chef_export"
-      trigger.run = {
-        inline: "chef export #{policyfile_path} #{export_directory_path} --force",
-      }
-    end
-
-    machine.vagrant.trigger.before trigger_actions do |trigger|
-      trigger.name = "#{name}_zip"
-      trigger.run = {
-        inline: "7z a -sdel #{export_file_path} #{export_directory_path}",
-      }
-    end
-
-    file_provisioner = VagrantFileProvisioner.new(
-      machine,
-      "#{name}_upload",
-      'source' => export_base_path,
-      'destination' => upload_base_path
-    )
-    file_provisioner.configure
-
-    shell_unzip_provisioner = VagrantShellProvisioner.new(
-      machine,
-      "#{name}_unzip",
-      'inline' => "cd #{upload_base_path}; 7z x -aoa #{policyfile_path}.zip",
-      'run' => options.fetch('run')
-    )
-    shell_unzip_provisioner.configure
-
-    shell_chef_client_provisioner = VagrantShellProvisioner.new(
-      machine,
-      "#{name}_chef_client",
-      'inline' => "cd #{upload_base_path}/#{policyfile_path}; chef-client --local-mode",
-      'run' => options.fetch('run')
-    )
-    shell_chef_client_provisioner.configure
   end
 end
 
 class VagrantChefZeroProvisioner < VagrantProvisioner
   @defaults = {
-    'type' => 'chef_zero',
-    'nodes_path' => ['.vagrant'],
-    'cookbooks_path' => ['cookbooks'],
+    'type' => 'chef_solo',
+    'cookbooks_path' => 'cookbooks',
     'run_list' => '',
     'json' => {},
   }
@@ -571,7 +669,6 @@ class VagrantChefZeroProvisioner < VagrantProvisioner
   def configure_core
     super
 
-    vagrant.nodes_path = options.fetch('nodes_path')
     vagrant.cookbooks_path = options.fetch('cookbooks_path')
     vagrant.run_list = options.fetch('run_list').split(',')
     vagrant.json = json

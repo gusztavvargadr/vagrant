@@ -9,3 +9,7 @@ VagrantMachine.defaults_include(
     },
   }
 )
+
+VagrantDeployment.defaults_include(
+  'service' => 'synced-folders'
+)

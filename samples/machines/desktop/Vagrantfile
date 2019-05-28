@@ -4,18 +4,25 @@ require "#{directory}/../vagrant"
 
 VagrantDeployment.defaults_include(
   'machines' => {
-    'linux' => {
-      'box' => VagrantLinuxDesktopMachine.defaults['box'],
+    'windows' => VagrantWindowsDesktopMachine.defaults,
+    'linux' => VagrantLinuxDesktopMachine.defaults,
+  }
+)
+
+VagrantMachine.defaults_include(
+  'providers' => {
+    'virtualbox' => {
+      'memory' => 4096,
+      'cpus' => 2,
     },
-    'windows' => {
-      'box' => VagrantWindowsDesktopMachine.defaults['box'],
+    'hyperv' => {
+      'memory' => 4096,
+      'cpus' => 2,
+    },
+    'azure' => {
+      'size' => 'Standard_B2s',
     },
   }
 )
 
-VagrantProvider.defaults_include(
-  'memory' => 8192,
-  'cpus' => 4
-)
-
-VagrantDeployment.configure(directory, 'environment' => 'desktop.machines.vagrant')
+VagrantDeployment.configure(directory, 'component' => 'desktop')

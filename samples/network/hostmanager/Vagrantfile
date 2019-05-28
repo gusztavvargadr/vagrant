@@ -2,4 +2,4 @@ directory = File.dirname(__FILE__)
 
 require "#{directory}/../vagrant"
 
-VagrantDeployment.configure(directory, 'environment' => 'hostmanager.network.vagrant', 'hostmanager' => true)
+VagrantDeployment.configure(directory, 'component' => 'hostmanager', 'hostmanager' => true)

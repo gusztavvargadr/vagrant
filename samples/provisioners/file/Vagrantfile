@@ -11,4 +11,4 @@ VagrantMachine.defaults_include(
   }
 )
 
-VagrantDeployment.configure(directory, 'environment' => 'file.provisioners.vagrant')
+VagrantDeployment.configure(directory, 'component' => 'file')
