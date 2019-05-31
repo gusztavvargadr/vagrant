@@ -102,7 +102,7 @@ class VagrantDeployment
       options.fetch('stack', ''),
       options.fetch('environment', ''),
       options.fetch('tenant', ''),
-    ].reject(&:nil?).reject(&:empty?).join('.')
+    ].reject(&:blank?).join('.')
   end
 
   def hostmanager_enabled?
@@ -175,14 +175,14 @@ class VagrantMachine
   end
 
   def configure_core
-    box = options['box'].to_s
-    unless box.empty?
+    box = options['box']
+    unless box.blank?
       box_parts = box.split(':')
       vagrant.vm.box = box_parts[0]
       vagrant.vm.box_version = box_parts[1] unless box_parts.length == 1
     end
 
-    vagrant.vm.communicator = options['communicator'] unless options['communicator'].to_s.empty?
+    vagrant.vm.communicator = options['communicator'] unless options['communicator'].blank?
 
     if deployment.hostmanager_enabled?
       vagrant.vm.hostname = hostname
@@ -433,13 +433,13 @@ class VagrantAzureProvider < VagrantProvider
 
     vagrant.vm_name = machine.hostname
 
-    box_overide = options.fetch('box_override', '').to_s
-    override.vm.box = box_overide unless box_overide.empty?
+    box_override = options.fetch('box_override')
+    override.vm.box = box_override unless box_override.blank?
 
-    managed_image_id = options.fetch('managed_image_id', '').to_s
-    if managed_image_id.empty?
-      image_urn = options.fetch('image_urn', '').to_s
-      vagrant.vm_image_urn = image_urn unless image_urn.empty?
+    managed_image_id = options.fetch('managed_image_id', '')
+    if managed_image_id.blank?
+      image_urn = options.fetch('image_urn')
+      vagrant.vm_image_urn = image_urn unless image_urn.blank?
     else
       vagrant.vm_managed_image_id = managed_image_id 
     end
@@ -456,8 +456,8 @@ class VagrantAzureProvider < VagrantProvider
     vagrant.subnet_name = resource_group_name
     vagrant.nsg_name = resource_group_name
 
-    ssh_private_key_path_override = options.fetch('ssh_private_key_path_override').to_s
-    override.ssh.private_key_path = ssh_private_key_path_override unless ssh_private_key_path_override.empty?
+    ssh_private_key_path_override = options.fetch('ssh_private_key_path_override')
+    override.ssh.private_key_path = ssh_private_key_path_override unless ssh_private_key_path_override.blank?
   end
 end
 
@@ -738,5 +738,11 @@ class ::Hash
   def deep_merge(other)
     merger = proc { |key, v1, v2| Hash === v1 && Hash === v2 ? v1.merge(v2, &merger) : Array === v1 && Array === v2 ? v1 | v2 : [:undefined, nil, :nil].include?(v2) ? v1 : v2 }
     self.merge(other.to_h, &merger)
+  end
+end
+
+class ::Object
+  def blank?
+    self.nil? || self.to_s.strip.empty?
   end
 end
