@@ -433,12 +433,12 @@ class VagrantAzureProvider < VagrantProvider
 
     vagrant.vm_name = machine.hostname
 
-    box_overide = options.fetch('box_override', '')
+    box_overide = options.fetch('box_override', '').to_s
     override.vm.box = box_overide unless box_overide.empty?
 
-    managed_image_id = options.fetch('managed_image_id', '')
+    managed_image_id = options.fetch('managed_image_id', '').to_s
     if managed_image_id.empty?
-      image_urn = options.fetch('image_urn', '')
+      image_urn = options.fetch('image_urn', '').to_s
       vagrant.vm_image_urn = image_urn unless image_urn.empty?
     else
       vagrant.vm_managed_image_id = managed_image_id 
@@ -456,7 +456,7 @@ class VagrantAzureProvider < VagrantProvider
     vagrant.subnet_name = resource_group_name
     vagrant.nsg_name = resource_group_name
 
-    ssh_private_key_path_override = options.fetch('ssh_private_key_path_override')
+    ssh_private_key_path_override = options.fetch('ssh_private_key_path_override').to_s
     override.ssh.private_key_path = ssh_private_key_path_override unless ssh_private_key_path_override.empty?
   end
 end
