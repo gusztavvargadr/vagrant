@@ -5,15 +5,17 @@ Vagrant.require_version('>= 2.1.5')
 
 class VagrantDeployment
   @defaults = {
-    'component' => ENV['VAGRANT_DEPLOYMENT_COMPONENT'],
-    'service' => ENV['VAGRANT_DEPLOYMENT_SERVICE'],
-    'stack' => ENV['VAGRANT_DEPLOYMENT_STACK'],
+    'component' => ENV['VAGRANT_DEPLOYMENT_COMPONENT'] || '',
+    'service' => ENV['VAGRANT_DEPLOYMENT_SERVICE'] || '',
+    'stack' => ENV['VAGRANT_DEPLOYMENT_STACK'] || '',
     'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'sandbox',
     'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
 
     'hostmanager' => ENV['VAGRANT_NETWORK_HOSTMANAGER'] == 'true',
 
-    'machines' => {},
+    'machines' => {
+      'defaults' => {},
+    },
   }
 
   class << self
@@ -68,14 +70,14 @@ class VagrantDeployment
       vagrant.hostmanager.manage_guest = false
       vagrant.hostmanager.include_offline = false
 
-      if ENV['VAGRANT_PREFERRED_PROVIDERS'] == 'virtualbox'
+      if ENV['VAGRANT_DEFAULT_PROVIDER'] == 'virtualbox'
         vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
           vm.provider.driver.read_guest_ip(1) if vm.state.id == :running
         end
       end
     end
 
-    VagrantMachine.defaults_include(options.fetch('machines').fetch('defaults', {}))
+    VagrantMachine.defaults_include(options.fetch('machines').fetch('defaults'))
     options.fetch('machines').each do |machine_name, machine_options|
       next if machine_name == 'defaults'
 
@@ -97,12 +99,12 @@ class VagrantDeployment
 
   def domain
     [
-      options.fetch('component', ''),
-      options.fetch('service', ''),
-      options.fetch('stack', ''),
-      options.fetch('environment', ''),
-      options.fetch('tenant', ''),
-    ].reject(&:blank?).join('.')
+      options.fetch('component'),
+      options.fetch('service'),
+      options.fetch('stack'),
+      options.fetch('environment'),
+      options.fetch('tenant'),
+    ].reject(&:empty?).join('.')
   end
 
   def hostmanager_enabled?
@@ -123,7 +125,9 @@ class VagrantMachine
       },
     },
     'aliases' => [],
-    'providers' => {},
+    'providers' => {
+      'defaults' => {},
+    },
     'provisioners' => {},
     'count' => 1,
   }
@@ -176,13 +180,13 @@ class VagrantMachine
 
   def configure_core
     box = options['box']
-    unless box.blank?
+    unless box.empty?
       box_parts = box.split(':')
       vagrant.vm.box = box_parts[0]
       vagrant.vm.box_version = box_parts[1] unless box_parts.length == 1
     end
 
-    vagrant.vm.communicator = options['communicator'] unless options['communicator'].blank?
+    vagrant.vm.communicator = options['communicator'] unless options['communicator'].empty?
 
     if deployment.hostmanager_enabled?
       vagrant.vm.hostname = hostname
@@ -191,7 +195,7 @@ class VagrantMachine
       vagrant.vm.network 'private_network', type: 'dhcp'
     end
 
-    VagrantProvider.defaults_include(options.fetch('providers').fetch('defaults', {}))
+    VagrantProvider.defaults_include(options.fetch('providers').fetch('defaults'))
     options.fetch('providers').each do |provider_name, provider_options|
       next if provider_name == 'defaults'
 
@@ -406,9 +410,9 @@ class VagrantAzureProvider < VagrantProvider
     'image_urn' => '',
     'managed_image_id' => '',
     'size' => 'Standard_B1s',
-    'location' => ENV['VAGRANT_PROVIDER_AZURE_LOCATION'],
+    'location' => ENV['VAGRANT_PROVIDER_AZURE_LOCATION'] || '',
     'synced_folder_type' => 'rsync',
-    'ssh_private_key_path_override' => ENV['VAGRANT_PROVIDER_AZURE_SSH_PRIVATE_KEY_PATH_OVERRIDE'],
+    'ssh_private_key_path_override' => ENV['VAGRANT_PROVIDER_AZURE_SSH_PRIVATE_KEY_PATH_OVERRIDE'] || '',
   }
 
   class << self
@@ -434,12 +438,12 @@ class VagrantAzureProvider < VagrantProvider
     vagrant.vm_name = machine.hostname
 
     box_override = options.fetch('box_override')
-    override.vm.box = box_override unless box_override.blank?
+    override.vm.box = box_override unless box_override.empty?
 
-    managed_image_id = options.fetch('managed_image_id', '')
-    if managed_image_id.blank?
+    managed_image_id = options.fetch('managed_image_id')
+    if managed_image_id.empty?
       image_urn = options.fetch('image_urn')
-      vagrant.vm_image_urn = image_urn unless image_urn.blank?
+      vagrant.vm_image_urn = image_urn unless image_urn.empty?
     else
       vagrant.vm_managed_image_id = managed_image_id 
     end
@@ -457,7 +461,7 @@ class VagrantAzureProvider < VagrantProvider
     vagrant.nsg_name = resource_group_name
 
     ssh_private_key_path_override = options.fetch('ssh_private_key_path_override')
-    override.ssh.private_key_path = ssh_private_key_path_override unless ssh_private_key_path_override.blank?
+    override.ssh.private_key_path = ssh_private_key_path_override unless ssh_private_key_path_override.empty?
   end
 end
 
@@ -738,11 +742,5 @@ class ::Hash
   def deep_merge(other)
     merger = proc { |key, v1, v2| Hash === v1 && Hash === v2 ? v1.merge(v2, &merger) : Array === v1 && Array === v2 ? v1 | v2 : [:undefined, nil, :nil].include?(v2) ? v1 : v2 }
     self.merge(other.to_h, &merger)
-  end
-end
-
-class ::Object
-  def blank?
-    self.nil? || self.to_s.strip.empty?
   end
 end
