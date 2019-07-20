@@ -16,6 +16,7 @@ jobs:
         workspace:
           clean: all
 
+        steps:
         - script: |
             cd samples/${{ join('/', sample.name) }}
             vagrant status
