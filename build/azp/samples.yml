@@ -16,6 +16,7 @@ stages:
         - provisioners
         - shell
       machines:
+      - windows
       - linux
       providers:
       - virtualbox
