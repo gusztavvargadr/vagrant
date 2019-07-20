@@ -12,11 +12,12 @@ stages:
       - name:
         - machines
         - server
-      - name:
-        - provisioners
-        - shell
+      # - name:
+      #   - provisioners
+      #   - shell
       machines:
       - windows
       - linux
       providers:
       - virtualbox
+      - hyperv
