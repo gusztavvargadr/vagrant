@@ -14,7 +14,7 @@ class VagrantWindowsServerMachine < VagrantMachine
     'providers' => {
       'azure' => {
         'image_urn' => ENV['VAGRANT_PROVIDER_AZURE_IMAGE_URN_WINDOWS_SERVER'] || 'MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest',
-        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_WINDOWS_SERVER'],
+        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_WINDOWS_SERVER'] || '',
       },
     },
   }
@@ -32,7 +32,7 @@ class VagrantLinuxServerMachine < VagrantMachine
     'providers' => {
       'azure' => {
         'image_urn' => ENV['VAGRANT_PROVIDER_AZURE_IMAGE_URN_LINUX_SERVER'] || 'Canonical:UbuntuServer:16.04-LTS:latest',
-        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_LINUX_SERVER'],
+        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_LINUX_SERVER'] || '',
       },
     },
   }
@@ -43,8 +43,8 @@ class VagrantDockerWindowsMachine < VagrantMachine
     'box' => ENV['VAGRANT_BOX_DOCKER_WINDOWS'] || 'gusztavvargadr/docker-windows',
     'providers' => {
       'azure' => {
-        'image_urn' => ENV['VAGRANT_PROVIDER_AZURE_IMAGE_URN_DOCKER_WINDOWS'],
-        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_DOCKER_WINDOWS'],
+        'image_urn' => ENV['VAGRANT_PROVIDER_AZURE_IMAGE_URN_DOCKER_WINDOWS'] || 'MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest',
+        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_DOCKER_WINDOWS'] || '',
       },
     },
   }
@@ -55,21 +55,12 @@ class VagrantDockerLinuxMachine < VagrantMachine
     'box' => ENV['VAGRANT_BOX_DOCKER_LINUX'] || 'gusztavvargadr/docker-linux',
     'providers' => {
       'azure' => {
-        'image_urn' => ENV['VAGRANT_PROVIDER_AZURE_IMAGE_URN_DOCKER_LINUX'],
-        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_DOCKER_LINUX'],
+        'image_urn' => ENV['VAGRANT_PROVIDER_AZURE_IMAGE_URN_DOCKER_LINUX'] || 'Canonical:UbuntuServer:16.04-LTS:latest',
+        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_DOCKER_LINUX'] || '',
       },
     },
   }
 end
-
-VagrantDeployment.defaults_include(
-  'stack' => 'vagrant',
-
-  'machines' => {
-    'windows' => VagrantWindowsServerMachine.defaults,
-    'linux' => VagrantLinuxServerMachine.defaults,
-  }
-)
 
 VagrantMachine.defaults_include(
   'providers' => {
@@ -84,5 +75,14 @@ VagrantMachine.defaults_include(
     'azure' => {
       'size' => 'Standard_B1s',
     },
+  }
+)
+
+VagrantDeployment.defaults_include(
+  'stack' => 'vagrant-samples',
+
+  'machines' => {
+    'windows' => VagrantWindowsServerMachine.defaults,
+    'linux' => VagrantLinuxServerMachine.defaults,
   }
 )
