@@ -19,11 +19,11 @@ jobs:
         steps:
         - script: |
             cd samples/${{ join('/', sample.name) }}
-            vagrant up ${{ machine }}
+            vagrant up ${{ machine }} --provider ${{ provider }}
           displayName: Build
 
         - script: |
             cd samples/${{ join('/', sample.name) }}
-            vagrant destroy -f
+            vagrant destroy -f ${{ machine }}
           displayName: Clean
           condition: always()
