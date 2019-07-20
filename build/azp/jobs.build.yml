@@ -26,3 +26,4 @@ jobs:
             cd samples/${{ join('/', sample.name) }}
             vagrant destroy -f
           displayName: Clean
+          condition: always()
