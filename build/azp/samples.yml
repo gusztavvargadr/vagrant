@@ -11,10 +11,16 @@ stages:
       samples:
       - name:
         - machines
+        - desktop
+      - name:
+        - machines
         - server
-      # - name:
-      #   - provisioners
-      #   - shell
+      - name:
+        - provisioners
+        - shell
+      - name:
+        - provisioners
+        - docker
       machines:
       - windows
       - linux
