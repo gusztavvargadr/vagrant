@@ -12,6 +12,9 @@ stages:
       - name:
         - machines
         - server
+      - name:
+        - provisioners
+        - shell
       machines:
       - linux
       providers:
