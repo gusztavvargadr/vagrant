@@ -21,6 +21,8 @@ jobs:
             cd samples/${{ join('/', sample.name) }}
             vagrant up ${{ machine }} --provider ${{ provider }}
           displayName: Build
+          env:
+            VAGRANT_PROVIDER_${{ provider }}_LINKED_CLONE: 'true'
 
         - script: |
             cd samples/${{ join('/', sample.name) }}
