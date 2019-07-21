@@ -16,7 +16,7 @@ machines:
       docker:
         runs:
         - name: hello-world
-          # image: hello-world
           args: '--rm'
           daemonize: false
           restart: 'no'
+      # reload:

@@ -9,8 +9,8 @@ stages:
   - template: ./samples.jobs.build.yml
     parameters:
       samples:
-      - name:
-        - provisioners
+      - name: machines
+      - name: provisioners
       machines:
       - windows
       - linux
