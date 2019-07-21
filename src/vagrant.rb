@@ -119,17 +119,17 @@ class VagrantMachine
     'autostart' => true,
     'primary' => false,
     'communicator' => '',
+    'count' => 1,
+    'providers' => {
+      'defaults' => {},
+    },
     'synced_folders' => {
       '/vagrant' => {
         'source' => '.',
       },
     },
     'aliases' => [],
-    'providers' => {
-      'defaults' => {},
-    },
     'provisioners' => {},
-    'count' => 1,
   }
 
   class << self
@@ -188,13 +188,6 @@ class VagrantMachine
 
     vagrant.vm.communicator = options['communicator'] unless options['communicator'].empty?
 
-    if deployment.hostmanager_enabled?
-      vagrant.vm.hostname = hostname
-      vagrant.hostmanager.aliases = [fqdn].concat(options.fetch('aliases')).concat(aliases_fqdn)
-
-      vagrant.vm.network 'private_network', type: 'dhcp'
-    end
-
     VagrantProvider.defaults_include(options.fetch('providers').fetch('defaults'))
     options.fetch('providers').each do |provider_name, provider_options|
       next if provider_name == 'defaults'
@@ -215,6 +208,13 @@ class VagrantMachine
       provider.configure
     end
 
+    if deployment.hostmanager_enabled?
+      vagrant.vm.hostname = hostname
+      vagrant.hostmanager.aliases = [fqdn].concat(options.fetch('aliases')).concat(aliases_fqdn)
+
+      vagrant.vm.network 'private_network', type: 'dhcp'
+    end
+
     options.fetch('provisioners').each do |provisioner_name, provisioner_options|
       provisioner = nil
 
@@ -223,7 +223,6 @@ class VagrantMachine
       provisioner = VagrantChefPolicyfileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_policyfile')
       provisioner = VagrantChefZeroProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_zero')
       provisioner = VagrantDockerProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('docker')
-      provisioner = VagrantReloadProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('reload')
 
       raise "Provisioner '#{provisioner_name}' is not supported." if provisioner.nil?
 
@@ -728,24 +727,6 @@ class VagrantDockerProvisioner < VagrantProvisioner
         deamonize: run.fetch('daemonize', true),
         restart: run.fetch('restart', 'always')
     end
-  end
-end
-
-class VagrantReloadProvisioner < VagrantProvisioner
-  @defaults = {
-    'type' => 'reload',
-  }
-
-  class << self
-    attr_reader :defaults
-
-    def defaults_include(defaults)
-      @defaults = @defaults.deep_merge(defaults)
-    end
-  end
-
-  def initialize(machine, name, options = {})
-    super(machine, name, VagrantReloadProvisioner.defaults.deep_merge(options))
   end
 end
 

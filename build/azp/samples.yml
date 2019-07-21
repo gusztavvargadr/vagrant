@@ -10,6 +10,7 @@ stages:
     parameters:
       samples:
       - name: machines
+      - name: providers
       - name: provisioners
       machines:
       - windows

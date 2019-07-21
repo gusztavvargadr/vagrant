@@ -19,13 +19,13 @@ jobs:
         steps:
         - script: |
             cd samples/${{ join('/', sample.name) }}
-            vagrant up ${{ machine }} --provider ${{ provider }}
+            vagrant up /${{ machine }}/ --provider ${{ provider }}
           displayName: Build
           env:
             VAGRANT_PROVIDER_${{ provider }}_LINKED_CLONE: 'true'
 
         - script: |
             cd samples/${{ join('/', sample.name) }}
-            vagrant destroy -f ${{ machine }}
+            vagrant destroy -f /${{ machine }}/
           displayName: Clean
           condition: always()
