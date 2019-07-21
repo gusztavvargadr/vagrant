@@ -40,7 +40,7 @@ class VagrantDeployment
   def initialize(directory, options = {})
     @directory = directory
     @options = VagrantDeployment.defaults
-    ['vagrant.yml', 'vagrant.override.yml'].each do |file|
+    ['Vagrantfile.yml', 'Vagrantfile.override.yml'].each do |file|
       yml = File.join(directory, file)
       @options = @options.deep_merge(YAML.load(ERB.new(File.read(yml)).result) || {}) if File.exist?(yml)
     end
@@ -523,6 +523,8 @@ class VagrantShellProvisioner < VagrantProvisioner
     'inline' => nil,
     'path' => nil,
     'args' => '',
+    'env' => {},
+    'reset' => false,
   }
 
   class << self
@@ -538,7 +540,13 @@ class VagrantShellProvisioner < VagrantProvisioner
   end
 
   def vagrant_options
-    super.deep_merge(inline: options.fetch('inline'), path: options.fetch('path'), args: options.fetch('args'))
+    super.deep_merge(
+      inline: options.fetch('inline'),
+      path: options.fetch('path'),
+      args: options.fetch('args'),
+      env: options.fetch('env'),
+      reset: options.fetch('reset'),
+    )
   end
 end
 
@@ -643,6 +651,7 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
         machine,
         "#{name}_chef_client",
         'inline' => "cd #{guest_directory_path}; chef-client --local-mode",
+        'env' => { 'CHEF_LICENSE' => 'accept-silent' },
         'run' => options.fetch('run')
       )
       shell_chef_client_provisioner.configure
@@ -710,6 +719,8 @@ class VagrantDockerProvisioner < VagrantProvisioner
     end
 
     options.fetch('runs').each do |run|
+      vagrant.pull_images run.fetch('image', run.fetch('name'))
+
       vagrant.run run.fetch('name'),
         image: run.fetch('image', run.fetch('name')),
         args: run.fetch('args', ''),

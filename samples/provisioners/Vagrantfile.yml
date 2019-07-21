@@ -1,0 +1,22 @@
+component: provisioners
+
+machines:
+  defaults:
+    provisioners:
+      shell:
+        inline: echo "Hello World!"
+      file:
+        source: hello-world.txt
+        destination: /tmp/hello-world.txt
+      chef_policyfile:
+        paths:
+        - Policyfile.rb
+      # chef_zero:
+      #   run_list: recipe[hello_world::default]
+      docker:
+        runs:
+        - name: hello-world
+          # image: hello-world
+          args: '--rm'
+          daemonize: false
+          restart: 'no'

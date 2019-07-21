@@ -6,21 +6,11 @@ stages:
   displayName: Build
 
   jobs:
-  - template: ./jobs.build.yml
+  - template: ./samples.jobs.build.yml
     parameters:
       samples:
       - name:
-        - machines
-        - desktop
-      - name:
-        - machines
-        - server
-      - name:
         - provisioners
-        - shell
-      - name:
-        - provisioners
-        - docker
       machines:
       - windows
       - linux
