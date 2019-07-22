@@ -11,11 +11,10 @@ machines:
       chef_policyfile:
         paths:
         - Policyfile.rb
-      chef_zero:
-        run_list: recipe[hello_world::default]
       docker:
         runs:
         - name: hello-world
           args: '--rm'
           daemonize: false
           restart: 'no'
+      hostmanager:
