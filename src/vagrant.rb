@@ -66,13 +66,11 @@ class VagrantDeployment
       vagrant.hostmanager.enabled = false
       vagrant.hostmanager.manage_host = true
       vagrant.hostmanager.manage_guest = false
+      vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+        vm.provider.driver.read_guest_ip(1) if vm.provider_name == :virtualbox
+        vm.ssh_info[:host] if vm.ssh_info
+      end
     end
-
-    # if ENV['VAGRANT_DEFAULT_PROVIDER'] == 'virtualbox'
-    #   vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
-    #     vm.provider.driver.read_guest_ip(1) if vm.state.id == :running
-    #   end
-    # end
 
     VagrantMachine.defaults_include(options.fetch('machines').fetch('defaults'))
     options.fetch('machines').each do |machine_name, machine_options|
