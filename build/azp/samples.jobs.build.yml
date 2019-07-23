@@ -1,0 +1,31 @@
+parameters:
+  samples: []
+  machines: []
+  providers: []
+
+jobs:
+- ${{ each sample in parameters.samples }}:
+  - ${{ each machine in parameters.machines }}:
+    - ${{ each provider in parameters.providers }}:
+      - job: ${{ join('_', sample.name) }}_${{ machine }}_${{ provider }}_build
+        displayName: Build ${{ join('-', sample.name) }}-${{ machine }}-${{ provider }}
+        pool:
+          name: Default
+          demands:
+          - AZP_AGENT_VAGRANT -equals ${{ provider }}
+        workspace:
+          clean: all
+
+        steps:
+        - script: |
+            cd samples/${{ join('/', sample.name) }}
+            vagrant up /${{ machine }}/ --provider ${{ provider }}
+          displayName: Build
+          env:
+            VAGRANT_PROVIDER_${{ provider }}_LINKED_CLONE: 'true'
+
+        - script: |
+            cd samples/${{ join('/', sample.name) }}
+            vagrant destroy -f /${{ machine }}/
+          displayName: Clean
+          condition: always()

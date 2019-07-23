@@ -11,8 +11,6 @@ class VagrantDeployment
     'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'sandbox',
     'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
 
-    'hostmanager' => ENV['VAGRANT_NETWORK_HOSTMANAGER'] == 'true',
-
     'machines' => {
       'defaults' => {},
     },
@@ -40,7 +38,7 @@ class VagrantDeployment
   def initialize(directory, options = {})
     @directory = directory
     @options = VagrantDeployment.defaults
-    ['vagrant.yml', 'vagrant.override.yml'].each do |file|
+    ['Vagrantfile.yml', 'Vagrantfile.override.yml'].each do |file|
       yml = File.join(directory, file)
       @options = @options.deep_merge(YAML.load(ERB.new(File.read(yml)).result) || {}) if File.exist?(yml)
     end
@@ -64,16 +62,13 @@ class VagrantDeployment
   end
 
   def configure_core
-    if hostmanager_enabled?
-      vagrant.hostmanager.enabled = true
+    if Vagrant.has_plugin?('vagrant-hostmanager')
+      vagrant.hostmanager.enabled = false
       vagrant.hostmanager.manage_host = true
       vagrant.hostmanager.manage_guest = false
-      vagrant.hostmanager.include_offline = false
-
-      if ENV['VAGRANT_DEFAULT_PROVIDER'] == 'virtualbox'
-        vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
-          vm.provider.driver.read_guest_ip(1) if vm.state.id == :running
-        end
+      vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+        vm.provider.driver.read_guest_ip(1) if vm.provider_name == :virtualbox
+        vm.ssh_info[:host] if vm.ssh_info
       end
     end
 
@@ -106,10 +101,6 @@ class VagrantDeployment
       options.fetch('tenant'),
     ].reject(&:empty?).join('.')
   end
-
-  def hostmanager_enabled?
-    options.fetch('hostmanager')
-  end
 end
 
 class VagrantMachine
@@ -119,17 +110,16 @@ class VagrantMachine
     'autostart' => true,
     'primary' => false,
     'communicator' => '',
+    'count' => 1,
+    'providers' => {
+      'defaults' => {},
+    },
     'synced_folders' => {
       '/vagrant' => {
         'source' => '.',
       },
     },
-    'aliases' => [],
-    'providers' => {
-      'defaults' => {},
-    },
     'provisioners' => {},
-    'count' => 1,
   }
 
   class << self
@@ -188,13 +178,6 @@ class VagrantMachine
 
     vagrant.vm.communicator = options['communicator'] unless options['communicator'].empty?
 
-    if deployment.hostmanager_enabled?
-      vagrant.vm.hostname = hostname
-      vagrant.hostmanager.aliases = [fqdn].concat(options.fetch('aliases')).concat(aliases_fqdn)
-
-      vagrant.vm.network 'private_network', type: 'dhcp'
-    end
-
     VagrantProvider.defaults_include(options.fetch('providers').fetch('defaults'))
     options.fetch('providers').each do |provider_name, provider_options|
       next if provider_name == 'defaults'
@@ -221,9 +204,8 @@ class VagrantMachine
       provisioner = VagrantShellProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('shell')
       provisioner = VagrantFileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('file')
       provisioner = VagrantChefPolicyfileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_policyfile')
-      provisioner = VagrantChefZeroProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_zero')
       provisioner = VagrantDockerProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('docker')
-      provisioner = VagrantReloadProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('reload')
+      provisioner = VagrantHostManagerProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('hostmanager')
 
       raise "Provisioner '#{provisioner_name}' is not supported." if provisioner.nil?
 
@@ -238,10 +220,6 @@ class VagrantMachine
 
   def fqdn
     "#{hostname}.#{deployment.domain}"
-  end
-
-  def aliases_fqdn
-    options.fetch('aliases').map { |value| "#{value}.#{deployment.domain}" }
   end
 end
 
@@ -523,6 +501,8 @@ class VagrantShellProvisioner < VagrantProvisioner
     'inline' => nil,
     'path' => nil,
     'args' => '',
+    'env' => {},
+    'reset' => false,
   }
 
   class << self
@@ -538,7 +518,13 @@ class VagrantShellProvisioner < VagrantProvisioner
   end
 
   def vagrant_options
-    super.deep_merge(inline: options.fetch('inline'), path: options.fetch('path'), args: options.fetch('args'))
+    super.deep_merge(
+      inline: options.fetch('inline'),
+      path: options.fetch('path'),
+      args: options.fetch('args'),
+      env: options.fetch('env'),
+      reset: options.fetch('reset'),
+    )
   end
 end
 
@@ -643,43 +629,11 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
         machine,
         "#{name}_chef_client",
         'inline' => "cd #{guest_directory_path}; chef-client --local-mode",
+        'env' => { 'CHEF_LICENSE' => 'accept-silent' },
         'run' => options.fetch('run')
       )
       shell_chef_client_provisioner.configure
     end
-  end
-end
-
-class VagrantChefZeroProvisioner < VagrantProvisioner
-  @defaults = {
-    'type' => 'chef_solo',
-    'cookbooks_path' => 'cookbooks',
-    'run_list' => '',
-    'json' => {},
-  }
-
-  class << self
-    attr_reader :defaults
-
-    def defaults_include(defaults)
-      @defaults = @defaults.deep_merge(defaults)
-    end
-  end
-
-  def initialize(machine, name, options = {})
-    super(machine, name, VagrantChefZeroProvisioner.defaults.deep_merge(options))
-  end
-
-  def configure_core
-    super
-
-    vagrant.cookbooks_path = options.fetch('cookbooks_path')
-    vagrant.run_list = options.fetch('run_list').split(',')
-    vagrant.json = json
-  end
-
-  def json
-    options.fetch('json')
   end
 end
 
@@ -710,6 +664,8 @@ class VagrantDockerProvisioner < VagrantProvisioner
     end
 
     options.fetch('runs').each do |run|
+      vagrant.pull_images run.fetch('image', run.fetch('name'))
+
       vagrant.run run.fetch('name'),
         image: run.fetch('image', run.fetch('name')),
         args: run.fetch('args', ''),
@@ -720,9 +676,9 @@ class VagrantDockerProvisioner < VagrantProvisioner
   end
 end
 
-class VagrantReloadProvisioner < VagrantProvisioner
+class VagrantHostManagerProvisioner < VagrantProvisioner
   @defaults = {
-    'type' => 'reload',
+    'type' => 'hostmanager',
   }
 
   class << self
@@ -734,7 +690,16 @@ class VagrantReloadProvisioner < VagrantProvisioner
   end
 
   def initialize(machine, name, options = {})
-    super(machine, name, VagrantReloadProvisioner.defaults.deep_merge(options))
+    super(machine, name, VagrantHostManagerProvisioner.defaults.deep_merge(options)) if Vagrant.has_plugin?('vagrant-hostmanager')
+  end
+
+  def configure_core
+    super
+
+    machine.vagrant.vm.network 'private_network', type: 'dhcp'
+
+    machine.vagrant.vm.hostname = machine.hostname
+    machine.vagrant.hostmanager.aliases = [ machine.fqdn ]
   end
 end
 

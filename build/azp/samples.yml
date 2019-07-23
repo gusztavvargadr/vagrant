@@ -1,0 +1,20 @@
+trigger: none
+pr: none
+
+stages:
+- stage: build
+  displayName: Build
+
+  jobs:
+  - template: ./samples.jobs.build.yml
+    parameters:
+      samples:
+      - name: machines
+      - name: providers
+      - name: provisioners
+      machines:
+      - windows
+      - linux
+      providers:
+      - virtualbox
+      - hyperv

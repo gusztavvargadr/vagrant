@@ -1,0 +1,24 @@
+component: machines
+
+machines:
+  defaults:
+    providers:
+      virtualbox:
+        synced_folder_type: ''
+      hyperv:
+        synced_folder_type: smb
+      azure:
+        synced_folder_type: rsync
+    synced_folders:
+      /vagrant:
+        disabled: true
+      /vagrant-default:
+        source: .
+  windows:
+    synced_folders:
+      /vagrant-windows:
+        source: .
+  linux:
+    synced_folders:
+      /vagrant-linux:
+        source: .

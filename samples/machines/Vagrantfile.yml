@@ -1,0 +1,15 @@
+component: machines
+
+machines:
+  defaults:
+    primary: false
+    autostart: true
+    count: 0
+  windows:
+    primary: true
+    autostart: true
+    count: 1
+  linux:
+    primary: false
+    autostate: false
+    count: 2
