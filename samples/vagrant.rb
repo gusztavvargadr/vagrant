@@ -5,15 +5,15 @@ require "#{directory}/../src/vagrant"
 VagrantMachine.defaults_include(
   'providers' => {
     'virtualbox' => {
-      'memory' => 1024,
-      'cpus' => 1,
+      'memory' => 4096,
+      'cpus' => 2,
     },
     'hyperv' => {
-      'memory' => 1024,
-      'cpus' => 1,
+      'memory' => 4096,
+      'cpus' => 2,
     },
     'azure' => {
-      'size' => 'Standard_B1s',
+      'size' => 'Standard_B2s',
     },
   }
 )
