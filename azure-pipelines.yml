@@ -12,7 +12,7 @@ stages:
         pool:
           name: Default
           demands:
-            - AZP_AGENT_VAGRANT -equals 'hyperv'
+            - AZP_AGENT_VAGRANT
 
         workspace:
           clean: all
