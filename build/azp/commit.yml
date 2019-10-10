@@ -18,6 +18,9 @@ stages:
           clean: all
 
         steps:
+          - checkout: self
+            submodules: recursive
+
           - script: |
               vagrant version
               vagrant plugin list
@@ -26,5 +29,5 @@ stages:
           - ${{ each sample in parameters.samples }}:
             - script: |
                 cd ./samples/${{ sample }}
-                vagrant status
-              displayName: Test ${{ sample }}
+                vagrant validate
+              displayName: Test - Validate
