@@ -5,23 +5,9 @@ stages:
     displayName: Commit
 
     jobs:
-      - job: build
-        displayName: Build
-
-        pool:
-          name: Default
-          demands:
-            - AZP_AGENT_VAGRANT
-
-        workspace:
-          clean: all
-
-        steps:
-          - script: |
-              vagrant --version
-            displayName: Init
-
-          - script: |
-              cd ./samples/machines
-              vagrant status
-            displayName: Test
+      - template: ./build/azp/commit.build.yml
+        parameters:
+          samples:
+            - machines
+            - providers
+            - provisioners
