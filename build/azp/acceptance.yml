@@ -1,0 +1,34 @@
+parameters:
+  samples: []
+  providers: []
+
+jobs:
+  - ${{ each sample in parameters.samples }}:
+    - ${{ each provider in parameters.providers }}:
+      - job: test_${{ sample }}_${{ provider }}
+        displayName: Test ${{ sample }} on ${{ provider }}
+
+        pool:
+          name: Default
+          demands:
+            - AZP_AGENT_VAGRANT -equals ${{ provider }}
+
+        workspace:
+          clean: all
+
+        steps:
+          - script: |
+              vagrant version
+              vagrant plugin list
+            displayName: Init
+
+          - script: |
+              cd ./samples/${{ sample }}
+              vagrant up --provider ${{ provider }}
+            displayName: Test
+
+          - script: |
+              cd ./samples/${{ sample }}
+              vagrant destroy -f
+            displayName: Clean
+            condition: always()
