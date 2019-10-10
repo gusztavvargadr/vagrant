@@ -1,0 +1,9 @@
+trigger:
+  branches:
+    include:
+      - '*'
+pr: none
+
+stages:
+  - template: ./build/azp/commit.yml
+  - template: ./build/azp/acceptance.yml

@@ -5,26 +5,26 @@ require "#{directory}/../src/vagrant"
 VagrantMachine.defaults_include(
   'providers' => {
     'virtualbox' => {
-      'memory' => 1024,
-      'cpus' => 1,
+      'memory' => 4096,
+      'cpus' => 2,
     },
     'hyperv' => {
-      'memory' => 1024,
-      'cpus' => 1,
+      'memory' => 4096,
+      'cpus' => 2,
     },
     'azure' => {
-      'size' => 'Standard_B1s',
+      'size' => 'Standard_B2s',
     },
   }
 )
 
 class VagrantWindowsServerMachine < VagrantMachine
   @defaults = {
-    'box' => ENV['VAGRANT_BOX_WINDOWS_SERVER'] || 'gusztavvargadr/docker-windows',
+    'box' => ENV['VAGRANT_BOX_WINDOWS_SERVER'] || 'gusztavvargadr/windows-server',
     'providers' => {
       'azure' => {
-        'image_urn' => ENV['VAGRANT_PROVIDER_AZURE_IMAGE_URN_WINDOWS_SERVER'] || 'MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest',
-        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_WINDOWS_SERVER'] || '',
+        'image_urn' => ENV['VAGRANT_BOX_WINDOWS_SERVER_AZURE_IMAGE_URN'] || 'MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest',
+        'managed_image_id' => ENV['VAGRANT_BOX_WINDOWS_SERVER_AZURE_MANAGED_IMAGE_ID'] || '',
       },
     },
   }
@@ -32,11 +32,35 @@ end
 
 class VagrantLinuxServerMachine < VagrantMachine
   @defaults = {
+    'box' => ENV['VAGRANT_BOX_LINUX_SERVER'] || 'gusztavvargadr/ubuntu-server',
+    'providers' => {
+      'azure' => {
+        'image_urn' => ENV['VAGRANT_BOX_LINUX_SERVER_AZURE_IMAGE_URN'] || 'Canonical:UbuntuServer:16.04-LTS:latest',
+        'managed_image_id' => ENV['VAGRANT_BOX_LINUX_SERVER_AZURE_MANAGED_IMAGE_ID'] || '',
+      },
+    },
+  }
+end
+
+class VagrantDockerWindowsMachine < VagrantMachine
+  @defaults = {
+    'box' => ENV['VAGRANT_BOX_DOCKER_WINDOWS'] || 'gusztavvargadr/docker-windows',
+    'providers' => {
+      'azure' => {
+        'image_urn' => ENV['VAGRANT_BOX_DOCKER_WINDOWS_AZURE_IMAGE_URN'] || 'MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest',
+        'managed_image_id' => ENV['VAGRANT_BOX_DOCKER_WINDOWS_AZURE_MANAGED_IMAGE_ID'] || '',
+      },
+    },
+  }
+end
+
+class VagrantDockerLinuxMachine < VagrantMachine
+  @defaults = {
     'box' => ENV['VAGRANT_BOX_LINUX_SERVER'] || 'gusztavvargadr/docker-linux',
     'providers' => {
       'azure' => {
-        'image_urn' => ENV['VAGRANT_PROVIDER_AZURE_IMAGE_URN_LINUX_SERVER'] || 'Canonical:UbuntuServer:16.04-LTS:latest',
-        'managed_image_id' => ENV['VAGRANT_PROVIDER_AZURE_MANAGED_IMAGE_ID_LINUX_SERVER'] || '',
+        'image_urn' => ENV['VAGRANT_BOX_DOCKER_LINUX_AZURE_IMAGE_URN'] || 'Canonical:UbuntuServer:16.04-LTS:latest',
+        'managed_image_id' => ENV['VAGRANT_BOX_DOCKER_LINUX_AZURE_MANAGED_IMAGE_ID'] || '',
       },
     },
   }

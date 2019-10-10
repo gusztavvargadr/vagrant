@@ -62,16 +62,6 @@ class VagrantDeployment
   end
 
   def configure_core
-    if Vagrant.has_plugin?('vagrant-hostmanager')
-      vagrant.hostmanager.enabled = false
-      vagrant.hostmanager.manage_host = true
-      vagrant.hostmanager.manage_guest = false
-      vagrant.hostmanager.ip_resolver = proc do |vm, resolving_vm|
-        vm.provider.driver.read_guest_ip(1) if vm.provider_name == :virtualbox
-        vm.ssh_info[:host] if vm.ssh_info
-      end
-    end
-
     VagrantMachine.defaults_include(options.fetch('machines').fetch('defaults'))
     options.fetch('machines').each do |machine_name, machine_options|
       next if machine_name == 'defaults'
@@ -205,7 +195,6 @@ class VagrantMachine
       provisioner = VagrantFileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('file')
       provisioner = VagrantChefPolicyfileProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('chef_policyfile')
       provisioner = VagrantDockerProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('docker')
-      provisioner = VagrantHostManagerProvisioner.new(self, provisioner_name, provisioner_options) if provisioner_name.start_with?('hostmanager')
 
       raise "Provisioner '#{provisioner_name}' is not supported." if provisioner.nil?
 
@@ -326,7 +315,7 @@ class VagrantVirtualBoxProvider < VagrantProvider
   def configure_core
     super
 
-    vagrant.name = machine.fqdn
+    # vagrant.name = machine.fqdn
 
     vagrant.memory = options.fetch('memory')
     vagrant.cpus = options.fetch('cpus')
@@ -367,7 +356,7 @@ class VagrantHyperVProvider < VagrantProvider
   def configure_core
     super
 
-    vagrant.vmname = machine.fqdn
+    # vagrant.vmname = machine.fqdn
 
     vagrant.memory = options.fetch('memory')
     vagrant.cpus = options.fetch('cpus')
@@ -413,7 +402,7 @@ class VagrantAzureProvider < VagrantProvider
   def configure_core
     super
 
-    vagrant.vm_name = machine.hostname
+    # vagrant.vm_name = machine.hostname
 
     box_override = options.fetch('box_override')
     override.vm.box = box_override unless box_override.empty?
@@ -673,33 +662,6 @@ class VagrantDockerProvisioner < VagrantProvisioner
         deamonize: run.fetch('daemonize', true),
         restart: run.fetch('restart', 'always')
     end
-  end
-end
-
-class VagrantHostManagerProvisioner < VagrantProvisioner
-  @defaults = {
-    'type' => 'hostmanager',
-  }
-
-  class << self
-    attr_reader :defaults
-
-    def defaults_include(defaults)
-      @defaults = @defaults.deep_merge(defaults)
-    end
-  end
-
-  def initialize(machine, name, options = {})
-    super(machine, name, VagrantHostManagerProvisioner.defaults.deep_merge(options)) if Vagrant.has_plugin?('vagrant-hostmanager')
-  end
-
-  def configure_core
-    super
-
-    machine.vagrant.vm.network 'private_network', type: 'dhcp'
-
-    machine.vagrant.vm.hostname = machine.hostname
-    machine.vagrant.hostmanager.aliases = [ machine.fqdn ]
   end
 end
 

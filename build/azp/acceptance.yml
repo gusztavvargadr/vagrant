@@ -1,0 +1,51 @@
+parameters:
+  samples: [ 'machines', 'providers', 'provisioners' ]
+  machines: [ 'windows', 'linux' ]
+  providers: [ 'virtualbox', 'hyperv' ]
+
+stages:
+  - stage: acceptance
+    displayName: Acceptance
+
+    jobs:
+      - ${{ each sample in parameters.samples }}:
+        - ${{ each machine in parameters.machines }}:
+          - ${{ each provider in parameters.providers }}:
+            - job: test_${{ sample }}_${{ machine }}_${{ provider }}
+              displayName: Test ${{ sample }} on ${{ machine }} with ${{ provider }}
+
+              pool:
+                name: Default
+                demands:
+                  - AZP_AGENT_VAGRANT -equals ${{ provider }}
+
+              workspace:
+                clean: all
+
+              steps:
+                - checkout: self
+                  submodules: recursive
+
+                - script: |
+                    vagrant version
+                    vagrant plugin list
+                  displayName: Init
+
+                - script: |
+                    cd ./samples/${{ sample }}
+                    pwd
+
+                    vagrant status
+                    vagrant up ${{ machine }} --provider ${{ provider }}
+                    vagrant status
+                  displayName: Test
+
+                - script: |
+                    cd ./samples/${{ sample }}
+                    pwd
+
+                    vagrant status
+                    vagrant destroy -f ${{ machine }}
+                    vagrant status
+                  displayName: Clean
+                  condition: always()

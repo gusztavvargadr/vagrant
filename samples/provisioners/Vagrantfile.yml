@@ -17,4 +17,3 @@ machines:
           args: '--rm'
           daemonize: false
           restart: 'no'
-      hostmanager:
