@@ -6,30 +6,30 @@ stages:
     displayName: Commit
 
     jobs:
-      - job: build
-        displayName: Build
+      - ${{ each sample in parameters.samples }}:
+        - job: test_${{ sample }}
+          displayName: Test ${{ sample }}
 
-        pool:
-          name: Default
-          demands:
-            - AZP_AGENT_VAGRANT
+          pool:
+            name: Default
+            demands:
+              - AZP_AGENT_VAGRANT
 
-        workspace:
-          clean: all
+          workspace:
+            clean: all
 
-        steps:
-          - checkout: self
-            submodules: recursive
+          steps:
+            - checkout: self
+              submodules: recursive
 
-          - script: |
-              vagrant version
-              vagrant plugin list
-            displayName: Init
+            - script: |
+                vagrant version
+                vagrant plugin list
+              displayName: Init
 
-          - ${{ each sample in parameters.samples }}:
             - script: |
                 cd ./samples/${{ sample }}
                 pwd
 
-                vagrant validate
-              displayName: Test - Validate ${{ sample }}
+                vagrant validate --ignore-provider
+              displayName: Test

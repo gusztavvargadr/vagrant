@@ -35,13 +35,17 @@ stages:
                     cd ./samples/${{ sample }}
                     pwd
 
+                    vagrant status
                     vagrant up ${{ machine }} --provider ${{ provider }}
-                  displayName: Test - Up ${{ sample }} on ${{ machine }} with ${{ provider }}
+                    vagrant status
+                  displayName: Test
 
                 - script: |
                     cd ./samples/${{ sample }}
                     pwd
 
+                    vagrant status
                     vagrant destroy -f ${{ machine }}
-                  displayName: Clean - Destroy ${{ sample }} on ${{ machine }}
+                    vagrant status
+                  displayName: Clean
                   condition: always()
