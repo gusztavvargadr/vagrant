@@ -1,27 +1,5 @@
 pr: none
 
 stages:
-  - stage: commit
-    displayName: Commit
-
-    jobs:
-      - template: ./build/azp/commit.yml
-        parameters:
-          samples:
-            - machines
-            - providers
-            - provisioners
-
-  - stage: acceptance
-    displayName: Acceptance
-
-    jobs:
-      - template: ./build/azp/acceptance.yml
-        parameters:
-          samples:
-            - machines
-            - providers
-            - provisioners
-          providers:
-            - virtualbox
-            - hyperv
+  - template: ./build/azp/commit.yml
+  - template: ./build/azp/acceptance.yml

@@ -1,26 +1,30 @@
 parameters:
-  samples: []
+  samples: [ 'machines', 'providers', 'provisioners' ]
 
-jobs:
-  - job: build
-    displayName: Build
+stages:
+  - stage: commit
+    displayName: Commit
 
-    pool:
-      name: Default
-      demands:
-        - AZP_AGENT_VAGRANT
+    jobs:
+      - job: build
+        displayName: Build
 
-    workspace:
-      clean: all
+        pool:
+          name: Default
+          demands:
+            - AZP_AGENT_VAGRANT
 
-    steps:
-      - script: |
-          vagrant version
-          vagrant plugin list
-        displayName: Init
+        workspace:
+          clean: all
 
-      - ${{ each sample in parameters.samples }}:
-        - script: |
-            cd ./samples/${{ sample }}
-            vagrant status
-          displayName: Test ${{ sample }}
+        steps:
+          - script: |
+              vagrant version
+              vagrant plugin list
+            displayName: Init
+
+          - ${{ each sample in parameters.samples }}:
+            - script: |
+                cd ./samples/${{ sample }}
+                vagrant status
+              displayName: Test ${{ sample }}

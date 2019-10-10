@@ -1,34 +1,38 @@
 parameters:
-  samples: []
-  providers: []
+  samples: [ 'machines', 'providers', 'provisioners' ]
+  providers: [ 'virtualbox', 'hyperv' ]
 
-jobs:
-  - ${{ each sample in parameters.samples }}:
-    - ${{ each provider in parameters.providers }}:
-      - job: test_${{ sample }}_${{ provider }}
-        displayName: Test ${{ sample }} on ${{ provider }}
+stages:
+  - stage: acceptance
+    displayName: Acceptance
 
-        pool:
-          name: Default
-          demands:
-            - AZP_AGENT_VAGRANT -equals ${{ provider }}
+    jobs:
+      - ${{ each provider in parameters.providers }}:
+        - job: test_${{ provider }}
+          displayName: Test ${{ provider }}
 
-        workspace:
-          clean: all
+          pool:
+            name: Default
+            demands:
+              - AZP_AGENT_VAGRANT -equals ${{ provider }}
 
-        steps:
-          - script: |
-              vagrant version
-              vagrant plugin list
-            displayName: Init
+          workspace:
+            clean: all
 
-          - script: |
-              cd ./samples/${{ sample }}
-              vagrant up --provider ${{ provider }}
-            displayName: Test
+          steps:
+            - script: |
+                vagrant version
+                vagrant plugin list
+              displayName: Init
 
-          - script: |
-              cd ./samples/${{ sample }}
-              vagrant destroy -f
-            displayName: Clean
-            condition: always()
+            - ${{ each sample in parameters.samples }}:
+              - script: |
+                  cd ./samples/${{ sample }}
+                  vagrant up linux
+                displayName: Test ${{ sample }}
+
+              - script: |
+                  cd ./samples/${{ sample }}
+                  vagrant destroy -f linux
+                displayName: Clean ${{ sample }}
+                condition: always()
