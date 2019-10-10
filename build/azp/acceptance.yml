@@ -1,7 +1,7 @@
 parameters:
   samples: [ 'machines', 'providers', 'provisioners' ]
-  providers: [ 'virtualbox', 'hyperv' ]
   machines: [ 'windows', 'linux' ]
+  providers: [ 'virtualbox', 'hyperv' ]
 
 stages:
   - stage: acceptance
@@ -9,10 +9,10 @@ stages:
 
     jobs:
       - ${{ each sample in parameters.samples }}:
-        - ${{ each provider in parameters.providers }}:
-          - ${{ each machine in parameters.machines }}:
-            - job: test_${{ sample }}_${{ provider }}_${{ machine }}
-              displayName: Test ${{ sample }} with ${{ provider }} on ${{ machine }}
+        - ${{ each machine in parameters.machines }}:
+          - ${{ each provider in parameters.providers }}:
+            - job: test_${{ sample }}_${{ machine }}_${{ provider }}
+              displayName: Test ${{ sample }} on ${{ machine }} with ${{ provider }}
 
               pool:
                 name: Default
@@ -33,11 +33,15 @@ stages:
 
                 - script: |
                     cd ./samples/${{ sample }}
+                    pwd
+
                     vagrant up ${{ machine }} --provider ${{ provider }}
-                  displayName: Test - Up
+                  displayName: Test - Up ${{ sample }} on ${{ machine }} with ${{ provider }}
 
                 - script: |
                     cd ./samples/${{ sample }}
+                    pwd
+
                     vagrant destroy -f ${{ machine }}
-                  displayName: Clean - Destroy
+                  displayName: Clean - Destroy ${{ sample }} on ${{ machine }}
                   condition: always()

@@ -29,5 +29,7 @@ stages:
           - ${{ each sample in parameters.samples }}:
             - script: |
                 cd ./samples/${{ sample }}
+                pwd
+
                 vagrant validate
-              displayName: Test - Validate
+              displayName: Test - Validate ${{ sample }}
