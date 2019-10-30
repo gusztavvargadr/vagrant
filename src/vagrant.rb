@@ -66,7 +66,7 @@ class VagrantDeployment
     options.fetch('machines').each do |machine_name, machine_options|
       next if machine_name == 'defaults'
 
-      machine = VagrantMachine.new(self, { 'name' => machine_name }.deep_merge(machine_options))
+      machine = VagrantMachine.new(self, machine_options.deep_merge('name' => machine_name))
       machine_count = machine.options.fetch('count')
 
       if machine_count > 0
@@ -75,7 +75,7 @@ class VagrantDeployment
       end
 
       (2..machine_count).each do |machine_index|
-        machine = VagrantMachine.new(self, { 'name' => "#{machine_name}-#{machine_index}" }.deep_merge(machine_options))
+        machine = VagrantMachine.new(self, machine_options.deep_merge('name' => "#{machine_name}-#{machine_index}"))
         machines.push(machine)
         machine.configure
       end

@@ -1,4 +1,4 @@
-component: machines
+component: providers
 
 machines:
   defaults:
