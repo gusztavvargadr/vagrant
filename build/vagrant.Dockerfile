@@ -1,0 +1,10 @@
+FROM library/ubuntu:16.04
+
+RUN apt-get update -y
+RUN apt-get install -y wget
+
+RUN wget -q https://releases.hashicorp.com/vagrant/2.2.5/vagrant_2.2.5_x86_64.deb
+RUN dpkg -i vagrant_2.2.5_x86_64.deb
+
+ENTRYPOINT [ "vagrant" ]
+CMD [ "status" ]
