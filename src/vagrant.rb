@@ -512,7 +512,7 @@ class VagrantShellProvisioner < VagrantProvisioner
       path: options.fetch('path'),
       args: options.fetch('args'),
       env: options.fetch('env'),
-      reset: options.fetch('reset'),
+      reset: options.fetch('reset')
     )
   end
 end
@@ -545,6 +545,7 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
   @defaults = {
     'type' => 'chef_policyfile',
     'paths' => [],
+    'reset' => false,
   }
 
   class << self
@@ -619,7 +620,8 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
         "#{name}_chef_client",
         'inline' => "cd #{guest_directory_path}; chef-client --local-mode",
         'env' => { 'CHEF_LICENSE' => 'accept-silent' },
-        'run' => options.fetch('run')
+        'run' => options.fetch('run'),
+        'reset' => options.fetch('reset')
       )
       shell_chef_client_provisioner.configure
     end
