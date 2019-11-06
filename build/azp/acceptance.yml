@@ -33,19 +33,11 @@ stages:
 
                 - script: |
                     cd ./samples/${{ sample }}
-                    pwd
-
-                    vagrant status
                     vagrant up ${{ machine }} --provider ${{ provider }}
-                    vagrant status
                   displayName: Test
 
                 - script: |
                     cd ./samples/${{ sample }}
-                    pwd
-
-                    vagrant status
                     vagrant destroy -f ${{ machine }}
-                    vagrant status
                   displayName: Clean
                   condition: always()

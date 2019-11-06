@@ -29,7 +29,5 @@ stages:
 
             - script: |
                 cd ./samples/${{ sample }}
-                pwd
-
                 vagrant validate --ignore-provider
               displayName: Test
