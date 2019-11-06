@@ -1,5 +1,5 @@
 parameters:
-  samples: [ 'machines', 'providers', 'provisioners' ]
+  samples: [ 'machines' ]
 
 stages:
   - stage: commit
