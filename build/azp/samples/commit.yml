@@ -30,13 +30,14 @@ stages:
               displayName: Restore
 
             - script: |
-                docker-compose run --rm --workdir /opt/app/samples/${{ sample }} vagrant validate --ignore-provider
+                docker-compose run --workdir /opt/app/samples/${{ sample }} vagrant validate --ignore-provider
               displayName: Test
 
             - script: |
-                docker-compose run --rm rubocop ./samples/${{ sample }}
+                docker-compose run rubocop ./samples/${{ sample }}
               displayName: Analyze
 
             - script: |
                 docker-compose down
-              displayName: Cleanup
+              displayName: Clean
+              condition: always()
