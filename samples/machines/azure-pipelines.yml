@@ -5,5 +5,5 @@ trigger:
 pr: none
 
 stages:
-  - template: ./../../build/azp/samples/commit.yml
-  - template: ./../../build/azp/samples/acceptance.yml
+  - template: ../../build/azp/samples/commit.yml
+  - template: ../../build/azp/samples/acceptance.yml
