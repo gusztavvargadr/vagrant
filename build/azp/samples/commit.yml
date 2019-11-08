@@ -11,9 +11,7 @@ stages:
           displayName: Test ${{ sample }}
 
           pool:
-            name: Default
-            demands:
-              - AZP_AGENT_VAGRANT
+            vmImage: ubuntu-16.04
 
           workspace:
             clean: all
@@ -23,11 +21,13 @@ stages:
               submodules: recursive
 
             - script: |
-                vagrant version
-                vagrant plugin list
+                docker version
               displayName: Init
 
             - script: |
-                cd ./samples/${{ sample }}
-                vagrant validate --ignore-provider
+                docker-compose build
+              displayName: Restore
+
+            - script: |
+                docker-compose run --workdir /opt/app/samples/${{ sample }} vagrant validate --ignore-provider
               displayName: Test
