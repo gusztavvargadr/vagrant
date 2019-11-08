@@ -10,15 +10,15 @@ machines:
 
     providers:
       virtualbox:
-        memory: 1024
-        cpus: 1
+        memory: 2048
+        cpus: 2
         synced_folder_type: ''
       hyperv:
-        memory: 1024
-        cpus: 1
+        memory: 2048
+        cpus: 2
         synced_folder_type: smb
       azure:
-        size: Standard_B1s
+        size: Standard_B2s
         synced_folder_type: rsync
 
     synced_folders:
