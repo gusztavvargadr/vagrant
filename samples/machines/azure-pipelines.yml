@@ -6,4 +6,11 @@ pr: none
 
 stages:
   - template: ../../build/azp/samples/commit.yml
+    parameters:
+      samples: [ 'machines' ]
+
   - template: ../../build/azp/samples/acceptance.yml
+    parameters:
+      samples: [ 'machines' ]
+      machines: [ 'windows', 'linux' ]
+      providers: [ 'virtualbox', 'hyperv' ]

@@ -1,7 +1,7 @@
 parameters:
-  samples: [ 'machines' ]
-  machines: [ 'windows', 'linux' ]
-  providers: [ 'virtualbox', 'hyperv' ]
+  samples: []
+  machines: []
+  providers: []
 
 stages:
   - stage: acceptance
