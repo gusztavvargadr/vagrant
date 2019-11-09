@@ -1,14 +1,53 @@
+stack: vagrant
+service: samples
 component: machines
 
 machines:
-  # defaults:
-  #   primary: false
-  #   autostart: true
-  #   count: 1
+  defaults:
+    # primary: false
+    # autostart: true
+    # count: 1
+
+    providers:
+      virtualbox:
+        memory: 2048
+        cpus: 2
+        synced_folder_type: ''
+      hyperv:
+        memory: 2048
+        cpus: 2
+        synced_folder_type: smb
+      azure:
+        size: Standard_B2s
+        synced_folder_type: rsync
+
+    synced_folders:
+      /vagrant:
+        disabled: true
+      /vagrant-override:
+        source: .
+
+    provisioners:
+      shell:
+        inline: echo "Hello World!"
+      file:
+        source: hello-world.txt
+        destination: /tmp/hello-world.txt
+      chef_policyfile:
+        paths:
+        - Policyfile.rb
+      docker:
+        runs:
+        - name: hello-world
+          args: '--rm'
+          daemonize: false
+          restart: 'no'
+
   windows:
     # primary: false
     # autostart: true
     # count: 1
+
   linux:
     # primary: false
     # autostart: true

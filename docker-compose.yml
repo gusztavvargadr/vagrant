@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  rubocop:
+    build:
+      context: ./build
+      dockerfile: ./rubocop.Dockerfile
+    volumes:
+      - .:/opt/app
+    working_dir: /opt/app
+  vagrant:
+    build:
+      context: ./build
+      dockerfile: ./vagrant.Dockerfile
+    volumes:
+      - .:/opt/app
+    working_dir: /opt/app
