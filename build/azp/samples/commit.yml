@@ -39,8 +39,8 @@ stages:
               condition: always()
 
       - ${{ each sample in parameters.samples }}:
-        - job: build_${{ sample }}
-          displayName: Build ${{ sample }}
+        - job: analyze_${{ sample }}
+          displayName: Analyze ${{ sample }}
 
           pool:
             vmImage: ubuntu-16.04
