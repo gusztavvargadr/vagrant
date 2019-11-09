@@ -7,8 +7,8 @@ stages:
 
     jobs:
       - ${{ each sample in parameters.samples }}:
-        - job: test_${{ sample }}
-          displayName: Test ${{ sample }}
+        - job: build_${{ sample }}
+          displayName: Build ${{ sample }}
 
           pool:
             vmImage: ubuntu-16.04
@@ -26,7 +26,7 @@ stages:
               displayName: Init
 
             - script: |
-                docker-compose build
+                docker-compose build vagrant
               displayName: Restore
 
             - script: |
@@ -34,8 +34,36 @@ stages:
               displayName: Test
 
             - script: |
+                docker-compose down
+              displayName: Clean
+              condition: always()
+
+      - ${{ each sample in parameters.samples }}:
+        - job: build_${{ sample }}
+          displayName: Build ${{ sample }}
+
+          pool:
+            vmImage: ubuntu-16.04
+
+          workspace:
+            clean: all
+
+          steps:
+            - checkout: self
+              submodules: recursive
+
+            - script: |
+                docker version
+                docker-compose version
+              displayName: Init
+
+            - script: |
+                docker-compose build rubocop
+              displayName: Restore
+
+            - script: |
                 docker-compose run rubocop ./samples/${{ sample }}
-              displayName: Analyze
+              displayName: Test
 
             - script: |
                 docker-compose down
