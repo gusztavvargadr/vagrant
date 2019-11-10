@@ -1,18 +1,16 @@
 parameters:
-  samples: []
-  machines: []
-  providers: []
+  options: []
 
 stages:
   - stage: acceptance
     displayName: Acceptance
 
     jobs:
-      - ${{ each sample in parameters.samples }}:
-        - ${{ each machine in parameters.machines }}:
-          - ${{ each provider in parameters.providers }}:
-            - job: test_${{ sample }}_${{ machine }}_${{ provider }}
-              displayName: Test ${{ sample }} on ${{ machine }} with ${{ provider }}
+      - ${{ each option in parameters.options }}:
+        - ${{ each machine in option.machines }}:
+          - ${{ each provider in option.providers }}:
+            - job: test_${{ option.name }}_${{ machine }}_${{ provider }}
+              displayName: Test ${{ option.name }} on ${{ machine }} with ${{ provider }}
 
               pool:
                 name: Default
@@ -32,12 +30,12 @@ stages:
                   displayName: Init
 
                 - script: |
-                    cd ./samples/${{ sample }}
+                    cd ./samples/environments/${{ option.environment }}
                     vagrant up ${{ machine }} --provider ${{ provider }}
                   displayName: Test
 
                 - script: |
-                    cd ./samples/${{ sample }}
+                    cd ./samples/environments/${{ option.environment }}
                     vagrant destroy -f ${{ machine }}
                   displayName: Clean
                   condition: always()

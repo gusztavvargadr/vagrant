@@ -1,14 +1,14 @@
 parameters:
-  samples: []
+  options: []
 
 stages:
   - stage: commit
     displayName: Commit
 
     jobs:
-      - ${{ each sample in parameters.samples }}:
-        - job: build_${{ sample }}
-          displayName: Build ${{ sample }}
+      - ${{ each option in parameters.options }}:
+        - job: build_${{ option.environment }}
+          displayName: Build ${{ option.environment }}
 
           pool:
             vmImage: ubuntu-16.04
@@ -30,7 +30,7 @@ stages:
               displayName: Restore
 
             - script: |
-                docker-compose run --workdir /opt/app/samples/${{ sample }} vagrant validate --ignore-provider
+                docker-compose run --workdir /opt/app/samples/environments/${{ option.environment }} vagrant validate --ignore-provider
               displayName: Test
 
             - script: |
@@ -38,9 +38,9 @@ stages:
               displayName: Clean
               condition: always()
 
-      - ${{ each sample in parameters.samples }}:
-        - job: analyze_${{ sample }}
-          displayName: Analyze ${{ sample }}
+      - ${{ each option in parameters.options }}:
+        - job: analyze_${{ option.environment }}
+          displayName: Analyze ${{ option.environment }}
 
           pool:
             vmImage: ubuntu-16.04
@@ -62,7 +62,7 @@ stages:
               displayName: Restore
 
             - script: |
-                docker-compose run rubocop ./samples/${{ sample }}
+                docker-compose run rubocop ./samples/environments/${{ option.environment }}
               displayName: Test
 
             - script: |

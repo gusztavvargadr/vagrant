@@ -1,0 +1,18 @@
+trigger:
+  branches:
+    include:
+      - '*'
+pr: none
+
+stages:
+  - template: ../../../build/azp/samples/environments/commit.yml
+    parameters:
+      options:
+        - environment: machines
+
+  - template: ../../../build/azp/samples/environments/acceptance.yml
+    parameters:
+      options:
+        - environment: machines
+          machines: [ 'windows', 'linux' ]
+          providers: [ 'virtualbox', 'hyperv' ]
