@@ -7,7 +7,6 @@ services:
       dockerfile: ./rubocop.Dockerfile
     volumes:
       - .:/opt/gusztavvargadr/rubocop
-    working_dir: /opt/gusztavvargadr/rubocop
 
   vagrant:
     build:
@@ -15,4 +14,3 @@ services:
       dockerfile: ./vagrant.Dockerfile
     volumes:
       - .:/opt/gusztavvargadr/vagrant
-    working_dir: /opt/gusztavvargadr/vagrant

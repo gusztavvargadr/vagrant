@@ -1,5 +1,7 @@
 FROM library/ubuntu:16.04
 
+WORKDIR /opt/gusztavvargadr/vagrant
+
 RUN apt-get update -y
 RUN apt-get install -y wget
 
