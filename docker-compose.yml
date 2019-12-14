@@ -3,15 +3,14 @@ version: '3'
 services:
   rubocop:
     build:
-      context: ./build
+      context: ./build/docker
       dockerfile: ./rubocop.Dockerfile
     volumes:
-      - .:/opt/app
-    working_dir: /opt/app
+      - .:/opt/gusztavvargadr/rubocop
+
   vagrant:
     build:
-      context: ./build
+      context: ./build/docker
       dockerfile: ./vagrant.Dockerfile
     volumes:
-      - .:/opt/app
-    working_dir: /opt/app
+      - .:/opt/gusztavvargadr/vagrant
