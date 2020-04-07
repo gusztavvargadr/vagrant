@@ -13,7 +13,7 @@ stages:
     jobs:
       - ${{ each configuration in parameters.configurations }}:
         - job: build_${{ join('_', configuration.name) }}
-          displayName: Build ${{ join('/', configuration.name) }}
+          displayName: Build ${{ join('.', configuration.name) }}
 
           pool:
             vmImage: ubuntu-16.04
@@ -45,7 +45,7 @@ stages:
 
       - ${{ each configuration in parameters.configurations }}:
         - job: analyze_${{ join('_', configuration.name) }}
-          displayName: Analyze ${{ join('/', configuration.name) }}
+          displayName: Analyze ${{ join('.', configuration.name) }}
 
           pool:
             vmImage: ubuntu-16.04

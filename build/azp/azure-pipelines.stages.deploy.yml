@@ -15,7 +15,7 @@ stages:
         - ${{ each machine in configuration.machines }}:
           - ${{ each provider in configuration.providers }}:
             - job: test_${{ join('_', configuration.name) }}_${{ machine }}_${{ provider }}
-              displayName: Test ${{ join('/', configuration.name) }} with ${{ machine }} for ${{ provider }}
+              displayName: Test ${{ join('.', configuration.name) }} with ${{ machine }} for ${{ provider }}
 
               pool:
                 name: Default
