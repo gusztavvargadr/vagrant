@@ -1,6 +1,6 @@
 stack: vagrant
-service: samples
-component: machines
+service: machines
+component: servers
 
 machines:
   defaults:

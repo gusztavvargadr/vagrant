@@ -5,11 +5,11 @@ Vagrant.require_version('>= 2.1.5')
 
 class VagrantDeployment
   @defaults = {
-    'component' => ENV['VAGRANT_DEPLOYMENT_COMPONENT'] || '',
-    'service' => ENV['VAGRANT_DEPLOYMENT_SERVICE'] || '',
+    'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || '',
+    'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || '',
     'stack' => ENV['VAGRANT_DEPLOYMENT_STACK'] || '',
-    'environment' => ENV['VAGRANT_DEPLOYMENT_ENVIRONMENT'] || 'sandbox',
-    'tenant' => ENV['VAGRANT_DEPLOYMENT_TENANT'] || 'local',
+    'service' => ENV['VAGRANT_DEPLOYMENT_SERVICE'] || '',
+    'component' => ENV['VAGRANT_DEPLOYMENT_COMPONENT'] || '',
 
     'machines' => {
       'defaults' => {},
@@ -100,7 +100,6 @@ class VagrantMachine
     'autostart' => true,
     'primary' => false,
     'communicator' => '',
-    'count' => 1,
     'providers' => {
       'defaults' => {},
     },
@@ -110,6 +109,7 @@ class VagrantMachine
       },
     },
     'provisioners' => {},
+    'count' => 1,
   }
 
   class << self
@@ -208,7 +208,11 @@ class VagrantMachine
   end
 
   def fqdn
-    "#{hostname}.#{deployment.domain}"
+    if deployment.options['tenant'].empty? || deployment.options['environment'].empty?
+      ''
+    else
+      "#{hostname}.#{deployment.domain}"
+    end
   end
 end
 
@@ -315,7 +319,7 @@ class VagrantVirtualBoxProvider < VagrantProvider
   def configure_core
     super
 
-    # vagrant.name = machine.fqdn
+    vagrant.name = machine.fqdn unless machine.fqdn.empty?
 
     vagrant.memory = options.fetch('memory')
     vagrant.cpus = options.fetch('cpus')
@@ -356,7 +360,7 @@ class VagrantHyperVProvider < VagrantProvider
   def configure_core
     super
 
-    # vagrant.vmname = machine.fqdn
+    vagrant.vmname = machine.fqdn unless machine.fqdn.empty?
 
     vagrant.memory = options.fetch('memory')
     vagrant.cpus = options.fetch('cpus')

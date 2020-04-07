@@ -1,6 +1,6 @@
 directory = File.dirname(__FILE__)
 
-require "#{directory}/../../src/vagrant"
+require "#{directory}/../src/vagrant"
 
 class VagrantWindowsServerMachine < VagrantMachine
   @defaults = VagrantMachine.defaults.deep_merge(
