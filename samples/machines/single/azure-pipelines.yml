@@ -6,4 +6,4 @@ stages:
       configurations:
         - name: [ 'samples', 'machines', 'single' ]
           machines: [ 'default' ]
-          providers: [ 'hyperv' ]
+          providers: [ 'virtualbox', 'hyperv' ]
