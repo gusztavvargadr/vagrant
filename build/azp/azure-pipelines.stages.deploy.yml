@@ -1,19 +1,21 @@
-parameters:
-  options: []
-    # - environment: environment-name
-    #   machines: [ 'machine-name' ]
-    #   providers: [ 'provider-name' ]
+# parameters:
+#   name: ''
+#   displayName: ''
+#   configurations:
+#     - name: []
+#       machines: []
+#       providers: []
 
 stages:
-  - stage: acceptance
-    displayName: Acceptance
+  - stage: ${{ parameters.name }}
+    displayName: ${{ parameters.displayName }}
 
     jobs:
-      - ${{ each option in parameters.options }}:
-        - ${{ each machine in option.machines }}:
-          - ${{ each provider in option.providers }}:
-            - job: test_${{ option.environment }}_${{ machine }}_${{ provider }}
-              displayName: Test ${{ option.environment }} on ${{ machine }} with ${{ provider }}
+      - ${{ each configuration in parameters.configurations }}:
+        - ${{ each machine in configuration.machines }}:
+          - ${{ each provider in configuration.providers }}:
+            - job: test_${{ join('_', configuration.name) }}_${{ machine }}_${{ provider }}
+              displayName: Test ${{ join('.', configuration.name) }} with ${{ machine }} for ${{ provider }}
 
               pool:
                 name: Default
@@ -33,12 +35,12 @@ stages:
                   displayName: Init
 
                 - script: |
-                    cd samples/environments/${{ option.environment }}
+                    cd ./${{ join('/', configuration.name) }}
                     vagrant up ${{ machine }} --provider ${{ provider }}
                   displayName: Test
 
                 - script: |
-                    cd samples/environments/${{ option.environment }}
+                    cd ./${{ join('/', configuration.name) }}
                     vagrant destroy --force ${{ machine }}
                   displayName: Clean
                   condition: always()

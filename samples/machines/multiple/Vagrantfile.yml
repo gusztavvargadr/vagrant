@@ -1,0 +1,12 @@
+# tenant: ''
+# environment: ''
+stack: vagrant-samples
+service: machines
+component: multiple
+
+machines:
+  server:
+    box: <%= ENV['VAGRANT_BOX_LINUX_SERVER'] || 'gusztavvargadr/ubuntu-server' %>
+
+  desktop:
+    box: <%= ENV['VAGRANT_BOX_LINUX_DESKTOP'] || 'gusztavvargadr/ubuntu-desktop' %>
