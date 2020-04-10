@@ -5,7 +5,7 @@ require "#{directory}/../../../src/vagrant"
 VagrantMachine.defaults_include(
   'providers' => {
     'virtualbox' => {},
-    'hyperv' => {}
+    'hyperv' => {},
   }
 )
 

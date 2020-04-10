@@ -7,5 +7,8 @@ Naming/FileName:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
 Metrics/LineLength:
   Max: 120
