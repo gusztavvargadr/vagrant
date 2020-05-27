@@ -5,7 +5,7 @@ service: provisioners
 component: core
 
 machines:
-  default:
+  defaults:
     provisioners:
       shell:
         inline: echo "Hello World!"

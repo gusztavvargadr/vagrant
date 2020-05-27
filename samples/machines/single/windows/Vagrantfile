@@ -1,0 +1,12 @@
+directory = File.dirname(__FILE__)
+
+require "#{directory}/../../../../src/vagrant"
+require "#{directory}/../../../../samples/vagrant"
+
+VagrantDeployment.defaults_include(
+  'machines' => {
+    'default' => VagrantWindowsServerMachine.defaults,
+  }
+)
+
+VagrantDeployment.configure(directory)

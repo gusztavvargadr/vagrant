@@ -1,0 +1,10 @@
+trigger: none
+pr: none
+
+stages:
+  - template: ../../../../build/azp/azure-pipelines.stages.yml
+    parameters:
+      configurations:
+        - name: [ 'samples', 'machines', 'single', 'windows' ]
+          machines: [ 'default' ]
+          providers: [ 'virtualbox', 'hyperv' ]
