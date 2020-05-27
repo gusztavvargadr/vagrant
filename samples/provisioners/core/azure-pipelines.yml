@@ -1,4 +1,13 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - '*'
+  tags:
+    include:
+      - '*'
+  paths:
+    include:
+      - samples/provisioners/core
 pr: none
 
 stages:
