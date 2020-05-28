@@ -5,8 +5,9 @@ require "#{directory}/../../../../samples/vagrant"
 
 VagrantDeployment.defaults_include(
   'machines' => {
-    'windows' => VagrantWindowsDockerMachine.defaults,
-    'linux' => VagrantLinuxDockerMachine.defaults,
+    'server' => VagrantLinuxServerMachine.defaults,
+    'desktop' => VagrantLinuxDesktopMachine.defaults,
+    'docker' => VagrantLinuxDockerMachine.defaults,
   }
 )
 

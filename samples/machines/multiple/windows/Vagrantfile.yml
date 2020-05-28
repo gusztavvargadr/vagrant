@@ -2,4 +2,4 @@
 # environment: ''
 stack: vagrant-samples
 service: multiple-machines
-component: desktop
+component: windows
