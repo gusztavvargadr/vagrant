@@ -28,7 +28,7 @@ stages:
             - script: |
                 docker version
                 docker-compose version
-              displayName: Init
+              displayName: Initialize
 
             - script: |
                 docker-compose build vagrant
@@ -60,7 +60,7 @@ stages:
             - script: |
                 docker version
                 docker-compose version
-              displayName: Init
+              displayName: Initalize
 
             - script: |
                 docker-compose build rubocop

@@ -32,7 +32,9 @@ stages:
                 - script: |
                     vagrant version
                     vagrant plugin list
-                  displayName: Init
+                    vagrant box list
+                    vagrant global-status --prune
+                  displayName: Initialize
 
                 - script: |
                     cd ./${{ join('/', configuration.name) }}
