@@ -3,12 +3,12 @@ class VagrantWindowsServerMachine < VagrantMachine
     'box' => ENV['VAGRANT_BOX_WINDOWS_SERVER'] || 'gusztavvargadr/windows-server',
     'providers' => {
       'virtualbox' => {
-        'memory' => 2048,
-        'cpus' => 2,
+        'memory' => 1024,
+        'cpus' => 1,
       },
       'hyperv' => {
-        'memory' => 2048,
-        'cpus' => 2,
+        'memory' => 1024,
+        'cpus' => 1,
       },
       'azure' => {
         'size' => 'Standard_B1s',
@@ -24,12 +24,12 @@ class VagrantLinuxServerMachine < VagrantMachine
     'box' => ENV['VAGRANT_BOX_LINUX_SERVER'] || 'gusztavvargadr/ubuntu-server',
     'providers' => {
       'virtualbox' => {
-        'memory' => 2048,
-        'cpus' => 2,
+        'memory' => 1024,
+        'cpus' => 1,
       },
       'hyperv' => {
-        'memory' => 2048,
-        'cpus' => 2,
+        'memory' => 1024,
+        'cpus' => 1,
       },
       'azure' => {
         'size' => 'Standard_B1s',
@@ -83,12 +83,12 @@ class VagrantWindowsDockerMachine < VagrantMachine
     'box' => ENV['VAGRANT_BOX_WINDOWS_DOCKER'] || 'gusztavvargadr/docker-windows',
     'providers' => {
       'virtualbox' => {
-        'memory' => 2048,
-        'cpus' => 2,
+        'memory' => 1024,
+        'cpus' => 1,
       },
       'hyperv' => {
-        'memory' => 2048,
-        'cpus' => 2,
+        'memory' => 1024,
+        'cpus' => 1,
       },
       'azure' => {
         'size' => 'Standard_B1s',
@@ -102,12 +102,12 @@ class VagrantLinuxDockerMachine < VagrantMachine
     'box' => ENV['VAGRANT_BOX_LINUX_DOCKER'] || 'gusztavvargadr/docker-linux',
     'providers' => {
       'virtualbox' => {
-        'memory' => 2048,
-        'cpus' => 2,
+        'memory' => 1024,
+        'cpus' => 1,
       },
       'hyperv' => {
-        'memory' => 2048,
-        'cpus' => 2,
+        'memory' => 1024,
+        'cpus' => 1,
       },
       'azure' => {
         'size' => 'Standard_B1s',
