@@ -1,9 +1,0 @@
-# tenant: ''
-# environment: ''
-stack: vagrant-samples
-service: machines
-component: single
-
-machines:
-  default:
-    box: <%= ENV['VAGRANT_BOX_LINUX_SERVER'] || 'gusztavvargadr/ubuntu-server' %>

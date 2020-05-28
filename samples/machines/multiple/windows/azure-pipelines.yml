@@ -1,0 +1,19 @@
+trigger:
+  branches:
+    include:
+      - '*'
+  tags:
+    include:
+      - '*'
+  paths:
+    include:
+      - samples/machines/multiple/windows
+pr: none
+
+stages:
+  - template: ../../../../build/azp/azure-pipelines.stages.yml
+    parameters:
+      configurations:
+        - name: [ 'samples', 'machines', 'multiple', 'windows' ]
+          machines: [ 'server', 'desktop', 'docker' ]
+          providers: [ 'virtualbox', 'hyperv' ]

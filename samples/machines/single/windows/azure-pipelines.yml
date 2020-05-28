@@ -7,13 +7,13 @@ trigger:
       - '*'
   paths:
     include:
-      - samples/provisioners/core
+      - samples/machines/single/windows
 pr: none
 
 stages:
-  - template: ../../../build/azp/azure-pipelines.stages.yml
+  - template: ../../../../build/azp/azure-pipelines.stages.yml
     parameters:
       configurations:
-        - name: [ 'samples', 'provisioners', 'core' ]
-          machines: [ 'windows', 'linux' ]
+        - name: [ 'samples', 'machines', 'single', 'windows' ]
+          machines: [ 'default' ]
           providers: [ 'virtualbox', 'hyperv' ]
