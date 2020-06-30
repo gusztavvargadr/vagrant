@@ -1,5 +1,5 @@
 # tenant: ''
 # environment: ''
 stack: vagrant-samples
-service: machines
-component: multiple-windows
+service: multiple-machines
+component: windows
