@@ -15,5 +15,5 @@ stages:
     parameters:
       configurations:
         - name: ["samples", "provisioners", "core", "linux"]
-          machines: ["windows", "linux"]
+          machines: ["default"]
           providers: ["virtualbox", "hyperv"]
