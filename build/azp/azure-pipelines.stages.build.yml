@@ -12,65 +12,65 @@ stages:
 
     jobs:
       - ${{ each configuration in parameters.configurations }}:
-        - job: build_${{ join('_', configuration.name) }}
-          displayName: Build ${{ join('.', configuration.name) }}
+          - job: build_${{ join('_', configuration.name) }}
+            displayName: Build ${{ join('.', configuration.name) }}
 
-          pool:
-            vmImage: ubuntu-16.04
+            pool:
+              vmImage: ubuntu-16.04
 
-          workspace:
-            clean: all
+            workspace:
+              clean: all
 
-          steps:
-            - checkout: self
-              submodules: recursive
+            steps:
+              - checkout: self
+                submodules: recursive
 
-            - script: |
-                docker version
-                docker-compose version
-              displayName: Initialize
+              - script: |
+                  docker version
+                  docker-compose version
+                displayName: Initialize
 
-            - script: |
-                docker-compose build vagrant
-              displayName: Restore
+              - script: |
+                  docker-compose build vagrant
+                displayName: Restore
 
-            - script: |
-                docker-compose run -e VAGRANT_CWD=./${{ join('/', configuration.name) }} vagrant validate --ignore-provider
-              displayName: Test
+              - script: |
+                  docker-compose run -e VAGRANT_CWD=./${{ join('/', configuration.name) }} vagrant validate --ignore-provider
+                displayName: Test
 
-            - script: |
-                docker-compose down --rmi all
-              displayName: Clean
-              condition: always()
+              - script: |
+                  docker-compose down --rmi all
+                displayName: Clean
+                condition: always()
 
       - ${{ each configuration in parameters.configurations }}:
-        - job: analyze_${{ join('_', configuration.name) }}
-          displayName: Analyze ${{ join('.', configuration.name) }}
+          - job: analyze_${{ join('_', configuration.name) }}
+            displayName: Analyze ${{ join('.', configuration.name) }}
 
-          pool:
-            vmImage: ubuntu-16.04
+            pool:
+              vmImage: ubuntu-16.04
 
-          workspace:
-            clean: all
+            workspace:
+              clean: all
 
-          steps:
-            - checkout: self
-              submodules: recursive
+            steps:
+              - checkout: self
+                submodules: recursive
 
-            - script: |
-                docker version
-                docker-compose version
-              displayName: Initalize
+              - script: |
+                  docker version
+                  docker-compose version
+                displayName: Initalize
 
-            - script: |
-                docker-compose build rubocop
-              displayName: Restore
+              - script: |
+                  docker-compose build rubocop
+                displayName: Restore
 
-            - script: |
-                docker-compose run rubocop ./${{ join('/', configuration.name) }}
-              displayName: Test
+              - script: |
+                  docker-compose run rubocop ./${{ join('/', configuration.name) }}
+                displayName: Test
 
-            - script: |
-                docker-compose down --rmi all
-              displayName: Clean
-              condition: always()
+              - script: |
+                  docker-compose down --rmi all
+                displayName: Clean
+                condition: always()

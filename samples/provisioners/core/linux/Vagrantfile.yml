@@ -1,11 +1,11 @@
 # tenant: ''
 # environment: ''
 stack: vagrant-samples
-service: provisioners
-component: core
+service: core-provisioners
+component: linux
 
 machines:
-  defaults:
+  default:
     provisioners:
       shell:
         inline: echo "Hello World!"
@@ -14,10 +14,10 @@ machines:
         destination: /tmp/hello-world.txt
       chef_policyfile:
         paths:
-        - Policyfile.rb
+          - Policyfile.rb
       docker:
         runs:
-        - name: hello-world
-          args: '--rm'
-          daemonize: false
-          restart: 'no'
+          - name: hello-world
+            args: "--rm"
+            daemonize: false
+            restart: "no"

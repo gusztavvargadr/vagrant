@@ -1,5 +1,5 @@
 FROM library/ubuntu:16.04
-ARG VAGRANT_VERSION=2.2.7
+ARG VAGRANT_VERSION=2.2.9
 
 WORKDIR /opt/gusztavvargadr/vagrant
 
