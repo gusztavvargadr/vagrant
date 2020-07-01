@@ -1,16 +1,27 @@
 # tenant: ''
 # environment: ''
 stack: vagrant-samples
-service: providers
-component: hyperv
+service: hyperv-providers
+component: windows
 
 machines:
+  default:
+    providers:
+      hyperv:
+
   dhcp:
     providers:
       hyperv:
         start: StartIfRunning
         stop: Save
+    synced_folders:
+      /vagrant:
+        disabled: true
     provisioners:
+      # New-VMSwitch -SwitchName HyperVNAT -SwitchType Internal
+      # New-NetIPAddress -IPAddress 192.168.238.1 -PrefixLength 24 -InterfaceAlias "vEthernet (HyperVNAT)"
+      # New-NetNat -Name HyperVNAT -InternalIPInterfaceAddressPrefix 192.168.238.0/24
+      ## TODO Configure NAT external addresses
       shell-dhcp-server:
         inline: |
           Get-WindowsOptionalFeature -Online | Where { $_.FeatureName -match "dhcp" } | Where { $_.State -ne "Enabled" } | ForEach { Enable-WindowsOptionalFeature -Online -FeatureName $_.FeatureName -All -NoRestart }
