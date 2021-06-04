@@ -599,7 +599,7 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
       machine.vagrant.trigger.before trigger_actions do |trigger|
         trigger.name = "#{name}_zip"
         trigger.run = {
-          inline: "rm #{host_file_path}; 7z a -sdel #{host_file_path} #{host_directory_path}",
+          inline: "7z a -sdel #{host_file_path} #{host_directory_path}",
         }
       end
 
