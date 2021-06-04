@@ -579,14 +579,15 @@ class VagrantChefPolicyfileProvisioner < VagrantProvisioner
 
       trigger_actions = (File.exist?(host_file_path) && File.size(host_file_path) > 0) ? [:provision] : [:up, :provision]
 
-      FileUtils.mkdir_p File.dirname(host_file_path)
-      FileUtils.touch host_file_path
-
       machine.vagrant.trigger.before trigger_actions do |trigger|
         trigger.name = "#{name}_chef_install"
         trigger.run = {
           inline: "chef install #{policyfile_path}",
         }
+        trigger.ruby do
+          FileUtils.mkdir_p File.dirname(host_file_path)
+          FileUtils.rm_f host_file_path
+        end
       end
 
       machine.vagrant.trigger.before trigger_actions do |trigger|
