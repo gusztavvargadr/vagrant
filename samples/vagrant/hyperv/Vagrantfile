@@ -1,0 +1,11 @@
+# ENV["VAGRANT_DEFAULT_PROVIDER"] = "hyperv"
+
+Vagrant.configure("2") do |config|
+  config.vm.provider "hyperv" do |provider_hyperv, config_override|
+    provider_hyperv.enable_virtualization_extensions = true
+    provider_hyperv.linked_clone = true
+
+    config_override.vm.network "private_network", bridge: "Default Switch"
+    config_override.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "", smb_password: ""
+  end
+end

@@ -1,5 +1,0 @@
-# tenant: ''
-# environment: ''
-stack: vagrant-samples
-service: single-machines
-component: linux

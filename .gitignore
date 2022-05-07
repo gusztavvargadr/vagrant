@@ -1,6 +1,1 @@
-**/.vagrant
-**/Vagrantfile.override.yml
-
-**/.chef
-**/*.lock.json
-**/Berksfile.lock
+.vagrant

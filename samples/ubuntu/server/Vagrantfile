@@ -1,0 +1,15 @@
+Vagrant.configure("2") do |config|
+  config.vm.define "default", primary: true do |vm_default|
+    vm_default.vm.box = "gusztavvargadr/ubuntu-server"
+    # vm_default.vm.box_version = "~> 2004.0" # Version 20.04 LTS
+    # vm_default.vm.box_version = "~> 1804.0" # Version 20.04 LTS
+  end
+
+  config.vm.define "2004-lts", autostart: false do |vm_2004_lts|
+    vm_2004_lts.vm.box = "gusztavvargadr/ubuntu-server-2004-lts"
+  end
+
+  config.vm.define "1804-lts", autostart: false do |vm_1804_lts|
+    vm_1804_lts.vm.box = "gusztavvargadr/ubuntu-server-1804-lts"
+  end
+end
