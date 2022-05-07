@@ -1,11 +1,17 @@
 # ENV["VAGRANT_DEFAULT_PROVIDER"] = "hyperv"
 
+hyperv_enable_virtualization_extensions = ENV["VAGRANT_HYPERV_ENABLE_VIRTUALIZATION_EXTENSIONS"] || false
+hyperv_linked_clone = ENV["VAGRANT_HYPERV_LINKED_CLONE"] || false
+hyperv_network_bridge = ENV["VAGRANT_HYPERV_NETWORK_BRIDGE"] || "Default Switch"
+hyperv_synced_folder_smb_username = ENV["USERNAME"]
+hyperv_synced_folder_smb_password = ENV["VAGRANT_HYPERV_SYNCED_FOLDER_SMB_PASSWORD"]
+
 Vagrant.configure("2") do |config|
   config.vm.provider "hyperv" do |provider_hyperv, config_override|
-    provider_hyperv.enable_virtualization_extensions = true
-    provider_hyperv.linked_clone = true
+    provider_hyperv.enable_virtualization_extensions = hyperv_enable_virtualization_extensions
+    provider_hyperv.linked_clone = hyperv_linked_clone
 
-    config_override.vm.network "private_network", bridge: "Default Switch"
-    config_override.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "", smb_password: ""
+    config_override.vm.network "private_network", bridge: hyperv_network_bridge
+    config_override.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: hyperv_synced_folder_smb_username, smb_password: hyperv_synced_folder_smb_password
   end
 end

@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
   config.vm.define "default", primary: true do |vm_default|
     vm_default.vm.box = "gusztavvargadr/docker-linux"
-    # vm_default.vm.box_version = "~> 2010.2004.-" # Version 20.04 LTS
-    # vm_default.vm.box_version = "~> 2010.1804.0" # Version 20.04 LTS
+    # vm_default.vm.box_version = "~> 2010.2004.-" # 20.04 LTS
+    # vm_default.vm.box_version = "~> 2010.1804.0" # 18.04 LTS
   end
 end
