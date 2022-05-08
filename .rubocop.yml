@@ -1,14 +1,5 @@
+Style/StringLiterals:
+    Enabled: false
+
 Layout/EndOfLine:
   Enabled: false
-
-Naming/FileName:
-  Enabled: false
-
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: consistent_comma
-
-Metrics/LineLength:
-  Max: 120

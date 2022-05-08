@@ -1,0 +1,18 @@
+Vagrant.configure("2") do |config|
+  config.vm.define "default", primary: true do |vm_default|
+    vm_default.vm.box = "gusztavvargadr/ubuntu-desktop"
+    # vm_default.vm.box_version = "~> 2004.0" # 20.04 LTS
+    # vm_default.vm.box_version = "~> 1804.0" # 18.04 LTS
+  end
+
+  config.vm.define "2004-lts-xfce", autostart: false do |vm_2004_lts_xfce|
+    vm_2004_lts_xfce.vm.box = "gusztavvargadr/ubuntu-desktop-2004-lts-xfce"
+  end
+
+  config.vm.define "1804-lts-xfce", autostart: false do |vm_1804_lts_xfce|
+    vm_1804_lts_xfce.vm.box = "gusztavvargadr/ubuntu-desktop-1804-lts-xfce"
+  end
+
+  config.vm.provision "shell", inline: "lsb_release -a"
+  config.vm.provision "shell", inline: "apt list xubuntu-desktop"
+end
