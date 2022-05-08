@@ -12,4 +12,6 @@ Vagrant.configure("2") do |config|
   config.vm.define "1804-lts", autostart: false do |vm_1804_lts|
     vm_1804_lts.vm.box = "gusztavvargadr/ubuntu-server-1804-lts"
   end
+
+  config.vm.provision "shell", inline: "lsb_release -a"
 end
