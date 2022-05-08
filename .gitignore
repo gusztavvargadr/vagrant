@@ -1,1 +1,5 @@
 .vagrant
+
+logs
+config
+tmp
