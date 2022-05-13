@@ -1,9 +1,10 @@
 # ENV["VAGRANT_DEFAULT_PROVIDER"] = "hyperv"
+# TODO separate user with full access for SMB
 
 hyperv_enable_virtualization_extensions = ENV["VAGRANT_HYPERV_ENABLE_VIRTUALIZATION_EXTENSIONS"] || false
 hyperv_linked_clone = ENV["VAGRANT_HYPERV_LINKED_CLONE"] || false
 hyperv_network_bridge = ENV["VAGRANT_HYPERV_NETWORK_BRIDGE"] || "Default Switch"
-hyperv_synced_folder_smb_username = ENV["USERNAME"]
+hyperv_synced_folder_smb_username = ENV["VAGRANT_HYPERV_SYNCED_FOLDER_SMB_USERNAME"] || ENV["USERNAME"]
 hyperv_synced_folder_smb_password = ENV["VAGRANT_HYPERV_SYNCED_FOLDER_SMB_PASSWORD"]
 
 Vagrant.configure("2") do |config|
