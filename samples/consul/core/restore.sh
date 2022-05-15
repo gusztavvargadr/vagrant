@@ -5,17 +5,18 @@ set -o nounset
 
 export DEBIAN_FRONTEND=noninteractive
 
-export CONSUL_VERSION=1.11.4
+export CONSUL_VERSION=1.12.0
+export ENVOY_VERSION=1.22.0
 
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt install consul=$CONSUL_VERSION -y
+sudo apt install consul=$CONSUL_VERSION-1 -y
 
 curl -L https://func-e.io/install.sh | sudo bash -s -- -b /usr/local/bin
-func-e use 1.20.2
-sudo cp ~/.func-e/versions/1.20.2/bin/envoy /usr/local/bin/
+func-e use $ENVOY_VERSION
+sudo cp ~/.func-e/versions/$ENVOY_VERSION/bin/envoy /usr/local/bin/
 envoy --version
 
-sudo apt install zip unzip -y
+sudo apt install zip unzip docker-compose-plugin -y
 
 docker pull consul:$CONSUL_VERSION

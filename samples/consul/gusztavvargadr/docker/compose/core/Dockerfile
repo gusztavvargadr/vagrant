@@ -2,8 +2,8 @@ ARG BASE
 FROM ${BASE}
 
 WORKDIR /consul
-ADD *.hcl config/
+ADD ./*.hcl config/
 
-ADD run.sh .
+ADD ./run.sh .
 
-CMD [ "sh", "run.sh" ]
+CMD [ "sh", "./run.sh" ]

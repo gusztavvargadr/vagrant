@@ -3,13 +3,10 @@
 set -o errexit
 set -o nounset
 
-cd core
-echo encrypt = \"$(consul keygen)\" > gossip.hcl
+sh ./boot.sh
 
-mkdir certs
-cd certs
-consul tls ca create
-consul tls cert create -server -dc local
+cp -R ./core/* ./config
 
-cd ../..
-chown -R consul:consul core
+chown -R consul:consul ./config
+
+docker-entrypoint.sh agent
