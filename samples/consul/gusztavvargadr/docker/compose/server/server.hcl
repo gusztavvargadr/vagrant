@@ -1,5 +1,4 @@
-server     = true
-retry_join = ["consul-bootstrap", "consul-server"]
+server           = true
 
 cert_file = "/consul/config/certs/local-server-consul-0.pem"
 key_file  = "/consul/config/certs/local-server-consul-0-key.pem"

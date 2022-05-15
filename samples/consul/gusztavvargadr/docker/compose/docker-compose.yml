@@ -8,24 +8,6 @@ services:
       dockerfile: ./Dockerfile
       args:
         BASE: ${CONSUL_IMAGE_NAME}:${CONSUL_IMAGE_VERSION}
-    restart: on-failure
-    volumes:
-      - core:/consul/core
-    networks:
-      - core
-
-  consul-bootstrap:
-    image: ${CONSUL_BOOTSTRAP_IMAGE}
-    build:
-      context: ./bootstrap
-      dockerfile: ./Dockerfile
-      args:
-        BASE: ${CONSUL_CORE_IMAGE}
-    restart: on-failure
-    volumes:
-      - core:/consul/core
-    networks:
-      - core
 
   consul-server:
     image: ${CONSUL_SERVER_IMAGE}

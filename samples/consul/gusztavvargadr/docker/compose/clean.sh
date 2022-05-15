@@ -3,4 +3,4 @@
 set -o errexit
 set -o nounset
 
-docker-compose down --rmi all --volumes
+docker compose down --rmi all --volumes
