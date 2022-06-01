@@ -6,10 +6,14 @@ vault secrets enable -path=kv kv
 
 vault kv put kv/hello target=world
 vault kv get kv/hello
+vault kv list kv
 
-vault kv put kv/my-secret value="s3c(eT"
-vault kv get kv/my-secret
-vault kv delete kv/my-secret
+vault kv put kv/secret value="s3c(eT"
+vault kv get kv/secret
+vault kv list kv
+
+vault kv delete kv/hello
+vault kv delete kv/secret
 vault kv list kv
 
 vault secrets disable kv

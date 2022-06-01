@@ -2,7 +2,7 @@
 
 mkdir -p ./tmp/
 
-sudo cp vault.hcl /etc/vault.d/
+sudo cp ./vault.hcl /etc/vault.d/
 sudo chown -R vault:vault /etc/vault.d/
 # sudo chown -R o-rwx /etc/vault.d/
 
@@ -17,7 +17,7 @@ vault operator init -key-shares=1 -key-threshold=1 -format=json | tee ./tmp/vaul
 vault status
 
 jq -r .unseal_keys_b64[0] ./tmp/vault-operator-init.json | xargs vault operator unseal $1
-# vault status
+vault status
 
 jq -r .root_token ./tmp/vault-operator-init.json | vault login -
 vault token lookup
