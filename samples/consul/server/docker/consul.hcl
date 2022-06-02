@@ -3,7 +3,7 @@ datacenter = "local"
 data_dir = "/opt/consul"
 
 client_addr = "0.0.0.0"
-bind_addr   = "{{ GetInterfaceIP \"eth1\" }}"
+bind_addr   = "{{ GetAllInterfaces | include \"name\" \"eth\" | sort \"-name\" | limit 1 | attr \"address\" }}"
 
 acl {
   enabled                  = true

@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  consul:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        BASE: ${CONSUL_IMAGE_NAME}:${CONSUL_IMAGE_VERSION}
+    ports:
+      - 8500:8500
+    command: agent

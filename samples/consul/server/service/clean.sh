@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-export CONSUL_HTTP_TOKEN=`jq -r .SecretID ./tmp/consul-acl-bootstrap.json`
+set -o errexit
+set -o nounset
 
-consul leave
+cd `dirname $0`
+
+bash ../core/clean.sh
 
 sudo systemctl stop consul.service
 sudo systemctl disable consul.service
 
 sudo rm -R /opt/consul/*
-rm -R ./tmp/

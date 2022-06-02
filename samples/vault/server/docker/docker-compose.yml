@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  vault:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        BASE: ${VAULT_IMAGE_NAME}:${VAULT_IMAGE_VERSION}
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 8200:8200
+    command: server

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -o errexit
+set -o nounset
+
 export VAULT_ADDR=http://127.0.0.1:8200
 
 vault secrets enable -path=kv kv
@@ -14,6 +17,6 @@ vault kv list kv
 
 vault kv delete kv/hello
 vault kv delete kv/secret
-vault kv list kv
+vault kv list kv || true
 
 vault secrets disable kv
