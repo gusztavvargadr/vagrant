@@ -3,6 +3,4 @@
 set -o errexit
 set -o nounset
 
-cd `dirname $0`
-
-bash ../core/test.sh
+echo export VAULT_ADDR=http://127.0.0.1:8200
