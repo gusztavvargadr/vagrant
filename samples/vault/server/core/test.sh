@@ -3,7 +3,7 @@
 set -o errexit
 set -o nounset
 
-export VAULT_ADDR=http://127.0.0.1:8200
+eval `bash ./env.sh`
 
 vault secrets enable -path=kv kv
 
