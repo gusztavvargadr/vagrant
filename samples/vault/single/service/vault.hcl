@@ -7,4 +7,6 @@ listener "tcp" {
   tls_disable = 1
 }
 
+api_addr = "http://{{ GetAllInterfaces | include \"name\" \"eth\" | sort \"-name\" | limit 1 | attr \"address\" }}:8200"
+
 ui = true
