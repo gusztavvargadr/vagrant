@@ -3,4 +3,6 @@
 set -o errexit
 set -o nounset
 
-docker compose down --rmi all --volumes
+cd `dirname $0`
+
+bash ../core/restore.sh
