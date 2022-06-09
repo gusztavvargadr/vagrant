@@ -2,7 +2,12 @@ datacenter = "local"
 
 data_dir = "/opt/consul"
 
-bind_addr = "{{ GetAllInterfaces | include \"name\" \"eth\" | sort \"-name\" | limit 1 | attr \"address\" }}"
+client_addr = "0.0.0.0"
+bind_addr   = "{{ GetAllInterfaces | include \"name\" \"eth\" | sort \"-name\" | limit 1 | attr \"address\" }}"
+
+ui_config {
+  enabled = true
+}
 
 acl {
   enabled        = true
