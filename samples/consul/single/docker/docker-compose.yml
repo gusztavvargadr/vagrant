@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  consul:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        BASE: ${CONSUL_IMAGE_NAME}:${CONSUL_IMAGE_VERSION}
+    network_mode: host
+    command: agent
