@@ -5,7 +5,7 @@ set -o nounset
 
 mkdir -p ./tmp/
 
-consul acl bootstrap -format=json | tee ./tmp/consul-acl-bootstrap.json
+consul acl bootstrap -format=json | tee ./tmp/acl.json
 eval `bash ./env.sh`
 consul info
 

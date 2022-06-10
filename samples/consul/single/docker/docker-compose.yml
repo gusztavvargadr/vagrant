@@ -7,5 +7,7 @@ services:
       dockerfile: ./Dockerfile
       args:
         BASE: ${CONSUL_IMAGE_NAME}:${CONSUL_IMAGE_VERSION}
-    network_mode: host
+    ports:
+      - 8500:8500
+      - 8600:8600
     command: agent

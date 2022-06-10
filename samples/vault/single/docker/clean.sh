@@ -7,5 +7,6 @@ cd `dirname $0`
 
 bash ../core/clean.sh
 
-docker compose down --rmi all --volumes
+docker-compose down --rmi all --volumes
+
 docker builder prune -f

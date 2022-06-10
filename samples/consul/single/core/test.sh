@@ -17,4 +17,4 @@ consul kv delete hello
 consul kv delete config
 consul kv export
 
-consul services register ../core/service-ssh.hcl
+# consul services register ../core/service-ssh.hcl

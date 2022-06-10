@@ -9,5 +9,6 @@ services:
         BASE: ${VAULT_IMAGE_NAME}:${VAULT_IMAGE_VERSION}
     cap_add:
       - IPC_LOCK
-    network_mode: host
+    ports:
+      - 8200:8200
     command: server

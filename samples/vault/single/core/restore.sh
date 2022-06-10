@@ -14,5 +14,3 @@ sudo apt install vault=$VAULT_VERSION-1 -y
 sudo apt install jq net-tools -y
 
 docker pull library/vault:$VAULT_VERSION
-
-sudo apt install docker-compose-plugin -y

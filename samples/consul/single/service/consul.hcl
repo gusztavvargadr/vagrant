@@ -5,6 +5,10 @@ data_dir = "/opt/consul"
 client_addr = "0.0.0.0"
 bind_addr   = "{{ GetAllInterfaces | include \"name\" \"eth\" | sort \"-name\" | limit 1 | attr \"address\" }}"
 
+ui_config {
+  enabled = true
+}
+
 acl {
   enabled                  = true
   default_policy           = "deny"
@@ -14,7 +18,3 @@ acl {
 
 server           = true
 bootstrap_expect = 1
-
-ui_config {
-  enabled = true
-}

@@ -15,13 +15,9 @@ sudo apt install jq net-tools -y
 
 docker pull library/consul:$CONSUL_VERSION
 
-sudo apt install docker-compose-plugin -y
-
 export ENVOY_VERSION=1.22.0
 
 curl -L https://func-e.io/install.sh | sudo bash -s -- -b /usr/local/bin
 func-e use $ENVOY_VERSION
 sudo cp ~/.func-e/versions/$ENVOY_VERSION/bin/envoy /usr/local/bin/
 envoy --version
-
-sudo apt install zip unzip
