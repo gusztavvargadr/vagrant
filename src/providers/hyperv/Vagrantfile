@@ -1,6 +1,6 @@
 # ENV['VAGRANT_DEFAULT_PROVIDER'] = 'hyperv'
 
-# Get-WindowsOptionalFeature -Online | Where { $_.FeatureName -match "hyper" } | Where { $_.State -ne "Enabled" } | ForEach { Enable-WindowsOptionalFeature -Online -FeatureName $_.FeatureName -All -NoRestart }
+# Get-WindowsOptionalFeature -Online | Where { $_.FeatureName -match "hyper-" } | Where { $_.State -ne "Enabled" } | ForEach { Enable-WindowsOptionalFeature -Online -FeatureName $_.FeatureName -All -NoRestart }
 
 # New-VMSwitch -SwitchName "Internal" -SwitchType Internal
 # New-NetIPAddress -InterfaceAlias "vEthernet (Internal)" -IPAddress 192.168.238.1 -PrefixLength 24
@@ -16,9 +16,7 @@ Vagrant.configure("2") do |config|
     dhcp.vm.provider "hyperv" do |hyperv|
       hyperv.cpus = 2
       hyperv.memory = 1024
-
-      hyperv.auto_start_action = "Start"
-      hyperv.auto_stop_action = "Shutdown"
+      hyperv.auto_start_action = "StartIfRunning"
     end
 
     dhcp.vm.network "private_network", bridge: "Internal"
