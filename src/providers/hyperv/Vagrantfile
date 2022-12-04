@@ -1,4 +1,4 @@
-# ENV['VAGRANT_DEFAULT_PROVIDER'] = 'hyperv'
+# ENV["VAGRANT_DEFAULT_PROVIDER"] = "hyperv"
 
 # Get-WindowsOptionalFeature -Online | Where { $_.FeatureName -match "hyper-" } | Where { $_.State -ne "Enabled" } | ForEach { Enable-WindowsOptionalFeature -Online -FeatureName $_.FeatureName -All -NoRestart }
 
@@ -8,10 +8,11 @@
 
 # dedicated local user for shared folders
 # home vagrantfile and vars
+# ENV["VAGRANT_PRIVATE_NETWORK_NAME"] = "Internal"
 
 Vagrant.configure("2") do |config|
   config.vm.define "dhcp" do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/windows-server-core"
+    config_vm.vm.box = "gusztavvargadr/windows-server"
 
     config_vm.vm.provider "hyperv" do |config_provider|
       config_provider.cpus = 2
