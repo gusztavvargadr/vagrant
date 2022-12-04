@@ -1,14 +1,14 @@
 Vagrant.configure("2") do |config|
-  config.vm.define "server", primary: true do |server|
-    server.vm.box = "gusztavvargadr/ubuntu-server"
+  config.vm.define "server", primary: true do |config_vm|
+    config_vm.vm.box = "gusztavvargadr/ubuntu-server"
   end
 
-  config.vm.define "desktop", autostart: false do |desktop|
-    desktop.vm.box = "gusztavvargadr/ubuntu-desktop"
+  config.vm.define "desktop", autostart: false do |config_vm|
+    config_vm.vm.box = "gusztavvargadr/ubuntu-desktop"
   end
 
-  config.vm.define "docker", autostart: false do |docker|
-    docker.vm.box = "gusztavvargadr/docker-linux"
+  config.vm.define "docker", autostart: false do |config_vm|
+    config_vm.vm.box = "gusztavvargadr/docker-linux"
   end
 
   config.vm.provision "shell", inline: <<-EOH

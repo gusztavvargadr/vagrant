@@ -10,18 +10,18 @@
 # home vagrantfile and vars
 
 Vagrant.configure("2") do |config|
-  config.vm.define "dhcp" do |dhcp|
-    dhcp.vm.box = "gusztavvargadr/windows-server-core"
+  config.vm.define "dhcp" do |config_vm|
+    config_vm.vm.box = "gusztavvargadr/windows-server-core"
 
-    dhcp.vm.provider "hyperv" do |hyperv|
-      hyperv.cpus = 2
-      hyperv.memory = 1024
-      hyperv.auto_start_action = "StartIfRunning"
+    config_vm.vm.provider "hyperv" do |config_provider|
+      config_provider.cpus = 2
+      config_provider.memory = 1024
+      config_provider.auto_start_action = "StartIfRunning"
     end
 
-    dhcp.vm.network "private_network", bridge: "Internal"
+    config_vm.vm.network "private_network", bridge: "Internal"
 
-    dhcp.vm.synced_folder ".", "/vagrant", disabled: true
+    config_vm.vm.synced_folder ".", "/vagrant", disabled: true
 
     # New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress 192.168.238.2 -PrefixLength 24 -DefaultGateway 192.168.238.1
     # Set-DNSClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 8.8.8.8,8.8.4.4
