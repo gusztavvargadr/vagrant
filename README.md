@@ -1,5 +1,5 @@
 # Vagrant
 
-This repository contains [Vagrant] helper tools and sample environments.
+This repository contains [Vagrant] samples.
 
 [Vagrant]: https://vagrantup.com
