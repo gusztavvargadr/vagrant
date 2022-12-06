@@ -1,36 +1,17 @@
 # ENV["VAGRANT_DEFAULT_PROVIDER"] = "hyperv"
 
-# Get-WindowsOptionalFeature -Online | Where { $_.FeatureName -match "hyper-" } | Where { $_.State -ne "Enabled" } | ForEach { Enable-WindowsOptionalFeature -Online -FeatureName $_.FeatureName -All -NoRestart }
+private_network_bridge = ENV["VAGRANT_PRIVATE_NETWORK_BRIDGE"] || "Default Switch"
 
-# New-VMSwitch -SwitchName "Internal" -SwitchType Internal
-# New-NetIPAddress -InterfaceAlias "vEthernet (Internal)" -IPAddress 192.168.238.1 -PrefixLength 24
-# New-NetNat -Name "vEthernet (Internal)" -InternalIPInterfaceAddressPrefix 192.168.238.0/24
-
-# dedicated local user for shared folders
-# home vagrantfile and vars
-# ENV["VAGRANT_PRIVATE_NETWORK_NAME"] = "Internal"
+synced_folder_disabled = ENV["VAGRANT_SYNCED_FOLDER_DISABLED"] || false
+synced_folder_username = ENV["VAGRANT_SYNCED_FOLDER_USERNAME"] || ENV["USERNAME"]
+synced_folder_password = ENV["VAGRANT_SYNCED_FOLDER_PASSWORD"]
 
 Vagrant.configure("2") do |config|
-  config.vm.define "dhcp" do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/windows-server"
+  config.vm.network "private_network", bridge: private_network_bridge
 
-    config_vm.vm.provider "hyperv" do |config_provider|
-      config_provider.cpus = 2
-      config_provider.memory = 1024
-      config_provider.auto_start_action = "StartIfRunning"
-    end
-
-    config_vm.vm.network "private_network", bridge: "Internal"
-
-    config_vm.vm.synced_folder ".", "/vagrant", disabled: true
-
-    # New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress 192.168.238.2 -PrefixLength 24 -DefaultGateway 192.168.238.1
-    # Set-DNSClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 8.8.8.8,8.8.4.4
-
-    # Get-WindowsOptionalFeature -Online | Where { $_.FeatureName -match "dhcp" } | Where { $_.State -ne "Enabled" } | ForEach { Enable-WindowsOptionalFeature -Online -FeatureName $_.FeatureName -All -NoRestart }
-
-    # Add-DhcpServerv4Scope -Name "192.168.238.0/24" -StartRange 192.168.238.100 -EndRange 192.168.238.199 -SubnetMask 255.255.255.0 -LeaseDuration "04:00:00"
-    # Set-DhcpServerv4OptionValue -ScopeId 192.168.238.0 -OptionId 3 -Value 192.168.238.1
-    # Set-DhcpServerv4OptionValue -ScopeId 192.168.238.0 -OptionId 6 -Value 8.8.8.8,8.8.4.4
+  if synced_folder_disabled
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+  else
+    config.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: synced_folder_username, smb_password: synced_folder_password
   end
 end
