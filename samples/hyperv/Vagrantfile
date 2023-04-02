@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
   config.vm.define "dhcp" do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/windows-server"
+    config_vm.vm.box = "gusztavvargadr/windows-server-core"
 
     config_vm.vm.provider "hyperv" do |config_provider|
       config_provider.cpus = 2
