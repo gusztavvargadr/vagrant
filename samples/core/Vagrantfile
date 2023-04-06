@@ -1,0 +1,30 @@
+# ENV["VAGRANT_DEFAULT_PROVIDER"] = ("virtualbox" | "hyperv")
+
+synced_folder_disabled = ENV["VAGRANT_SYNCED_FOLDER_DISABLED"] || true
+
+provider_cpus = ENV["VAGRANT_PROVIDER_CPUS"]
+provider_memory = ENV["VAGRANT_PROVIDER_MEMORY"]
+provider_linked_clone = ENV["VAGRANT_PROVIDER_LINKED_CLONE"] || false
+provider_nested_virtualization = ENV["VAGRANT_PROVIDER_NESTED_VIRTUALIZATION"] || false
+
+hyperv_private_network_bridge = ENV["VAGRANT_HYPERV_PRIVATE_NETWORK_BRIDGE"] || "Default Switch"
+
+Vagrant.configure("2") do |config|
+  config.vm.synced_folder ".", "/vagrant", disabled: true if synced_folder_disabled
+
+  config.vm.provider "virtualbox" do |virtualbox, _override|
+    virtualbox.cpus = provider_cpus unless provider_cpus.to_s.empty?
+    virtualbox.memory = provider_memory unless provider_memory.to_s.empty?
+    virtualbox.linked_clone = true if provider_linked_clone
+    virtualbox.customize [ "modifyvm", :id, "--nested-hw-virt", "on" ] if provider_nested_virtualization
+  end
+
+  config.vm.provider "hyperv" do |hyperv, override|
+    hyperv.cpus = provider_cpus unless provider_cpus.to_s.empty?
+    hyperv.memory = provider_memory unless provider_memory.to_s.empty?
+    hyperv.linked_clone = true if provider_linked_clone
+    hyperv.enable_virtualization_extensions = true if provider_nested_virtualization
+
+    override.vm.network "private_network", bridge: hyperv_private_network_bridge
+  end
+end

@@ -1,5 +1,9 @@
+directory = File.dirname(__FILE__)
+
+load "#{directory}/../core/Vagrantfile"
+
 Vagrant.configure("2") do |config|
-  config.vm.define "server", autostart: false do |config_vm|
+  config.vm.define "server", primary: true do |config_vm|
     config_vm.vm.box = "gusztavvargadr/ubuntu-server"
   end
 
