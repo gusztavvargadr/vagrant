@@ -12,19 +12,26 @@ hyperv_private_network_bridge = ENV["VAGRANT_HYPERV_PRIVATE_NETWORK_BRIDGE"] || 
 Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/vagrant", disabled: true if synced_folder_disabled
 
-  config.vm.provider "virtualbox" do |virtualbox, _override|
-    virtualbox.cpus = provider_cpus unless provider_cpus.to_s.empty?
-    virtualbox.memory = provider_memory unless provider_memory.to_s.empty?
-    virtualbox.linked_clone = true if provider_linked_clone
-    virtualbox.customize [ "modifyvm", :id, "--nested-hw-virt", "on" ] if provider_nested_virtualization
+  config.vm.provider "virtualbox" do |provider, _override|
+    provider.cpus = provider_cpus unless provider_cpus.to_s.empty?
+    provider.memory = provider_memory unless provider_memory.to_s.empty?
+    provider.linked_clone = true if provider_linked_clone
+    provider.customize [ "modifyvm", :id, "--nested-hw-virt", "on" ] if provider_nested_virtualization
   end
 
-  config.vm.provider "hyperv" do |hyperv, override|
-    hyperv.cpus = provider_cpus unless provider_cpus.to_s.empty?
-    hyperv.memory = provider_memory unless provider_memory.to_s.empty?
-    hyperv.linked_clone = true if provider_linked_clone
-    hyperv.enable_virtualization_extensions = true if provider_nested_virtualization
+  config.vm.provider "hyperv" do |provider, override|
+    provider.cpus = provider_cpus unless provider_cpus.to_s.empty?
+    provider.memory = provider_memory unless provider_memory.to_s.empty?
+    provider.linked_clone = true if provider_linked_clone
+    provider.enable_virtualization_extensions = true if provider_nested_virtualization
 
     override.vm.network "private_network", bridge: hyperv_private_network_bridge
+  end
+
+  config.vm.provider "vmware_desktop" do |provider, _override|
+    provider.cpus = provider_cpus unless provider_cpus.to_s.empty?
+    provider.memory = provider_memory unless provider_memory.to_s.empty?
+    provider.linked_clone = true if provider_linked_clone
+    provider.vmx["vhv.enable"] = "TRUE" if provider_nested_virtualization
   end
 end

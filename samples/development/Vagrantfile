@@ -9,11 +9,9 @@ load "#{directory}/../core/Vagrantfile"
 Vagrant.configure("2") do |config|
   config.vm.define "ubuntu", primary: true do |config_vm|
     config_vm.vm.box = "gusztavvargadr/ubuntu-server"
-    config_vm.vm.hostname = "d11t-u06u"
   end
 
   config.vm.define "windows", autostart: false do |config_vm|
     config_vm.vm.box = "gusztavvargadr/windows-server"
-    config_vm.vm.hostname = "d11t-w07s"
   end
 end
