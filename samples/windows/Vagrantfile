@@ -1,6 +1,6 @@
 directory = File.dirname(__FILE__)
 
-load "#{directory}/../core/Vagrantfile"
+load "#{directory}/../../src/core.Vagrantfile"
 
 Vagrant.configure("2") do |config|
   config.vm.define "server", primary: true do |config_vm|
