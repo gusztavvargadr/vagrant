@@ -1,0 +1,17 @@
+directory = File.dirname(__FILE__)
+
+ENV["VAGRANT_PROVIDER_CPUS"] = "4"
+ENV["VAGRANT_PROVIDER_MEMORY"] = "8192"
+ENV["VAGRANT_PROVIDER_NESTED_VIRTUALIZATION"] = "true"
+
+load "#{directory}/../../src/core.Vagrantfile"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "ubuntu", primary: true do |config_vm|
+    config_vm.vm.box = "gusztavvargadr/ubuntu-server"
+  end
+
+  config.vm.define "windows", autostart: false do |config_vm|
+    config_vm.vm.box = "gusztavvargadr/windows-server"
+  end
+end
