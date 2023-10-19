@@ -12,21 +12,21 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |provider, _override|
     provider.cpus = provider_cpus unless provider_cpus.to_s.empty?
     provider.memory = provider_memory unless provider_memory.to_s.empty?
-    provider.linked_clone = true if provider_linked_clone
+    provider.linked_clone = provider_linked_clone
     provider.customize [ "modifyvm", :id, "--nested-hw-virt", "on" ] if provider_nested_virtualization
   end
 
   config.vm.provider "vmware_desktop" do |provider, _override|
     provider.cpus = provider_cpus unless provider_cpus.to_s.empty?
     provider.memory = provider_memory unless provider_memory.to_s.empty?
-    provider.linked_clone = true if provider_linked_clone
+    provider.linked_clone = provider_linked_clone
     provider.vmx["vhv.enable"] = "TRUE" if provider_nested_virtualization
   end
 
   config.vm.provider "hyperv" do |provider, override|
     provider.cpus = provider_cpus unless provider_cpus.to_s.empty?
     provider.memory = provider_memory unless provider_memory.to_s.empty?
-    provider.linked_clone = true if provider_linked_clone
+    provider.linked_clone = provider_linked_clone
     provider.enable_virtualization_extensions = true if provider_nested_virtualization
 
     override.vm.network "private_network", bridge: hyperv_network_bridge
