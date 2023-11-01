@@ -3,32 +3,44 @@ directory = File.dirname(__FILE__)
 load "#{directory}/../../src/core.Vagrantfile"
 
 Vagrant.configure("2") do |config|
-  config.vm.define "server", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/windows-server"
-  end
-
-  config.vm.define "server-core", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/windows-server-core"
-  end
-
-  config.vm.define "desktop", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/windows-11"
-  end
-
-  config.vm.define "desktop-10", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/windows-10"
-  end
-
-  config.vm.define "docker", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/docker-windows"
-  end
-
-  config.vm.define "docker-core", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/docker-community-windows-server-core"
-  end
-
   config.vm.provision "shell", inline: <<-EOH
     cmd /c ver
     systeminfo
+    Get-ComputerInfo
+    choco list -i
   EOH
+
+  config.vm.define "server", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server"
+  end
+
+  config.vm.define "server-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-core"
+  end
+
+  config.vm.define "desktop", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-11"
+  end
+
+  config.vm.define "desktop-10", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-10"
+  end
+
+  config.vm.define "docker", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/docker-windows"
+
+    config.vm.provision "shell", inline: <<-EOH
+      docker version
+      docker compose version
+    EOH
+  end
+
+  config.vm.define "docker-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/docker-community-windows-server-core"
+
+    config.vm.provision "shell", inline: <<-EOH
+      docker version
+      docker compose version
+    EOH
+  end
 end

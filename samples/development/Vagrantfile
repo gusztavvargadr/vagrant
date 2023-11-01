@@ -3,14 +3,26 @@ directory = File.dirname(__FILE__)
 ENV["VAGRANT_PROVIDER_CPUS"] = "4"
 ENV["VAGRANT_PROVIDER_MEMORY"] = "8192"
 
+# ENV["VAGRANT_PROVIDER_CPUS"] = "8"
+# ENV["VAGRANT_PROVIDER_MEMORY"] = "16384"
+# ENV["VAGRANT_PROVIDER_NESTED_VIRTUALIZATION"] = true
+
 load "#{directory}/../../src/core.Vagrantfile"
 
 Vagrant.configure("2") do |config|
-  config.vm.define "windows", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/windows-server"
+  config.vm.define "windows", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server"
+
+    config.vm.provision "shell", inline: <<-EOH
+      . { iwr -useb https://gist.github.com/gusztavvargadr/1f0d7dddc7f48549368eaaedf19bfe55/raw/deploy.ps1 } | iex
+    EOH
   end
 
-  config.vm.define "ubuntu", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/ubuntu-desktop"
+  config.vm.define "ubuntu", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/ubuntu-desktop"
+
+    config.vm.provision "shell", inline: <<-EOH
+      curl -Ls https://gist.github.com/gusztavvargadr/1f0d7dddc7f48549368eaaedf19bfe55/raw/deploy.sh | bash -s
+    EOH
   end
 end

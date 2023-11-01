@@ -4,9 +4,9 @@ provider_cpus = ENV["VAGRANT_PROVIDER_CPUS"]
 provider_memory = ENV["VAGRANT_PROVIDER_MEMORY"]
 provider_linked_clone = ENV["VAGRANT_PROVIDER_LINKED_CLONE"] || false
 provider_nested_virtualization = ENV["VAGRANT_PROVIDER_NESTED_VIRTUALIZATION"] || false
+provider_synced_folder_disabled = ENV["VAGRANT_PROVIDER_SYNCED_FOLDER_DISABLED"] || true
 
 hyperv_network_bridge = ENV["VAGRANT_HYPERV_NETWORK_BRIDGE"] || "Default Switch"
-hyperv_synced_folder_disabled = ENV["VAGRANT_HYPERV_SYNCED_FOLDER_DISABLED"] || false
 
 Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |provider, _override|
@@ -30,6 +30,7 @@ Vagrant.configure("2") do |config|
     provider.enable_virtualization_extensions = true if provider_nested_virtualization
 
     override.vm.network "private_network", bridge: hyperv_network_bridge
-    override.vm.synced_folder ".", "/vagrant", disabled: true if hyperv_synced_folder_disabled
   end
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true if provider_synced_folder_disabled
 end
