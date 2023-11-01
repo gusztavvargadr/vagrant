@@ -3,21 +3,27 @@ directory = File.dirname(__FILE__)
 load "#{directory}/../../src/core.Vagrantfile"
 
 Vagrant.configure("2") do |config|
-  config.vm.define "server", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/ubuntu-server"
-  end
-
-  config.vm.define "desktop", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/ubuntu-desktop"
-  end
-
-  config.vm.define "docker", autostart: false do |config_vm|
-    config_vm.vm.box = "gusztavvargadr/docker-linux"
-  end
-
   config.vm.provision "shell", inline: <<-EOH
     uname -a
     lsb_release -a
-    lshw
+    lshw -short
+    apt list --installed
   EOH
+
+  config.vm.define "server", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/ubuntu-server"
+  end
+
+  config.vm.define "desktop", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/ubuntu-desktop"
+  end
+
+  config.vm.define "docker", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/docker-linux"
+
+    config.vm.provision "shell", inline: <<-EOH
+      docker version
+      docker compose version
+    EOH
+  end
 end
