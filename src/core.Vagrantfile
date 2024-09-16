@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   provider_cpus = ENV["VAGRANT_PROVIDER_CPUS"]
   provider_memory = ENV["VAGRANT_PROVIDER_MEMORY"]
   provider_nested_virtualization = ENV.fetch("VAGRANT_PROVIDER_NESTED_VIRTUALIZATION", "false").to_s.downcase == "true"
-  provider_linked_clone = ENV.fetch("VAGRANT_PROVIDER_LINKED_CLONE", "true").to_s.downcase == "true"
+  provider_linked_clone = ENV.fetch("VAGRANT_PROVIDER_LINKED_CLONE", "false").to_s.downcase == "true"
   provider_synced_folder_disabled = ENV.fetch("VAGRANT_PROVIDER_SYNCED_FOLDER_DISABLED", "true").to_s.downcase == "true"
 
   config.vm.provider "hyperv" do |provider, override|
