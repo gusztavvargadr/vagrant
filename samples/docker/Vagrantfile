@@ -1,0 +1,22 @@
+directory = File.dirname(__FILE__)
+
+load "#{directory}/../../src/core.Vagrantfile"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "windows", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/docker-community-windows-server"
+  end
+
+  config.vm.define "windows-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/docker-community-windows-server-core"
+  end
+
+  config.vm.define "ubuntu", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/docker-community-ubuntu-server"
+  end
+
+  config.vm.provision "shell", inline: <<-EOH
+    docker version
+    docker compose version
+  EOH
+end
