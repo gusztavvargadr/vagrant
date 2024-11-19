@@ -14,7 +14,6 @@ Vagrant.configure("2") do |config|
     provider.memory = provider_memory unless provider_memory.to_s.empty?
     provider.enable_virtualization_extensions = true if provider_nested_virtualization
     provider.linked_clone = provider_linked_clone
-    provider.gui = provider_gui
 
     hyperv_network_bridge = ENV.fetch("VAGRANT_HYPERV_NETWORK_BRIDGE", "Default Switch")
     override.vm.network "private_network", bridge: hyperv_network_bridge
