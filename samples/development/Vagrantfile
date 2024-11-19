@@ -15,6 +15,7 @@ Vagrant.configure("2") do |config|
     config.vm.box = "gusztavvargadr/windows-server-2022-standard"
 
     config.vm.provision "shell", inline: <<-EOH
+      $env:CHEF_POLICY="gusztavvargadr_development"
       . { iwr -useb https://gist.github.com/gusztavvargadr/1f0d7dddc7f48549368eaaedf19bfe55/raw/provision.ps1 } | iex
     EOH
   end
@@ -23,6 +24,7 @@ Vagrant.configure("2") do |config|
     config.vm.box = "gusztavvargadr/ubuntu-server-2204-lts"
 
     config.vm.provision "shell", inline: <<-EOH
+      export CHEF_POLICY="gusztavvargadr_development"
       curl -Ls https://gist.github.com/gusztavvargadr/1f0d7dddc7f48549368eaaedf19bfe55/raw/provision.sh | bash -s
     EOH
   end
