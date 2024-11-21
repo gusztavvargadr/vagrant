@@ -6,6 +6,7 @@ Vagrant.configure("2") do |config|
   provider_memory = ENV["VAGRANT_PROVIDER_MEMORY"]
   provider_nested_virtualization = ENV.fetch("VAGRANT_PROVIDER_NESTED_VIRTUALIZATION", "false").to_s.downcase == "true"
   provider_linked_clone = ENV.fetch("VAGRANT_PROVIDER_LINKED_CLONE", "false").to_s.downcase == "true"
+  provider_gui = ENV.fetch("VAGRANT_PROVIDER_GUI", "false").to_s.downcase == "true"
   provider_synced_folder_disabled = ENV.fetch("VAGRANT_PROVIDER_SYNCED_FOLDER_DISABLED", "true").to_s.downcase == "true"
 
   config.vm.provider "hyperv" do |provider, override|
@@ -23,6 +24,7 @@ Vagrant.configure("2") do |config|
     provider.memory = provider_memory unless provider_memory.to_s.empty?
     provider.customize [ "modifyvm", :id, "--nested-hw-virt", "on" ] if provider_nested_virtualization
     provider.linked_clone = provider_linked_clone
+    provider.gui = provider_gui
   end
 
   config.vm.provider "vmware_desktop" do |provider, _override|
@@ -30,6 +32,7 @@ Vagrant.configure("2") do |config|
     provider.memory = provider_memory unless provider_memory.to_s.empty?
     provider.vmx["vhv.enable"] = "TRUE" if provider_nested_virtualization
     provider.linked_clone = provider_linked_clone
+    provider.gui = provider_gui
   end
 
   config.vm.synced_folder ".", "/vagrant", disabled: true if provider_synced_folder_disabled

@@ -3,6 +3,22 @@ directory = File.dirname(__FILE__)
 load "#{directory}/../../src/core.Vagrantfile"
 
 Vagrant.configure("2") do |config|
+  config.vm.define "server", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2022-standard"
+  end
+
+  config.vm.define "server-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2022-standard-core"
+  end
+
+  config.vm.define "desktop", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-11-24h2-enterprise"
+  end
+
+  config.vm.define "desktop-10", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-10-22h2-enterprise"
+  end
+
   config.vm.provision "shell", inline: <<-EOH
     cmd /c ver
 
@@ -12,38 +28,4 @@ Vagrant.configure("2") do |config|
     Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
     choco list -i
   EOH
-
-  config.vm.define "server", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/windows-server"
-  end
-
-  config.vm.define "server-core", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/windows-server-core"
-  end
-
-  config.vm.define "desktop", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/windows-11"
-  end
-
-  config.vm.define "desktop-10", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/windows-10"
-  end
-
-  config.vm.define "docker", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/docker-windows"
-
-    config.vm.provision "shell", inline: <<-EOH
-      docker version
-      docker compose version
-    EOH
-  end
-
-  config.vm.define "docker-core", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/docker-community-windows-server-core"
-
-    config.vm.provision "shell", inline: <<-EOH
-      docker version
-      docker compose version
-    EOH
-  end
 end
