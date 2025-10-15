@@ -1,9 +1,5 @@
 directory = File.dirname(__FILE__)
 
-ENV["VAGRANT_PROVIDER_CPUS"] = "4"
-ENV["VAGRANT_PROVIDER_MEMORY"] = "8192"
-ENV["VAGRANT_PROVIDER_NESTED_VIRTUALIZATION"] = "false"
-
 # ENV["VAGRANT_PROVIDER_CPUS"] = "8"
 # ENV["VAGRANT_PROVIDER_MEMORY"] = "16384"
 # ENV["VAGRANT_PROVIDER_NESTED_VIRTUALIZATION"] = "true"
@@ -11,21 +7,58 @@ ENV["VAGRANT_PROVIDER_NESTED_VIRTUALIZATION"] = "false"
 load "#{directory}/../../src/core.Vagrantfile"
 
 Vagrant.configure("2") do |config|
-  config.vm.define "windows-2025", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/windows-server-2025-standard"
+  config.vm.define "windows-latest", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/development-windows"
 
     config.vm.provision "shell", inline: <<-EOH
-      $env:CHEF_POLICY="gusztavvargadr_development"
-      . { iwr -useb https://gist.github.com/gusztavvargadr/1f0d7dddc7f48549368eaaedf19bfe55/raw/provision.ps1 } | iex
+      cmd /c ver
+
+      systeminfo
+      Get-ComputerInfo
+
+      Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+      choco list -i
     EOH
   end
 
-  config.vm.define "windows-2022", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/windows-server-2022-standard"
+  config.vm.define "windows-2025", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/development-windows-2025"
 
     config.vm.provision "shell", inline: <<-EOH
-      $env:CHEF_POLICY="gusztavvargadr_development"
-      . { iwr -useb https://gist.github.com/gusztavvargadr/1f0d7dddc7f48549368eaaedf19bfe55/raw/provision.ps1 } | iex
+      cmd /c ver
+
+      systeminfo
+      Get-ComputerInfo
+
+      Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+      choco list -i
+    EOH
+ end
+
+  config.vm.define "windows-2022", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/development-windows-2022"
+
+    config.vm.provision "shell", inline: <<-EOH
+      cmd /c ver
+
+      systeminfo
+      Get-ComputerInfo
+
+      Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+      choco list -i
+    EOH
+  end
+
+  config.vm.define "ubuntu-latest", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/development-ubuntu"
+
+    config.vm.provision "shell", inline: <<-EOH
+      uname -a
+      lsb_release -a
+
+      lshw -short
+      lscpu
+      lsmem
     EOH
   end
 
@@ -39,16 +72,6 @@ Vagrant.configure("2") do |config|
       lshw -short
       lscpu
       lsmem
-
-      export CHEF_POLICY="gusztavvargadr_development"
-      curl -Ls https://gist.github.com/gusztavvargadr/1f0d7dddc7f48549368eaaedf19bfe55/raw/provision.sh | bash -s
-
-      git --version
-
-      dotnet --info
-      dotnet tool list --global
-
-      docker --version
     EOH
   end
 
@@ -62,16 +85,15 @@ Vagrant.configure("2") do |config|
       lshw -short
       lscpu
       lsmem
-
-      export CHEF_POLICY="gusztavvargadr_development"
-      curl -Ls https://gist.github.com/gusztavvargadr/1f0d7dddc7f48549368eaaedf19bfe55/raw/provision.sh | bash -s
-
-      git --version
-
-      dotnet --info
-      dotnet tool list --global
-
-      docker --version
     EOH
   end
+
+  config.vm.provision "shell", inline: <<-EOH
+    git --version
+
+    dotnet --info
+    dotnet tool list --global
+
+    docker --version
+  EOH
 end
