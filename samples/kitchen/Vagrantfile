@@ -1,0 +1,33 @@
+directory = File.dirname(__FILE__)
+
+load "#{directory}/../../src/core.Vagrantfile"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "windows-latest", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/kitchen-windows"
+  end
+
+  config.vm.define "windows-2025", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/kitchen-windows-2025"
+  end
+
+  config.vm.define "windows-2022", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/kitchen-windows-2022"
+  end
+
+  config.vm.define "ubuntu-latest", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/kitchen-ubuntu"
+  end
+
+  config.vm.define "ubuntu-2404", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/kitchen-ubuntu-2404"
+  end
+
+  config.vm.define "ubuntu-2204", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/kitchen-ubuntu-2204"
+  end
+
+  config.vm.provision "shell", inline: <<-EOH
+    chef-client --version
+  EOH
+end

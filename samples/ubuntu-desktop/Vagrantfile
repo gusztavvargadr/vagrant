@@ -26,5 +26,8 @@ Vagrant.configure("2") do |config|
     lshw -short
     lscpu
     lsmem
+
+    apt list --installed | grep -i "linux-"
+    apt list --installed | grep -i "ubuntu-desktop"
   EOH
 end
