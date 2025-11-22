@@ -3,23 +3,23 @@ directory = File.dirname(__FILE__)
 load "#{directory}/../../src/core.Vagrantfile"
 
 Vagrant.configure("2") do |config|
-  config.vm.define "windows", autostart: false do |config|
+  config.vm.define "windows-latest", autostart: false do |config|
     config.vm.box = "gusztavvargadr/docker-windows"
   end
 
-  config.vm.define "windows-server", autostart: false do |config|
+  config.vm.define "windows-2025", autostart: false do |config|
     config.vm.box = "gusztavvargadr/docker-community-windows-server"
   end
 
-  config.vm.define "windows-server-core", autostart: false do |config|
+  config.vm.define "windows-2025-core", autostart: false do |config|
     config.vm.box = "gusztavvargadr/docker-community-windows-server-core"
   end
 
-  config.vm.define "ubuntu", autostart: false do |config|
+  config.vm.define "ubuntu-latest", autostart: false do |config|
     config.vm.box = "gusztavvargadr/docker-linux"
   end
 
-  config.vm.define "ubuntu-server", autostart: false do |config|
+  config.vm.define "ubuntu-2404", autostart: false do |config|
     config.vm.box = "gusztavvargadr/docker-community-ubuntu-server"
   end
 
