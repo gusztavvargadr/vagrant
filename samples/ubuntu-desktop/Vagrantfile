@@ -1,0 +1,33 @@
+directory = File.dirname(__FILE__)
+
+load "#{directory}/../../src/core.Vagrantfile"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "latest", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/ubuntu-desktop"
+  end
+
+  config.vm.define "2404-lts", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/ubuntu-desktop-2404-lts"
+  end
+
+  config.vm.define "2204-lts", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/ubuntu-desktop-2204-lts"
+  end
+
+  config.vm.define "2004-lts-deprecated", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/ubuntu-desktop-2004-lts"
+  end
+
+  config.vm.provision "shell", inline: <<-EOH
+    uname -a
+    lsb_release -a
+
+    lshw -short
+    lscpu
+    lsmem
+
+    apt list --installed | grep -i "linux-"
+    apt list --installed | grep -i "ubuntu-desktop"
+  EOH
+end

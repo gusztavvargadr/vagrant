@@ -1,0 +1,22 @@
+directory = File.dirname(__FILE__)
+
+load "#{directory}/../../src/core.Vagrantfile"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "latest", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/iis"
+  end
+
+  config.vm.define "windows-2022", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/iis-windows-server"
+  end
+
+  config.vm.define "windows-2022-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/iis-windows-server-core"
+  end
+
+  config.vm.provision "shell", inline: <<-EOH
+    dotnet --info
+    dotnet --list-runtimes
+  EOH
+end

@@ -1,0 +1,55 @@
+directory = File.dirname(__FILE__)
+
+load "#{directory}/../../src/core.Vagrantfile"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "latest", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server"
+  end
+
+  config.vm.define "latest-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-core"
+  end
+
+  config.vm.define "2025-standard", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2025-standard"
+  end
+
+  config.vm.define "2025-standard-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2025-standard-core"
+  end
+
+  config.vm.define "2022-standard", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2022-standard"
+  end
+
+  config.vm.define "2022-standard-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2022-standard-core"
+  end
+
+  config.vm.define "insider-standard", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-insider-preview-standard"
+  end
+
+  config.vm.define "insider-standard-core", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-insider-preview-standard-core"
+  end
+
+  config.vm.define "2019-standard-deprecated", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2019-standard"
+  end
+
+  config.vm.define "2019-standard-core-deprecated", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2019-standard-core"
+  end
+
+  config.vm.provision "shell", inline: <<-EOH
+    cmd /c ver
+
+    systeminfo
+    Get-ComputerInfo
+
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    choco list -i
+  EOH
+end

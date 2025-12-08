@@ -1,0 +1,35 @@
+directory = File.dirname(__FILE__)
+
+load "#{directory}/../../src/core.Vagrantfile"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "latest", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-10"
+  end
+
+  config.vm.define "22h2-enterprise", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-10-22h2-enterprise"
+  end
+  
+  config.vm.define "21h2-enterprise-ltsc", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-10-21h2-enterprise-ltsc"
+  end
+
+  config.vm.define "21h2-enterprise-deprecated", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-10-21h2-enterprise"
+  end
+
+  config.vm.define "1809-enterprise-ltsc-deprecated", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-10-1809-enterprise-ltsc"
+  end
+
+  config.vm.provision "shell", inline: <<-EOH
+    cmd /c ver
+
+    systeminfo
+    Get-ComputerInfo
+
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    choco list -i
+  EOH
+end
