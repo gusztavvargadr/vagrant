@@ -11,36 +11,36 @@ Vagrant.configure("2") do |config|
     config.vm.box = "gusztavvargadr/windows-server-core"
   end
 
-  config.vm.define "2025", autostart: false do |config|
+  config.vm.define "2025-standard", autostart: false do |config|
     config.vm.box = "gusztavvargadr/windows-server-2025-standard"
   end
 
-  config.vm.define "2025-core", autostart: false do |config|
+  config.vm.define "2025-standard-core", autostart: false do |config|
     config.vm.box = "gusztavvargadr/windows-server-2025-standard-core"
   end
 
-  config.vm.define "2022", autostart: false do |config|
+  config.vm.define "2022-standard", autostart: false do |config|
     config.vm.box = "gusztavvargadr/windows-server-2022-standard"
   end
 
-  config.vm.define "2022-core", autostart: false do |config|
+  config.vm.define "2022-standard-core", autostart: false do |config|
     config.vm.box = "gusztavvargadr/windows-server-2022-standard-core"
   end
 
-  config.vm.define "2019", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/windows-server-2019-standard"
-  end
-
-  config.vm.define "2019-core", autostart: false do |config|
-    config.vm.box = "gusztavvargadr/windows-server-2019-standard-core"
-  end
-
-  config.vm.define "insider", autostart: false do |config|
+  config.vm.define "insider-standard", autostart: false do |config|
     config.vm.box = "gusztavvargadr/windows-server-insider-preview-standard"
   end
 
-  config.vm.define "insider-core", autostart: false do |config|
+  config.vm.define "insider-standard-core", autostart: false do |config|
     config.vm.box = "gusztavvargadr/windows-server-insider-preview-standard-core"
+  end
+
+  config.vm.define "2019-standard-deprecated", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2019-standard"
+  end
+
+  config.vm.define "2019-standard-core-deprecated", autostart: false do |config|
+    config.vm.box = "gusztavvargadr/windows-server-2019-standard-core"
   end
 
   config.vm.provision "shell", inline: <<-EOH
