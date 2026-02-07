@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
     config.vm.box = "gusztavvargadr/ubuntu-server-2204-lts"
   end
 
-  # deprecated
+  # deprecated 2505
   config.vm.define "2004-lts", autostart: false do |config|
     config.vm.box = "gusztavvargadr/ubuntu-server-2004-lts"
   end

@@ -27,12 +27,12 @@ Vagrant.configure("2") do |config|
     config.vm.box = "gusztavvargadr/windows-server-2022-standard-core"
   end
 
-  # deprecated
+  # deprecated 2407
   config.vm.define "2019-standard", autostart: false do |config|
     config.vm.box = "gusztavvargadr/windows-server-2019-standard"
   end
 
-  # deprecated
+  # deprecated 2407
   config.vm.define "2019-standard-core", autostart: false do |config|
     config.vm.box = "gusztavvargadr/windows-server-2019-standard-core"
   end

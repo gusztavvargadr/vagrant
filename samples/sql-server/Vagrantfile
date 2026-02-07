@@ -3,17 +3,17 @@ directory = File.dirname(__FILE__)
 load "#{directory}/../../src/core.Vagrantfile"
 
 Vagrant.configure("2") do |config|
-  # deprecated
+  # deprecated 2503
   config.vm.define "latest", autostart: false do |config|
     config.vm.box = "gusztavvargadr/sql-server"
   end
 
-  # deprecated
+  # deprecated 2503
   config.vm.define "2019-developer-windows-2022", autostart: false do |config|
     config.vm.box = "gusztavvargadr/sql-server-20190-developer-windows-server"
   end
 
-  # deprecated
+  # deprecated 2503
   config.vm.define "2019-developer-windows-2022-core", autostart: false do |config|
     config.vm.box = "gusztavvargadr/sql-server-2019-developer-windows-server-core"
   end
